@@ -1,5 +1,7 @@
 """Argand Diagram Plotter
 
+plot.py - Class for storing a single drawable plot.
+
 Written by Sam Hubbard - samlhub@gmail.com
 """
 

@@ -1,5 +1,8 @@
 """Argand Diagram Plotter
 
+dialog_plots.py - Creates a dockable dialog for creating and
+                  managing plots.
+
 Written by Sam Hubbard - samlhub@gmail.com
 """
 

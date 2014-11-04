@@ -1,5 +1,9 @@
 """Argand Diagram Plotter
 
+abstract_syntax_tree.py - Produces an abstract syntax tree
+                          from a mathematical expression
+						  stored in a string.
+
 Written by Sam Hubbard - samlhub@gmail.com
 """
 

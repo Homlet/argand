@@ -1,5 +1,7 @@
 """Argand Diagram Plotter
 
+window.py - Creates the main window of the program.
+
 Written by Sam Hubbard - samlhub@gmail.com
 """
 
