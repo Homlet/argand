@@ -48,7 +48,6 @@ class Window(QtGui.QMainWindow):
         self.position_input_y.setAlignment(QtCore.Qt.AlignRight)
         self.grid.addWidget(self.position_input_y, 1, 3)
 
-        # Create a spacer.
         self.grid.setColumnMinimumWidth(4, 5)
         self.grid.setColumnStretch(4, 0)
 

@@ -75,15 +75,9 @@ class SyntaxParser:
         while next(self) == " ":
             self.index += 1
 
+    def resolve(self):
+        if self.parsed:
+            return self.tree.resolve()
+
     def __next__(self):
         return self.equation[self.index]
-
-    def get_tree(self):
-        if self.parsed:
-            return self.tree
-
-
-def calc(eqn):
-    s = SyntaxParser(eqn)
-    s.parse()
-    print(s.get_tree().resolve())

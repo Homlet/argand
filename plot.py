@@ -3,6 +3,8 @@
 Written by Sam Hubbard - samlhub@gmail.com
 """
 
+from abstract_syntax_tree import SyntaxParser
+
 
 TYPE_CIRCLE = 0
 TYPE_DISK = 1
@@ -21,45 +23,11 @@ class Plot:
         self.color = color
         self.alpha = alpha
         
-        self.parse(self.equation)
-
-    def parse(self, equation):
-        precedence = {
-            "|": 0, "(": 0, ")": 0,
-            "+": 1, "-": 1,
-            "*": 2,
-            "/": 3,
-            "^": 4
-        }
-        def evaluate(stack):
-            while precedence[last_operator(stack)] > 0 and len(stack) > 0:
-                stack.append([stack.pop() for i in range(3)][::-1])
-
-        def last_operator(stack):
-            for c in reversed(stack):
-                if c in precedence:
-                    return c
-        
-        terms = []
-        ops = []
-        for c in equation:
-            try:
-                # Try to interpret as operator.                    
-                if precedence[c] <= precedence[last_operator(stack)]:
-                    stack = evaluate(stack)
-                stack.append(c)
-            except:
-                # Otherwise treat as number.
-                stack.append(c)
-            print(stack)
-        i = 0
-        while i < len(stack):
-            if stack[i] in ["|", "(", ")"]:
-                del stack[i]
-            i += 1
-        print(stack)
+        self.parser = SyntaxParser(self.equation)
+        self.parser.parse()
 
 
 if __name__ == "__main__":
-    while True:
-        plot = Plot(input())
+    plot = Plot(input())
+    if plot.parser.parsed:
+        print(plot.parser.resolve())
