@@ -12,7 +12,9 @@ from PyQt4.QtCore import *
 
 class DialogPreferences(QDialog):
     def __init__(self, parent):
-        super(DialogPreferences, self).__init__(parent)
+        super(DialogPreferences, self).__init__(
+            parent, Qt.WindowTitleHint | Qt.WindowSystemMenuHint
+        )
         self.setup_content()
         self.initialize()
         
@@ -26,16 +28,14 @@ class DialogPreferences(QDialog):
         self.font_size_label = QLabel("Font size:")
         
         # Create integer inputs.
-        self.stroke = QSlider(Qt.Horizontal)
-        self.stroke.setTickPosition(QSlider.TicksBelow)
+        self.stroke = QSpinBox()
         self.stroke.setRange(1, 10)
-        self.stroke.setTickInterval(1)
         self.font_size = QSpinBox()
+        self.font_size.setRange(12, 24)
         
         # Create divider.
         self.divider = QFrame()
         self.divider.setFrameShape(QFrame.VLine)
-        self.divider.setFrameShadow(QFrame.Sunken)
         
         # Create check-boxes.
         self.label_axes = QCheckBox("Label axes")
