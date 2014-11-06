@@ -13,6 +13,7 @@ from diagram import Diagram
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    app.setWindowIcon(QIcon("img/logo16.png"))
     diagram = Diagram()
     window = Window()
     sys.exit(app.exec_())
