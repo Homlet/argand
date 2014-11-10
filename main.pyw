@@ -1,3 +1,4 @@
+#!python3
 """Argand Diagram Plotter
 
 Written by Sam Hubbard - samlhub@gmail.com
