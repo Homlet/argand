@@ -14,7 +14,6 @@ class Diagram:
         self.plots = []
         self.zoom = 1.0
         self.translation = Point(0.0, 0.0)
-        self.preferences = None
 
     def add_plot(self, plot, index):
         pass
@@ -33,6 +32,3 @@ class Diagram:
 
     def translate(self, translation):
         self.translation += translation
-
-    def set_preferences(self, preferences):
-        self.preferences = preferences

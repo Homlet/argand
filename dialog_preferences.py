@@ -11,10 +11,11 @@ from PyQt4.QtCore import *
 
 
 class DialogPreferences(QDialog):
-    def __init__(self, parent):
+    def __init__(self, parent, preferences):
         super(DialogPreferences, self).__init__(
             parent, Qt.WindowTitleHint | Qt.WindowSystemMenuHint
         )
+        self.preferences = preferences
         self.setup_content()
         self.initialize()
         
@@ -30,8 +31,10 @@ class DialogPreferences(QDialog):
         # Create integer inputs.
         self.stroke = QSpinBox()
         self.stroke.setRange(1, 10)
+        self.stroke.setValue(self.preferences.stroke)
         self.font_size = QSpinBox()
         self.font_size.setRange(12, 24)
+        self.font_size.setValue(self.preferences.font_size)
         
         # Create divider.
         self.divider = QFrame()
@@ -39,7 +42,9 @@ class DialogPreferences(QDialog):
         
         # Create check-boxes.
         self.label_axes = QCheckBox("Label axes")
+        self.label_axes.setChecked(self.preferences.label_axes)
         self.label_points = QCheckBox("Label points")
+        self.label_points.setChecked(self.preferences.label_points)
         
         # Create Save and Cancel buttons.
         self.buttons = QDialogButtonBox(
@@ -61,3 +66,10 @@ class DialogPreferences(QDialog):
     
     def initialize(self):
         self.setWindowTitle("Preferences")
+    
+    def accept(self, *args, **kwargs):
+        self.preferences.stroke = self.stroke.value()
+        self.preferences.font_size = self.font_size.value()
+        self.preferences.label_axes = self.label_axes.isChecked()
+        self.preferences.label_points = self.label_points.isChecked()
+        super(DialogPreferences, self).accept(*args, **kwargs)

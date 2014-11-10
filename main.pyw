@@ -8,13 +8,15 @@ import sys
 
 from PyQt4.QtGui import *
 
-from window import Window
+from preferences import Preferences
 from diagram import Diagram
+from window import Window
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon("img/logo16.png"))
     diagram = Diagram()
-    window = Window()
+    preferences = Preferences()
+    window = Window(preferences)
     sys.exit(app.exec_())

@@ -14,4 +14,8 @@ from PyQt4.QtCore import *
 class SceneDiagram(QGraphicsScene):
     def __init__(self):
         super(SceneDiagram, self).__init__()
-        self.addText("Hello, world!")
+
+    def draw_axes(self, preferences):
+        if preferences.label_axes:
+            pass
+        pass

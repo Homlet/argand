@@ -12,12 +12,14 @@ from PyQt4.QtCore import *
 
 from dialog_plots import DialogPlots
 from dialog_preferences import DialogPreferences
+from preferences import Preferences
 from scene_diagram import SceneDiagram
 
 
 class Window(QMainWindow):
-    def __init__(self):
+    def __init__(self, preferences):
         super(Window, self).__init__()
+        self.preferences = preferences
         self.setup_content()
         self.create_actions()
         self.setup_menubar()
@@ -102,7 +104,7 @@ class Window(QMainWindow):
         #menu_file.addAction(self.a_show_about)
     
     def show_preferences(self):
-        dialog = DialogPreferences(self)
+        dialog = DialogPreferences(self, self.preferences)
         result = dialog.exec_()
         
     def initialize(self):
