@@ -13,13 +13,13 @@ class Point:
         self.y = y
 
     def __add__(self, other):
-        return Point(self.x + other.x, self.y + other.y)
+        return Point(self.x + other[0], self.y + other[1])
 
     def __neg__(self):
         return Point(-self.x, -self.y)
 
     def __sub__(self, other):
-        return self + -other
+        return self + (-other[0], -other[1])
 
     def __mul__(self, other):
         if isinstance(other, Point):
@@ -34,7 +34,7 @@ class Point:
         return 2
 
     def __eq__(self, other):
-        return self.x == other.x and self.y == other.y
+        return self.x == other[0] and self.y == other[1]
 
     def __repr__(self):
         return "Point" + repr((self.x, self.y))

@@ -13,7 +13,7 @@ from PyQt4.QtCore import *
 from dialog_plots import DialogPlots
 from dialog_preferences import DialogPreferences
 from preferences import Preferences
-from scene_diagram import SceneDiagram
+from view_diagram import ViewDiagram
 
 
 class Window(QMainWindow):
@@ -37,8 +37,7 @@ class Window(QMainWindow):
         self.center.setLayout(self.grid)
 
         # Add a graphics area for drawing the diagram.
-        self.diagram_scene = SceneDiagram()
-        self.diagram = QGraphicsView(self.diagram_scene)
+        self.diagram = ViewDiagram(self.program)
         self.grid.addWidget(self.diagram, 0, 0, 1, 0)
 
         # Create a control region under the diagram.
@@ -110,4 +109,5 @@ class Window(QMainWindow):
     def initialize(self):
         self.setGeometry(200, 150, 800, 600)
         self.setWindowTitle("Argand Diagram Plotter")
+        
         self.show()
