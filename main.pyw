@@ -13,10 +13,18 @@ from diagram import Diagram
 from window import Window
 
 
+class Program:
+    def __init__(self):
+        self.app = QApplication(sys.argv)
+        self.app.setWindowIcon(QIcon("img/logo16.png"))
+        self.diagram = Diagram()
+        self.preferences = Preferences()
+        self.window = Window(self)
+    
+    def exec_(self):
+        return self.app.exec_()
+
+
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    app.setWindowIcon(QIcon("img/logo16.png"))
-    diagram = Diagram()
-    preferences = Preferences()
-    window = Window(preferences)
-    sys.exit(app.exec_())
+    program = Program()
+    sys.exit(program.exec_())

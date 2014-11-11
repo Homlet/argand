@@ -17,9 +17,9 @@ from scene_diagram import SceneDiagram
 
 
 class Window(QMainWindow):
-    def __init__(self, preferences):
+    def __init__(self, program):
         super(Window, self).__init__()
-        self.preferences = preferences
+        self.program = program
         self.setup_content()
         self.create_actions()
         self.setup_menubar()
@@ -104,7 +104,7 @@ class Window(QMainWindow):
         #menu_file.addAction(self.a_show_about)
     
     def show_preferences(self):
-        dialog = DialogPreferences(self, self.preferences)
+        dialog = DialogPreferences(self, self.program.preferences)
         result = dialog.exec_()
         
     def initialize(self):
