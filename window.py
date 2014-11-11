@@ -103,8 +103,8 @@ class Window(QMainWindow):
         #menu_file.addAction(self.a_show_about)
     
     def show_preferences(self):
-        dialog = DialogPreferences(self, self.program.preferences)
-        result = dialog.exec_()
+        DialogPreferences(self, self.program.preferences).exec_()
+        self.diagram.draw()
         
     def initialize(self):
         self.setGeometry(200, 150, 800, 600)
