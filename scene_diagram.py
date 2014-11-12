@@ -91,6 +91,8 @@ class SceneDiagram(QGraphicsScene):
             
             vertical_steps = int(height / LABEL_SPACING)
             for i in range(-vertical_steps, vertical_steps):
+                # Don't label the origin twice.
+                if i == 0: continue
                 self.addItem(FlippedText(
                     form.format(i * LABEL_SPACING / zoom),
                     width / 2 + cling_x,
