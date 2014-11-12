@@ -45,13 +45,15 @@ class DialogPlots(QDockWidget):
         self.alpha = QSlider(Qt.Horizontal)
         self.alpha.setTickPosition(QSlider.TicksBelow)
         self.alpha.setRange(0, 100)
+        self.alpha.setValue(100)
         self.alpha.setTickInterval(10)
         self.alpha.valueChanged.connect(self.update_alpha_label)
         
-        self.alpha_label = QLabel("100")
+        self.alpha_label = QLabel(str(self.alpha.value()))
 
         # Create a grid layout in the widget.
         self.grid = QGridLayout()
+        self.grid.setColumnStretch(2, 0)
         self.grid.setContentsMargins(3, 3, 3, 3)
         self.widget.setLayout(self.grid)
         
@@ -69,6 +71,7 @@ class DialogPlots(QDockWidget):
             Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea
         )
         self.setWidget(self.widget)
+        self.grid.setColumnMinimumWidth(2, self.alpha_label.geometry().width())
 
     def change_color(self):
         """Changes the color of the currently selected equation."""
