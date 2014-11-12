@@ -19,11 +19,7 @@ class DialogPreferences(QDialog):
         self.setup_content()
         self.initialize()
         
-    def setup_content(self):
-        self.grid = QGridLayout(self)
-        self.grid.setContentsMargins(3, 3, 3, 3)
-        self.grid.setSizeConstraint(QLayout.SetFixedSize)
-        
+    def setup_content(self):        
         # Create labels.
         self.stroke_label = QLabel("Stroke width:")
         self.font_size_label = QLabel("Font size:")
@@ -53,6 +49,11 @@ class DialogPreferences(QDialog):
         )
         self.buttons.accepted.connect(self.accept)
         self.buttons.rejected.connect(self.reject)
+        
+        # Create a grid layout in the widget.
+        self.grid = QGridLayout(self)
+        self.grid.setContentsMargins(3, 3, 3, 3)
+        self.grid.setSizeConstraint(QLayout.SetFixedSize)
         
         # Add everything to the grid.
         self.grid.addWidget(self.stroke_label, 0, 0)

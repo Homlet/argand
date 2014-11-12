@@ -21,11 +21,6 @@ class DialogPlots(QDockWidget):
         self.widget = QWidget()
         self.widget.setMinimumSize(200, 300)
 
-        # Create a grid layout in the widget.
-        self.grid = QGridLayout()
-        self.grid.setContentsMargins(3, 3, 3, 3)
-        self.widget.setLayout(self.grid)
-
         # Setup the list of plots.
         self.list = QListWidget()
 
@@ -54,6 +49,11 @@ class DialogPlots(QDockWidget):
         self.alpha.valueChanged.connect(self.update_alpha_label)
         
         self.alpha_label = QLabel("100")
+
+        # Create a grid layout in the widget.
+        self.grid = QGridLayout()
+        self.grid.setContentsMargins(3, 3, 3, 3)
+        self.widget.setLayout(self.grid)
         
         # Add everything to the grid.
         self.grid.addWidget(self.list, 0, 0, 1, 0)
@@ -62,7 +62,6 @@ class DialogPlots(QDockWidget):
         self.grid.addWidget(self.color_button, 2, 1, 1, 2)
         self.grid.addWidget(self.alpha_image, 3, 0)
         self.grid.addWidget(self.alpha, 3, 1)
-        self.grid.setColumnStretch(1, 0)
         self.grid.addWidget(self.alpha_label, 3, 2)
 
     def initialize(self):
