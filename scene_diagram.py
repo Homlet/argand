@@ -65,11 +65,11 @@ class SceneDiagram(QGraphicsScene):
             self.addItem(FlippedText(
                 "Re",
                 width - LABEL_PAD,
-                height / 2 + cling_y
+                height / 2 + cling_y - 2 * CLING_THRES
             ))
             self.addItem(FlippedText(
                 "Im",
-                width / 2 + cling_x,
+                width / 2 + cling_x - 2 * CLING_THRES,
                 height - LABEL_PAD
             ))
             
