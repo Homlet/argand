@@ -20,11 +20,11 @@ class ViewDiagram(QGraphicsView):
         self.scene = SceneDiagram(program)
         self.setScene(self.scene)
         self.scale(1, -1)
-        
-    def resizeEvent(self, event):
-        self.scene.set_viewport(self.viewport())
-        self.draw()
     
     def draw(self):
         self.scene.clear()
         self.scene.draw_axes()
+        
+    def resizeEvent(self, event):
+        self.scene.set_viewport(self.viewport())
+        self.draw()
