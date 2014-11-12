@@ -21,6 +21,11 @@ LABEL_SPACING = 100
 
 
 class FlippedText(QGraphicsTextItem):
+    """A vertically flipped text item.
+    
+    This is needed for using a properly oriented Cartesian
+    coordinate system with QGraphicsScene, unfortunately.
+    """
     def __init__(self, text, x, y):
         super(FlippedText, self).__init__()
         self.setPos(x, y)
@@ -35,11 +40,21 @@ class FlippedText(QGraphicsTextItem):
 
 
 class SceneDiagram(QGraphicsScene):
+    """Implementation of QGraphicsScene for drawing diagrams."""
     def __init__(self, program):
         super(SceneDiagram, self).__init__()
         self.program = program
 
     def draw_axes(self):
+        """Draws the real and imaginary axes.
+        
+        If the current preferences allow it, the axes will
+        be labelled at regular intervals.
+        
+        If the axes are too far from the viewport, they will
+        'cling' to the edges of the screen, but the labels
+        will still change.
+        """
         width = self.sceneRect().width()
         height = self.sceneRect().height()
 
@@ -100,4 +115,5 @@ class SceneDiagram(QGraphicsScene):
                 ))
 
     def set_viewport(self, viewport):
+        """Called when the size of the parent widget changes."""
         self.setSceneRect(QRectF(viewport.geometry()))
