@@ -50,6 +50,8 @@ class Window(QMainWindow):
 
         self.zoom_slider = QSlider(Qt.Horizontal)
         self.zoom_slider.setFixedWidth(100)
+        self.zoom_slider.setRange(-30, 60)
+        self.zoom_slider.valueChanged.connect(self.change_zoom)
 
         # Create a grid layout in the central widget.
         self.grid = QGridLayout()
@@ -103,6 +105,10 @@ class Window(QMainWindow):
     
     def show_preferences(self):
         DialogPreferences(self, self.program.preferences).exec_()
+        self.diagram.draw()
+    
+    def change_zoom(self):
+        self.program.diagram.zoom = 10 ** (self.zoom_slider.value() / 10)
         self.diagram.draw()
         
     def initialize(self):
