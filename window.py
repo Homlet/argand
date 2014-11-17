@@ -49,8 +49,8 @@ class Window(QMainWindow):
         self.zoom_label.setPixmap(QPixmap("img/zoom16.png"))
 
         self.zoom_slider = QSlider(Qt.Horizontal)
-        self.zoom_slider.setFixedWidth(100)
-        self.zoom_slider.setRange(-30, 60)
+        self.zoom_slider.setFixedWidth(150)
+        self.zoom_slider.setRange(-50, 100)
         self.zoom_slider.valueChanged.connect(self.change_zoom)
 
         # Create a grid layout in the central widget.
@@ -108,7 +108,7 @@ class Window(QMainWindow):
         self.diagram.draw()
     
     def change_zoom(self):
-        self.program.diagram.zoom = 10 ** (self.zoom_slider.value() / 10)
+        self.program.diagram.zoom = 10 ** (self.zoom_slider.value() / 25)
         self.diagram.draw()
         
     def initialize(self):

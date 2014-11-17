@@ -89,29 +89,39 @@ class SceneDiagram(QGraphicsScene):
             ))
             
             # Set the style of label based on how zoomed in we are.
-            if zoom >= 1000 * LABEL_SPACING:
+            if zoom >= 10 * LABEL_SPACING:
                 form = "{:.2e}"
             elif zoom >= LABEL_SPACING:
                 form = "{:." + str(int(log(zoom))-3) + "f}"
             else:
                 form = "{:.0f}"
-            
+
+            diff_x = origin.x - cling_x  # Correct labelling when clinging.
             horizontal_steps = int(width / LABEL_SPACING)
             for i in range(-horizontal_steps, horizontal_steps):
+                if i == 0: continue
                 self.addItem(FlippedText(
-                    form.format(i * LABEL_SPACING / zoom),
+                    form.format((i * LABEL_SPACING - diff_x) / zoom),
                     width / 2 + cling_x + i * LABEL_SPACING,
                     height / 2 + cling_y
                 ))
-            
+
+            diff_y = origin.y - cling_y  # Correct labelling when clinging.
             vertical_steps = int(height / LABEL_SPACING)
             for i in range(-vertical_steps, vertical_steps):
-                # Don't label the origin twice.
                 if i == 0: continue
                 self.addItem(FlippedText(
-                    form.format(i * LABEL_SPACING / zoom),
+                    form.format((i * LABEL_SPACING - diff_y) / zoom),
                     width / 2 + cling_x,
                     height / 2 + cling_y + i * LABEL_SPACING
+                ))
+
+            # Only label origin if it is actually in viewport (not clinging).
+            if diff_x == diff_y == 0:
+                self.addItem(FlippedText(
+                    "0",
+                    width / 2 + cling_x,
+                    height / 2 + cling_y
                 ))
 
     def set_viewport(self, viewport):
