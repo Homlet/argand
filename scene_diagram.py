@@ -7,7 +7,7 @@ scene_diagram.py - Implements QGraphicsScene for
 Written by Sam Hubbard - samlhub@gmail.com
 """
 
-from math import log
+from math import log, hypot
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -17,7 +17,8 @@ from utils import clamp
 
 CLING_THRES = 10
 LABEL_PAD = 20
-LABEL_SPACING = 100
+LABEL_SPACING = 50
+TICK_SIZE = 4
 
 
 class FlippedText(QGraphicsTextItem):
@@ -73,10 +74,14 @@ class SceneDiagram(QGraphicsScene):
             CLING_THRES - height / 2,
             height / 2 - CLING_THRES
         )
-
+        
+        # Draw the axes.
         self.addLine(width / 2 + cling_x, 0, width / 2 + cling_x, height)
         self.addLine(0, height / 2 + cling_y, width, height / 2 + cling_y)
+        
+        # If enabled, label the axes.
         if self.program.preferences.label_axes:
+            # Draw the Re and Im labels.
             self.addItem(FlippedText(
                 "Re",
                 width - LABEL_PAD,
@@ -89,12 +94,10 @@ class SceneDiagram(QGraphicsScene):
             ))
             
             # Set the style of label based on how zoomed in we are.
-            if zoom >= 10 * LABEL_SPACING:
-                form = "{:.2e}"
-            elif zoom >= LABEL_SPACING:
-                form = "{:." + str(int(log(zoom))-3) + "f}"
+            if zoom >= LABEL_SPACING:
+                form = "{:.1e}"
             else:
-                form = "{:.0f}"
+                form = "{:." + str(max(0, int(log(zoom)))) + "f}"
 
             diff_x = origin.x - cling_x  # Correct labelling when clinging.
             horizontal_steps = int(width / LABEL_SPACING)
@@ -105,6 +108,12 @@ class SceneDiagram(QGraphicsScene):
                     width / 2 + cling_x + i * LABEL_SPACING,
                     height / 2 + cling_y
                 ))
+                self.addLine(
+                    width / 2 + cling_x + i * LABEL_SPACING,
+                    height / 2 + cling_y + TICK_SIZE,
+                    width / 2 + cling_x + i * LABEL_SPACING,
+                    height / 2 + cling_y - TICK_SIZE,
+                )
 
             diff_y = origin.y - cling_y  # Correct labelling when clinging.
             vertical_steps = int(height / LABEL_SPACING)
@@ -115,6 +124,12 @@ class SceneDiagram(QGraphicsScene):
                     width / 2 + cling_x,
                     height / 2 + cling_y + i * LABEL_SPACING
                 ))
+                self.addLine(
+                    width / 2 + cling_x + TICK_SIZE,
+                    height / 2 + cling_y + i * LABEL_SPACING,
+                    width / 2 + cling_x - TICK_SIZE,
+                    height / 2 + cling_y + i * LABEL_SPACING
+                )
 
             # Only label origin if it is actually in viewport (not clinging).
             if diff_x == diff_y == 0:
@@ -123,6 +138,22 @@ class SceneDiagram(QGraphicsScene):
                     width / 2 + cling_x,
                     height / 2 + cling_y
                 ))
+    
+    def draw_plots(self):
+        width = self.sceneRect().width()
+        height = self.sceneRect().height()
+        
+        translation = self.program.diagram.translation
+        zoom = self.program.diagram.zoom
+        
+        for plot in self.program.diagram.plots:
+            diagonal = hypot(5, 5)
+            self.addEllipse(
+                width / 2 + (plot[0] - diagonal - translation.x) * zoom,
+                height / 2 + (plot[1] - diagonal - translation.y) * zoom,
+                10 * zoom,
+                10 * zoom
+            )
 
     def set_viewport(self, viewport):
         """Called when the size of the parent widget changes."""

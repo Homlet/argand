@@ -24,6 +24,7 @@ class ViewDiagram(QGraphicsView):
     def draw(self):
         self.scene.clear()
         self.scene.draw_axes()
+        self.scene.draw_plots()
         
     def resizeEvent(self, event):
         self.scene.set_viewport(self.viewport())
