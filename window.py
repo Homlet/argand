@@ -70,7 +70,7 @@ class Window(QMainWindow):
         self.grid.addWidget(self.zoom_slider, 1, 6)
 
         # Add the plot list docking dialog.
-        self.plots = DialogPlots(self)
+        self.plots = DialogPlots(self, self.program)
         self.addDockWidget(Qt.LeftDockWidgetArea, self.plots)
 
     def create_actions(self):        

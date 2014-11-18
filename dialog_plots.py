@@ -13,8 +13,9 @@ from plot_list import *
 
 
 class DialogPlots(QDockWidget):
-    def __init__(self, parent):
+    def __init__(self, parent, program):
         super(DialogPlots, self).__init__("Plots", parent)
+        self.program = program
         self.setup_content()
         self.initialize()
 
@@ -25,7 +26,7 @@ class DialogPlots(QDockWidget):
 
         # Setup the list of plots.
         self.list = QListView()
-        self.list.setModel(PlotListModel())
+        self.list.setModel(self.program.diagram.plots)
         self.list.setItemDelegate(PlotListDelegate())
 
         # Setup the equation input.

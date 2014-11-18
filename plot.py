@@ -5,6 +5,9 @@ plot.py - Class for storing a single drawable plot.
 Written by Sam Hubbard - samlhub@gmail.com
 """
 
+from PyQt4.QtGui import *
+from PyQt4.QtCore import *
+
 from abstract_syntax_tree import SyntaxParser
 
 
@@ -18,18 +21,16 @@ TYPE_HALF_PLANE = 4
 TYPE_RAY = 5
 TYPE_SECTOR = 6
 
+EQUATION_ROLE = Qt.UserRole
+COLOR_ROLE = Qt.UserRole + 1
 
-class Plot:
-    def __init__(self, equation, color=0, alpha=0.0):
-        self.equation = equation
-        self.color = color
-        self.alpha = alpha
+
+class Plot(QStandardItem):
+    def __init__(self, equation, color=QColor(0, 0, 0)):
+        super(Plot, self).__init__()
+
+        self.setData(equation, EQUATION_ROLE)
+        self.setData(color, COLOR_ROLE)
         
-        self.parser = SyntaxParser(self.equation)
+        self.parser = SyntaxParser(equation)
         self.parser.parse()
-
-
-if __name__ == "__main__":
-    plot = Plot(input())
-    if plot.parser.parsed:
-        print(plot.parser.resolve())

@@ -146,14 +146,14 @@ class SceneDiagram(QGraphicsScene):
         translation = self.program.diagram.translation
         zoom = self.program.diagram.zoom
         
-        for plot in self.program.diagram.plots:
-            diagonal = hypot(5, 5)
-            self.addEllipse(
-                width / 2 + (plot[0] - diagonal - translation.x) * zoom,
-                height / 2 + (plot[1] - diagonal - translation.y) * zoom,
-                10 * zoom,
-                10 * zoom
-            )
+#        for plot in self.program.diagram.plots:
+#            diagonal = hypot(5, 5)
+#            self.addEllipse(
+#                width / 2 + (plot[0] - diagonal - translation.x) * zoom,
+#                height / 2 + (plot[1] - diagonal - translation.y) * zoom,
+#                10 * zoom,
+#                10 * zoom
+#            )
 
     def set_viewport(self, viewport):
         """Called when the size of the parent widget changes."""
