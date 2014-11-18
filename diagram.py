@@ -14,4 +14,4 @@ class Diagram:
     def __init__(self):
         self.plots = [(20, 5)]
         self.zoom = 1.0
-        self.translation = Point(20.0, 5.0)
+        self.translation = Point(-1.0, -5.0)

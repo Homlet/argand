@@ -18,7 +18,7 @@ from utils import clamp
 CLING_THRES = 10
 LABEL_PAD = 20
 LABEL_SPACING = 50
-TICK_SIZE = 4
+TICK_SIZE = 2
 
 
 class FlippedText(QGraphicsTextItem):

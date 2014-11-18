@@ -22,21 +22,25 @@ class DialogPlots(QDockWidget):
         self.widget.setMinimumSize(200, 300)
 
         # Setup the list of plots.
-        self.list = QListWidget()
+        self.list = QListView()
 
         # Setup the equation input.
         self.equation = QLineEdit()
         self.equation.setPlaceholderText("Enter equation...")
+        self.equation.setEnabled(False)
 
         # Create a color picker dialog.
         self.color = QColorDialog()
 
         # Setup a button to open the color dialog.
-        self.color_label = QLabel()
-        self.color_label.setPixmap(QPixmap("img/color16.png"))
+        self.color_image = QLabel()
+        self.color_image.setPixmap(QPixmap("img/color16.png"))
         
         self.color_button = QPushButton("Color...")
         self.color_button.clicked.connect(self.change_color)
+        self.color_button.setEnabled(False)
+        
+        self.color_label = QWidget()
 
         # Create a slider to control the inequality opacity.
         self.alpha_image = QLabel()
@@ -48,6 +52,7 @@ class DialogPlots(QDockWidget):
         self.alpha.setValue(100)
         self.alpha.setTickInterval(10)
         self.alpha.valueChanged.connect(self.update_alpha_label)
+        self.alpha.setEnabled(False)
         
         self.alpha_label = QLabel(str(self.alpha.value()))
 
@@ -60,8 +65,9 @@ class DialogPlots(QDockWidget):
         # Add everything to the grid.
         self.grid.addWidget(self.list, 0, 0, 1, 0)
         self.grid.addWidget(self.equation, 1, 0, 1, 0)
-        self.grid.addWidget(self.color_label, 2, 0)
-        self.grid.addWidget(self.color_button, 2, 1, 1, 2)
+        self.grid.addWidget(self.color_image, 2, 0)
+        self.grid.addWidget(self.color_button, 2, 1)
+        self.grid.addWidget(self.color_label, 2, 2)
         self.grid.addWidget(self.alpha_image, 3, 0)
         self.grid.addWidget(self.alpha, 3, 1)
         self.grid.addWidget(self.alpha_label, 3, 2)
@@ -72,10 +78,15 @@ class DialogPlots(QDockWidget):
         )
         self.setWidget(self.widget)
         self.grid.setColumnMinimumWidth(2, self.alpha_label.geometry().width())
+        
+        self.current_plot = None
 
     def change_color(self):
         """Changes the color of the currently selected equation."""
-        self.color.getColor()
+        palette = QPalette()
+        palette.setColor(QPalette.Background, self.color.getColor())
+        self.color_label.setPalette(palette)
+        self.color_label.setAutoFillBackground(True)
 
     def update_alpha_label(self, value):
         """Changes the alpha label's value to match the alpha slider."""
