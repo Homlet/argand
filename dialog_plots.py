@@ -9,6 +9,8 @@ Written by Sam Hubbard - samlhub@gmail.com
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
+from plot_list import *
+
 
 class DialogPlots(QDockWidget):
     def __init__(self, parent):
@@ -23,6 +25,8 @@ class DialogPlots(QDockWidget):
 
         # Setup the list of plots.
         self.list = QListView()
+        self.list.setModel(PlotListModel())
+        self.list.setItemDelegate(PlotListDelegate())
 
         # Setup the equation input.
         self.equation = QLineEdit()
