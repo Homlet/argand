@@ -12,19 +12,27 @@ from PyQt4.QtCore import *
 from plot import *
 
 
+class PlotListModel(QStandardItemModel):
+    def __init__(self):
+        super(PlotListModel, self).__init__()
+    
+    def flags(self, index):
+        return Qt.ItemIsSelectable | Qt.ItemIsEnabled
+
+
 class PlotListDelegate(QStyledItemDelegate):
     def __init__(self):
         super(PlotListDelegate, self).__init__()
     
     def sizeHint(self, option, index):
         return QSize(24, 24)
-    
+
     def paint(self, painter, option, index):
-        super(PlotListDelegate, self).paint(painter, option, index)
-        
+        # Load data from index.
         equation = index.data(EQUATION_ROLE)
         color = index.data(COLOR_ROLE)
         bounds = option.rect
+        bounds.adjust(0, 0, 0, -1)
         
         size = self.sizeHint(option, index)
         font = QApplication.font()
@@ -33,8 +41,14 @@ class PlotListDelegate(QStyledItemDelegate):
         # Save so we can return to the previous pen.
         painter.save()
         painter.setPen(Qt.NoPen)
-        painter.setBrush(QBrush(color, Qt.SolidPattern))
-        painter.drawRect(bounds.x(), bounds.y(), 10, bounds.height() - 1)
+        
+        if option.state & QStyle.State_Selected:
+            painter.setBrush(QBrush(option.palette.highlight()))
+            painter.drawRect(bounds)
+        
+        painter.setBrush(QBrush(color))
+        painter.drawRect(bounds.x(), bounds.y(), 10, bounds.height())
+        
         painter.restore()
         
         text_bounds = font_metrics.boundingRect(equation)
