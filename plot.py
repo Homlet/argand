@@ -21,16 +21,22 @@ TYPE_HALF_PLANE = 4
 TYPE_RAY = 5
 TYPE_SECTOR = 6
 
-EQUATION_ROLE = Qt.UserRole
-COLOR_ROLE = Qt.UserRole + 1
+ROLE_EQUATION = Qt.UserRole
+ROLE_COLOR = Qt.UserRole + 1
+ROLE_BUTTON_STATE = Qt.UserRole + 2
+
+STATE_NORMAL = 0
+STATE_HOVER = 1
+STATE_DOWN = 2
 
 
 class Plot(QStandardItem):
     def __init__(self, equation, color=QColor(0, 0, 0)):
         super(Plot, self).__init__()
 
-        self.setData(equation, EQUATION_ROLE)
-        self.setData(color, COLOR_ROLE)
+        self.setData(equation, ROLE_EQUATION)
+        self.setData(color, ROLE_COLOR)
+        self.setData(STATE_NORMAL, ROLE_BUTTON_STATE)
         
         self.parser = SyntaxParser(equation)
         self.parser.parse()
