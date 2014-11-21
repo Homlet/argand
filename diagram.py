@@ -16,8 +16,5 @@ from geometry import Point
 class Diagram:
     def __init__(self):
         self.plots = PlotListModel()
-        self.plots.appendRow(Plot("4=4"))
-        self.plots.appendRow(Plot("456=234+634", QColor(200, 200, 50)))
-        self.plots.appendRow(Plot("4=444", QColor(255, 0, 0)))
         self.zoom = 1.0
         self.translation = Point(-1.0, -5.0)
