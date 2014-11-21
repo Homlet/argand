@@ -25,9 +25,7 @@ class DialogPlots(QDockWidget):
         self.widget.setMinimumSize(200, 300)
 
         # Setup the list of plots.
-        self.list = QListView()
-        self.list.setModel(self.program.diagram.plots)
-        self.list.setItemDelegate(PlotListDelegate())
+        self.list = PlotListTable(self.program.diagram.plots)
 
         # Setup the equation input.
         self.equation = QLineEdit()

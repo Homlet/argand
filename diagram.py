@@ -18,3 +18,6 @@ class Diagram:
         self.plots = PlotListModel()
         self.zoom = 1.0
         self.translation = Point(-1.0, -5.0)
+        
+        self.plots.append(Plot("123=235", QColor(200, 200, 0)))
+        self.plots.append(Plot("123=2135", QColor(220, 100, 0)))

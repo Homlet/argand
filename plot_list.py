@@ -12,12 +12,36 @@ from PyQt4.QtCore import *
 from plot import *
 
 
+COL_EQUATION = 0
+COL_BUTTON = 1
+
+
+class PlotListTable(QTableView):
+    def __init__(self, model):
+        super(PlotListTable, self).__init__()
+
+        self.setModel(model)
+        self.setItemDelegate(PlotListDelegate())
+
+        self.setShowGrid(False)
+        self.verticalHeader().setVisible(False)
+        self.horizontalHeader().setVisible(False)
+        self.horizontalHeader().setResizeMode(
+            COL_EQUATION, QHeaderView.Stretch)
+        self.horizontalHeader().setResizeMode(
+            COL_BUTTON, QHeaderView.Fixed)
+        self.resizeColumnsToContents()
+
+
 class PlotListModel(QStandardItemModel):
     def __init__(self):
         super(PlotListModel, self).__init__()
     
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled
+    
+    def append(self, plot):
+        self.appendRow([plot, QStandardItem()])
 
 
 class PlotListDelegate(QStyledItemDelegate):
@@ -26,7 +50,10 @@ class PlotListDelegate(QStyledItemDelegate):
         self.hover = QModelIndex()
     
     def sizeHint(self, option, index):
-        return QSize(24, 24)
+        if index.column() == COL_EQUATION:
+            return QSize(0, 24)
+        if index.column() == COL_BUTTON:
+            return QSize(0, 24)
 
     def paint(self, painter, option, index):
         # Load data from index.
@@ -36,65 +63,67 @@ class PlotListDelegate(QStyledItemDelegate):
         bounds = option.rect
         bounds.adjust(0, 0, 0, -1)
         
-        size = self.sizeHint(option, index)
         font = QApplication.font()
         font_metrics = QFontMetrics(font)
-        
-        # Save so we can return to the previous pen.
-        painter.save()
-        painter.setPen(Qt.NoPen)
-        
-        if option.state & QStyle.State_Selected:
-            painter.setBrush(QBrush(option.palette.highlight()))
-            painter.drawRect(bounds)
-        
-        painter.setBrush(QBrush(color))
-        painter.drawRect(bounds.x(), bounds.y(), 12, bounds.height())
-        
-        painter.restore()
-        
-        # Write out the equation.
-        text_bounds = font_metrics.boundingRect(equation)
-        text_point = QPointF(
-            bounds.x() + 20,
-            bounds.y() + (bounds.height() - text_bounds.y()) / 2
-        )
-        painter.drawText(text_point, equation)
 
-        # Draw the delete button.
-        button = QStyleOptionButton()
-        if button_state == STATE_HOVER:
-            button.state |= QStyle.State_MouseOver
-        if button_state == STATE_DOWN:
-            button.state |= QStyle.State_Sunken
-        button.state |= QStyle.State_Enabled
-        button.rect = QRect(
-            bounds.width() - 15, bounds.y() - 1,
-            16, bounds.height() + 2
-        )
-        button.text = u"\u00D7"
-        QApplication.style().drawControl(QStyle.CE_PushButton, button, painter)
+        if index.column() == COL_EQUATION:
+            # Save so we can return to the previous pen.
+            painter.save()
+
+            painter.setPen(Qt.NoPen)
+
+            if option.state & QStyle.State_Selected:
+                painter.setBrush(QBrush(option.palette.highlight()))
+                painter.drawRect(bounds)
+
+            painter.setBrush(QBrush(color))
+            painter.drawRect(bounds.x(), bounds.y(), 12, bounds.height())
+
+            painter.restore()
+
+            # Write out the equation.
+            text_bounds = font_metrics.boundingRect(equation)
+            text_point = QPointF(
+                bounds.x() + 20,
+                bounds.y() + (bounds.height() - text_bounds.y()) / 2
+            )
+            painter.drawText(text_point, equation)
+
+        if index.column() == COL_BUTTON:
+            # Draw the delete button.
+            button = QStyleOptionButton()
+            if button_state == STATE_HOVER:
+                button.state |= QStyle.State_MouseOver
+            if button_state == STATE_DOWN:
+                button.state |= QStyle.State_Sunken
+            button.state |= QStyle.State_Enabled
+            button.rect = bounds
+            button.text = u"\u00D7"
+            QApplication.style().drawControl(
+                QStyle.CE_PushButton, button, painter)
 
     def editorEvent(self, event, model, option, index):
-        state = {
-            QEvent.MouseMove: STATE_HOVER,
-            QEvent.MouseButtonPress: STATE_DOWN,
-            QEvent.MouseButtonDblClick: STATE_DOWN,
-            QEvent.MouseButtonRelease: STATE_NORMAL
-        }
-        
-        # If the event 
-        if index != self.hover and self.hover.isValid():
-            model.setData(self.hover, STATE_NORMAL, ROLE_BUTTON_STATE)
-        elif index.isValid():
-            self.hover = index
-        else:
-            self.hover = QModelIndex()
+        if index.column() == COL_BUTTON:
+            state = {
+                QEvent.MouseButtonPress: STATE_DOWN,
+                QEvent.MouseButtonDblClick: STATE_DOWN,
+                QEvent.MouseButtonRelease: STATE_NORMAL
+            }
+            if index != self.hover and self.hover.isValid():
+                model.setData(self.hover, STATE_NORMAL, ROLE_BUTTON_STATE)
+            elif index.isValid():
+                self.hover = index
+            else:
+                self.hover = QModelIndex()
 
-        if index.isValid():
-            if event.type() == QEvent.MouseMove:
-                pass  # Check if mouse in button rect.
-            model.setData(index, state[event.type()], ROLE_BUTTON_STATE)
-        
+            if index.isValid():
+                # If the mouse is moved over the button while pressed, don't
+                # revert to the hover state.
+                if not (event.type() == QEvent.MouseMove
+                   and  index.data(ROLE_BUTTON_STATE) == STATE_DOWN):
+                    model.setData(index,
+                        state[event.type()], ROLE_BUTTON_STATE)
+                    print(state[event.type()])
+
         return super(PlotListDelegate, self).editorEvent(
             event, model, option, index)
