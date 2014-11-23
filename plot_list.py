@@ -24,7 +24,8 @@ class PlotListTable(QTableView):
 
         self.setModel(model)
         self.setItemDelegate(PlotListDelegate())
-        self.itemDelegate().delete_item.connect(self.clearSelection)
+        self.itemDelegate().deleted_item.connect(self.clearSelection)
+        self.installEventFilter(self)
 
         self.setShowGrid(False)
         self.verticalHeader().setVisible(False)
@@ -42,6 +43,11 @@ class PlotListTable(QTableView):
         self.setSelectionMode(QAbstractItemView.SingleSelection)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
 
+    def eventFilter(self, object, event):
+        if event.type() == QEvent.Leave:
+            self.itemDelegate().notifyMouseLeave(self.model())
+        return False
+
 
 class PlotListModel(QStandardItemModel):
     def __init__(self):
@@ -55,7 +61,7 @@ class PlotListModel(QStandardItemModel):
 
 
 class PlotListDelegate(QStyledItemDelegate):
-    delete_item = pyqtSignal()
+    deleted_item = pyqtSignal()
 
     def __init__(self):
         super(PlotListDelegate, self).__init__()
@@ -116,16 +122,10 @@ class PlotListDelegate(QStyledItemDelegate):
                 bounds.y() + (bounds.height() - text_bounds.y()) / 2
             )
             painter.drawText(text_point, equation)
-        
 
     def editorEvent(self, event, model, option, index):
+        """Handles delete button logic."""
         if index.column() == COL_BUTTON:
-            state = {
-                QEvent.MouseMove: STATE_HOVER,
-                QEvent.MouseButtonPress: STATE_DOWN,
-                QEvent.MouseButtonDblClick: STATE_DOWN,
-                QEvent.MouseButtonRelease: STATE_NORMAL
-            }
             if index != self.hover:
                 if self.hover.isValid():
                     model.setData(self.hover, STATE_NORMAL, ROLE_BUTTON_STATE)
@@ -134,17 +134,34 @@ class PlotListDelegate(QStyledItemDelegate):
                 else:
                     self.hover = QModelIndex()
 
-            if index.isValid() and event.type() in state:
+            next_state = {
+                QEvent.MouseMove: STATE_HOVER,
+                QEvent.MouseButtonPress: STATE_DOWN,
+                QEvent.MouseButtonDblClick: STATE_DOWN}
+            if index.isValid() and event.type() in next_state:
                 # If the mouse is moved over the button while pressed, don't
                 # revert to the hover state.
                 if not (event.type() == QEvent.MouseMove
                    and  index.data(ROLE_BUTTON_STATE) == STATE_DOWN):
                     model.setData(index,
-                        state[event.type()], ROLE_BUTTON_STATE)
+                        next_state[event.type()], ROLE_BUTTON_STATE)
 
-            if event.type() == QEvent.MouseButtonRelease:
-                model.removeRow(index.row())
-                self.delete_item.emit()
+            # If the button is released, delete the index from the model.
+            if event.type() == QEvent.MouseButtonRelease \
+            and index.data(ROLE_BUTTON_STATE) == STATE_DOWN:
+                self.delete_item(model, index)
 
         return super(PlotListDelegate, self).editorEvent(
             event, model, option, index)
+
+    def delete_item(self, model, index):
+        """Deletes a single index from its parent model.
+           Also resets the self.hover pointer just in case."""
+        model.removeRow(index.row())
+        self.hover = QModelIndex()
+        self.deleted_item.emit()
+
+    def notifyMouseLeave(self, model):
+        if self.hover.isValid():
+            model.setData(self.hover, STATE_NORMAL, ROLE_BUTTON_STATE)
+            self.hover = QModelIndex()
