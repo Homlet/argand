@@ -2,30 +2,33 @@
 
 abstract_syntax_tree.py - Produces an abstract syntax tree
                           from a mathematical expression
-						  stored in a string.
+                          stored in a string.
 
-Written by Sam Hubbard - samlhub@gmail.com
+Written by Sam Hubbard -  samlhub@gmail.com
 """
 
-OPERATORS = {
-    "=": lambda x, y: (x == y),
-    "-": lambda x, y: x - y,
-    "+": lambda x, y: x + y,
-    "*": lambda x, y: x * y,
-    "/": lambda x, y: x / y
+from collections import namedtuple
+import re
+
+
+TOKENS = {
+    "(": "LPAR",
+    ")": "RPAR",
+    "|": "MOD",
+    "=": "EQL",
+    "-": "SUB",
+    "+": "ADD",
+    "*": "MUL",
+    "/": "DIV"
 }
-PRECEDENCE = ["(", "|", "=", "-", "+", "*", "/"]
-END = "\0"
-
-
-def get_prec(operator):
-    try:
-        return PRECEDENCE.index(operator)
-    except: pass
-    if operator == END:
-        return -1
-    else:
-        return len(PRECEDENCE)
+GRAMMAR = {
+    "add": ["mul ADD add", "mul"],
+    "mul": ["atm MUL mul", "atm"],
+    "atm": ["NUM", "LPAR add RPAR", "MOD add MOD", "neg"],
+    "neg": ["ADD atm"]
+}
+Token = namedtuple("Token", ["name", "value"])
+Match = namedtuple("Match", ["rule", "matched"])
 
 
 class Node:
@@ -40,48 +43,36 @@ class Node:
         else:
             return OPERATORS[self.value](
                 self.children[0].resolve(),
-                self.children[1].resolve()
-            )
+                self.children[1].resolve())
+
+    def __repr__(self):
+        s = str(self.value)
+        s += "> "
+        for child in self.children:
+            s += str(child) + " "
+        s += "<"
+        return s
 
 
 class SyntaxParser:
-    def __init__(self, equation):
-        self.equation = equation + END
-        self.parsed = False
+    def __init__(self, equation, ruleset=GRAMMAR):
+        self.ruleset = ruleset
+        split = re.findall(
+            "[a-hj-z]|[\d.]+|[\d.]*i|[%s]" % "\\".join(TOKENS),
+            equation)
+        self.tokens = [Token(TOKENS.get(x, "NUM"), x) for x in split]
+        print(self.match("add", self.tokens))
 
-    def parse(self):
-        self.index = 0
-        self.tree = self.expect(get_prec(END) + 1)
-        self.parsed = True
-
-    def expect(self, prec):
-        first = self.term()
-        while get_prec(next(self)) >= prec:
-            operator = next(self)
-            self.consume()
-            second = self.expect(get_prec(operator))
-            first = Node(operator, first, second)
-        return first
-
-    def term(self):
-        self.consume_ws()
-        number = ""
-        while next(self).isdigit():
-            number += next(self)
-            self.consume()
-        self.consume_ws()
-        return Node(int(number))
-
-    def consume(self):
-        self.index += 1
-
-    def consume_ws(self):
-        while next(self) == " ":
-            self.index += 1
-
-    def resolve(self):
-        if self.parsed:
-            return self.tree.resolve()
-
-    def __next__(self):
-        return self.equation[self.index]
+    def match(self, rule, tokens):
+        if tokens and rule == tokens[0].name:
+            return Match(*tokens[0]), tokens[1:]
+        for case in self.ruleset.get(rule, ()):
+            remaining = tokens
+            chain = []
+            for subrule in case.split():
+                matched, remaining = self.match(subrule, remaining)
+                if not matched: break
+                chain.append(matched)
+            else:
+                return Match(rule, chain), remaining
+        return None, None
