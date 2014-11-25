@@ -38,4 +38,3 @@ class Plot(QStandardItem):
         self.setData(color, ROLE_COLOR)
         
         self.parser = SyntaxParser(equation)
-        self.parser.parse()
