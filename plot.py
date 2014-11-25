@@ -36,7 +36,6 @@ class Plot(QStandardItem):
 
         self.setData(equation, ROLE_EQUATION)
         self.setData(color, ROLE_COLOR)
-        self.setData(STATE_NORMAL, ROLE_BUTTON_STATE)
         
         self.parser = SyntaxParser(equation)
         self.parser.parse()

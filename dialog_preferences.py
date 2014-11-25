@@ -51,19 +51,20 @@ class DialogPreferences(QDialog):
         self.buttons.rejected.connect(self.reject)
         
         # Create a grid layout in the widget.
-        self.grid = QGridLayout(self)
-        self.grid.setContentsMargins(3, 3, 3, 3)
-        self.grid.setSizeConstraint(QLayout.SetFixedSize)
+        grid = QGridLayout()
+        grid.setContentsMargins(3, 3, 3, 3)
+        grid.setSizeConstraint(QLayout.SetFixedSize)
+        self.setLayout(grid)
         
         # Add everything to the grid.
-        self.grid.addWidget(self.stroke_label, 0, 0)
-        self.grid.addWidget(self.stroke, 0, 1)
-        self.grid.addWidget(self.font_size_label, 1, 0)
-        self.grid.addWidget(self.font_size, 1, 1)
-        self.grid.addWidget(self.divider, 0, 2, 2, 1)
-        self.grid.addWidget(self.label_axes, 0, 3)
-        self.grid.addWidget(self.label_points, 1, 3)
-        self.grid.addWidget(self.buttons, 2, 0, 1, 4, Qt.AlignRight)
+        grid.addWidget(self.stroke_label, 0, 0)
+        grid.addWidget(self.stroke, 0, 1)
+        grid.addWidget(self.font_size_label, 1, 0)
+        grid.addWidget(self.font_size, 1, 1)
+        grid.addWidget(self.divider, 0, 2, 2, 1)
+        grid.addWidget(self.label_axes, 0, 3)
+        grid.addWidget(self.label_points, 1, 3)
+        grid.addWidget(self.buttons, 2, 0, 1, 4, Qt.AlignRight)
     
     def initialize(self):
         self.setWindowTitle("Preferences")
