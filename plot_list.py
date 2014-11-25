@@ -45,7 +45,7 @@ class PlotListTable(QTableView):
 
     def eventFilter(self, object, event):
         if event.type() == QEvent.Leave:
-            self.itemDelegate().notifyMouseLeave(self.model())
+            self.itemDelegate().mouseLeft(self.model())
         return False
 
 
@@ -161,7 +161,9 @@ class PlotListDelegate(QStyledItemDelegate):
         self.hover = QModelIndex()
         self.deleted_item.emit()
 
-    def notifyMouseLeave(self, model):
+    def mouseLeft(self, model):
+        """Called when the mouse leaves the parent widget's viewport.
+           Resets the self.hover pointer."""
         if self.hover.isValid():
             model.setData(self.hover, STATE_NORMAL, ROLE_BUTTON_STATE)
             self.hover = QModelIndex()

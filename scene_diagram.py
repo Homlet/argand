@@ -94,10 +94,7 @@ class SceneDiagram(QGraphicsScene):
             ))
             
             # Set the style of label based on how zoomed in we are.
-            if zoom >= LABEL_SPACING:
-                form = "{:.1e}"
-            else:
-                form = "{:." + str(max(0, int(log(zoom)))) + "f}"
+            form = "{:." + str(max(0, int(log(zoom)) - 3)) + "f}"
 
             diff_x = origin.x - cling_x  # Correct labelling when clinging.
             horizontal_steps = int(width / LABEL_SPACING)
