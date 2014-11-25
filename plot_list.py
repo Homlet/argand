@@ -43,6 +43,9 @@ class PlotListTable(QTableView):
         self.setSelectionMode(QAbstractItemView.SingleSelection)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
 
+    def append(self, plot):
+        self.model().append(plot)
+
     def eventFilter(self, object, event):
         if event.type() == QEvent.Leave:
             self.itemDelegate().mouseLeft(self.model())
