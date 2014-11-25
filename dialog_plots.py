@@ -35,6 +35,9 @@ class DialogPlots(QDockWidget):
 
         # Setup the equation input.
         self.equation = QLineEdit()
+        font = QApplication.font()
+        font.setPointSize(11)
+        self.equation.setFont(font)
         self.equation.setPlaceholderText("Enter equation...")
 
         # Create a color picker dialog.
