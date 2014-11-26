@@ -40,10 +40,6 @@ class DialogPlots(QDockWidget):
         self.equation.setFont(font)
         self.equation.setPlaceholderText("Enter equation...")
 
-        # Create a color picker dialog.
-        self.color = QColorDialog()
-        self.color.setOption(QColorDialog.ShowAlphaChannel, True)
-
         # Setup a button to open the color dialog.
         self.color_image = QLabel()
         self.color_image.setPixmap(QPixmap("img/color16.png"))
@@ -90,7 +86,8 @@ class DialogPlots(QDockWidget):
     def change_color(self):
         """Change the color of the currently selected equation."""
         if self.current_plot:
-            color = self.color.getColor()
+            color = QColorDialog.getColor(
+                QColor(), self, "Select Color", QColorDialog.ShowAlphaChannel)
             self.change_color_label(color)
             self.list.model().setData(self.current_plot, color, ROLE_COLOR)
 

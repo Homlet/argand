@@ -86,7 +86,6 @@ class PlotListDelegate(QStyledItemDelegate):
 
         font = QApplication.font()
         font_metrics = QFontMetrics(font)
-        
 
         if option.state & QStyle.State_Selected:
             # Highlight the row when selected.
@@ -96,19 +95,23 @@ class PlotListDelegate(QStyledItemDelegate):
             painter.drawRect(bounds)
             painter.restore()
 
-            # Draw the delete button when row selected.
-            if index.column() == COL_BUTTON:
-                button = QStyleOptionButton()
-                if button_state == STATE_HOVER \
-                and option.state & QStyle.State_MouseOver:
-                    button.state |= QStyle.State_MouseOver
-                if button_state == STATE_DOWN:
-                    button.state |= QStyle.State_Sunken
-                button.state |= QStyle.State_Enabled
-                button.rect = bounds
-                button.text = u"\u00D7"
+        # Draw the delete button.
+        if index.column() == COL_BUTTON:
+            button = QStyleOptionButton()
+            if button_state == STATE_HOVER \
+            and option.state & QStyle.State_MouseOver:
+                button.state |= QStyle.State_MouseOver
+            if button_state == STATE_DOWN:
+                button.state |= QStyle.State_Sunken
+            button.state |= QStyle.State_Enabled
+            button.rect = bounds
+            button.text = u"\u00D7"
+            if option.state & QStyle.State_Selected:
                 QApplication.style().drawControl(
                     QStyle.CE_PushButton, button, painter)
+            else:
+                QApplication.style().drawControl(
+                    QStyle.CE_PushButtonLabel, button, painter)
 
         if index.column() == COL_EQUATION:
             # Draw the coloured block.
