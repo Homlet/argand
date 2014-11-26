@@ -42,46 +42,33 @@ class DialogPlots(QDockWidget):
 
         # Create a color picker dialog.
         self.color = QColorDialog()
+        self.color.setOption(QColorDialog.ShowAlphaChannel, True)
 
         # Setup a button to open the color dialog.
         self.color_image = QLabel()
         self.color_image.setPixmap(QPixmap("img/color16.png"))
-
-        self.color_button = QPushButton("Color...")
-        self.color_button.clicked.connect(self.change_color)
-
+        
         self.color_label = QWidget()
+        self.color_label.setFixedHeight(20)
 
-        # Create a slider to control the inequality opacity.
-        self.alpha_image = QLabel()
-        self.alpha_image.setPixmap(QPixmap("img/alpha16.png"))
-
-        self.alpha = QSlider(Qt.Horizontal)
-        self.alpha.setTickPosition(QSlider.TicksBelow)
-        self.alpha.setRange(0, 100)
-        self.alpha.setValue(100)
-        self.alpha.setTickInterval(10)
-        self.alpha.valueChanged.connect(self.update_alpha_label)
-
-        self.alpha_label = QLabel(str(self.alpha.value()))
+        self.color_button = QPushButton("...")
+        self.color_button.clicked.connect(self.change_color)
+        self.color_button.setFixedWidth(26)
 
         # Create a frame for the input area.
         self.input_frame = QFrame()
         self.input_frame.setFrameStyle(QFrame.Box | QFrame.Sunken)
         self.input_frame.setEnabled(False)
         input_grid = QGridLayout()
-        input_grid.setColumnStretch(2, 0)
+        input_grid.setColumnStretch(1, 1)
         input_grid.setContentsMargins(3, 3, 3, 3)
         self.input_frame.setLayout(input_grid)
 
         # Add input widgets to the frame.
         input_grid.addWidget(self.equation, 0, 0, 1, 0)
         input_grid.addWidget(self.color_image, 1, 0)
-        input_grid.addWidget(self.color_button, 1, 1)
-        input_grid.addWidget(self.color_label, 1, 2)
-        input_grid.addWidget(self.alpha_image, 2, 0)
-        input_grid.addWidget(self.alpha, 2, 1)
-        input_grid.addWidget(self.alpha_label, 2, 2)
+        input_grid.addWidget(self.color_label, 1, 1)
+        input_grid.addWidget(self.color_button, 1, 2)
 
         # Create a grid layout in the widget.
         grid = QGridLayout()
@@ -97,19 +84,19 @@ class DialogPlots(QDockWidget):
         self.setAllowedAreas(
             Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
         self.setWidget(self.widget)
-        self.input_frame.layout().setColumnMinimumWidth(2, 20)
 
         self.current_plot = None
 
     def change_color(self):
         """Change the color of the currently selected equation."""
-        self.change_color_label(self.color.getColor())
+        if self.current_plot:
+            color = self.color.getColor()
+            self.change_color_label(color)
+            self.list.model().setData(self.current_plot, color, ROLE_COLOR)
 
     def change_color_label(self, color):
         """Change the color of the label in the input area."""
-        palette = QPalette()
-        palette.setColor(QPalette.Background, color)
-        self.color_label.setPalette(palette)
+        self.color_label.setPalette(QPalette(color))
         self.color_label.setAutoFillBackground(True)
 
     def reset_color_label(self):
@@ -132,13 +119,11 @@ class DialogPlots(QDockWidget):
         valid = len(indexes) > 0
 
         if valid:
-            self.equation.setText(indexes[0].data(ROLE_EQUATION))
-            self.change_color_label(indexes[0].data(ROLE_COLOR))
+            self.current_plot = indexes[0]
+            self.equation.setText(self.current_plot.data(ROLE_EQUATION))
+            self.change_color_label(self.current_plot.data(ROLE_COLOR))
         else:
+            self.current_plot = None
             self.equation.clear()
             self.reset_color_label()
         self.input_frame.setEnabled(valid)
-
-    def update_alpha_label(self, value):
-        """Changes the alpha label's value to match the alpha slider."""
-        self.alpha_label.setText(str(value))
