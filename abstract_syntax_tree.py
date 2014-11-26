@@ -9,6 +9,7 @@ Written by Sam Hubbard -  samlhub@gmail.com
 
 from collections import namedtuple
 import re
+import inspect
 
 
 TOKENS = {
@@ -16,24 +17,30 @@ TOKENS = {
     ")": "RPAR",
     "|": "MOD",
     "=": "EQL",
-    "-": "ADD",
+    "-": "SUB",
     "+": "ADD",
     "*": "MUL",
-    "/": "MUL"
+    "/": "DIV"
 }
 OPERATORS = {
-    "-": lambda x, y: x - y,
-    "+": lambda x, y: x + y,
-    "*": lambda x, y: x * y,
-    "/": lambda x, y: x / y,
-    "=": lambda x, y: x == y
+    "eql": lambda x, y: x == y,
+    "sub": lambda x, y: x - y,
+    "add": lambda x, y: x + y,
+    "mul": lambda x, y: x * y,
+    "div": lambda x, y: x / y,
+    "mod": lambda x: abs(x),
+    "neg": lambda x: -x
 }
 GRAMMAR = {
     "eqn": ["add EQL add"],
+    "sub": ["add SUB sub", "add"],
     "add": ["mul ADD add", "mul"],
-    "mul": ["atm MUL mul", "atm"],
-    "atm": ["NUM", "LPAR add RPAR", "MOD add MOD", "neg"],
-    "neg": ["ADD atm"]
+    "mul": ["div MUL mul", "div"],
+    "div": ["atm DIV div", "atm"],
+    "atm": ["NUM", "LPAR sub RPAR", "mod", "neg", "pos"],
+    "mod": ["MOD sub MOD"],
+    "neg": ["SUB atm"],
+    "pos": ["ADD atm"]
 }
 
 
@@ -48,10 +55,8 @@ class Node:
         self.leaf = (len(children) == 0)
 
     def resolve(self):
-        if len(self.children) == 2:
-            return self.value(
-                self.children[0].resolve(),
-                self.children[1].resolve())
+        if callable(self.value):
+            return self.value(*[child.resolve() for child in self.children])
         else:
             return self.value
 
@@ -73,7 +78,7 @@ class SyntaxParser:
         if eqn:
             return eqn
         else:
-            return self.tree("add", self, equation)
+            return self.tree("sub", self.equation)
 
     def tree(self, rule, equation):
         split = re.findall(
@@ -105,7 +110,7 @@ class SyntaxParser:
         def flatten(match):
             matched = recurse(match, flatten)
             if match.rule in rules \
-            and len(matched) == 3           \
+            and len(matched) == 3  \
             and match.rule == matched[-1].rule:
                 matched[-1:] = matched[-1].matched
             return Match(match.rule, matched)
@@ -120,19 +125,43 @@ class SyntaxParser:
         return build_left(flatten(match))
 
     def build(self, match):
-        matched = match.matched
-        if not isinstance(matched, list):
-            matched = [matched]
-        if len(matched) == 1:
-            if match.rule in self.ruleset:
-                return self.build(matched[0])
-            else:
-                return Node(float(matched[0]))
+        if match.rule == "NUM":
+            # Create a leaf node containing the number.
+            return Node(float(match.matched))
         else:
-            return Node(
-                OPERATORS[matched[1].matched],
-                self.build(matched[0]),
-                self.build(matched[2]))
+            # Create an alias for the child matches, and
+            # force it to be a list.
+            matched = match.matched
+            if not isinstance(matched, list):
+                matched = [matched]
+
+            # Delete all child matches that just contain an
+            # operator character, since they're useless now.
+            i = 0
+            while i < len(matched):
+                if matched[i].rule not in self.ruleset \
+                and matched[i].rule != "NUM":
+                    del matched[i]
+                else:
+                    i += 1
+
+            if match.rule in OPERATORS:
+                # We have a rule node. We need to determine
+                # if it is being used as a container or operator.
+                # Then, we check if the number of child matches left is
+                # the same as the expected number of arguments for the func.
+                args = inspect.getargspec(OPERATORS[match.rule])[0]
+                if len(matched) == len(args):
+                    # We have an operator node.
+                    return Node(
+                        OPERATORS[match.rule],
+                        *[self.build(child) for child in matched])
+                else:
+                    # We just have a container (like sub), so build its child.
+                    return self.build(matched[0])
+            else:
+                # We just have a container (like atm).
+                return self.build(matched[0])
 
 
 def recurse(match, func):
