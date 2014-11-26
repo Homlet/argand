@@ -132,40 +132,40 @@ class SyntaxParser:
         if match.rule == "NUM":
             # Create a leaf node containing the number.
             return Node(float(match.matched))
-        else:
-            # Create an alias for the child matches, and
-            # force it to be a list.
-            matched = match.matched
-            if not isinstance(matched, list):
-                matched = [matched]
 
-            # Delete all child matches that just contain an
-            # operator character, since they're useless now.
-            i = 0
-            while i < len(matched):
-                if matched[i].rule not in self.ruleset \
-                and matched[i].rule != "NUM":
-                    del matched[i]
-                else:
-                    i += 1
+        # Create an alias for the child matches, and
+        # force it to be a list.
+        matched = match.matched
+        if not isinstance(matched, list):
+            matched = [matched]
 
-            if match.rule in OPERATORS:
-                # We have a rule node. We need to determine
-                # if it is being used as a container or operator.
-                # Then, we check if the number of child matches left is
-                # the same as the expected number of arguments for the func.
-                args = inspect.getargspec(OPERATORS[match.rule])[0]
-                if len(matched) == len(args):
-                    # We have an operator node.
-                    return Node(
-                        OPERATORS[match.rule],
-                        *[self.build(child) for child in matched])
-                else:
-                    # We just have a container (like sub), so build its child.
-                    return self.build(matched[0])
+        # Delete all child matches that just contain an
+        # operator character, since they're useless now.
+        i = 0
+        while i < len(matched):
+            if matched[i].rule not in self.ruleset \
+            and matched[i].rule != "NUM":
+                del matched[i]
             else:
-                # We just have a container (like atm).
+                i += 1
+
+        if match.rule in OPERATORS:
+            # We have a rule node. We need to determine
+            # if it is being used as a container or operator.
+            # Then, we check if the number of child matches left is
+            # the same as the expected number of arguments for the func.
+            args = inspect.getargspec(OPERATORS[match.rule])[0]
+            if len(matched) == len(args):
+                # We have an operator node.
+                return Node(
+                    OPERATORS[match.rule],
+                    *[self.build(child) for child in matched])
+            else:
+                # We just have a container (like sub), so build its child.
                 return self.build(matched[0])
+        else:
+            # We just have a container (like atm).
+            return self.build(matched[0])
 
 
 def recurse(match, func):
