@@ -78,16 +78,16 @@ class SyntaxParser:
         self.ruleset = ruleset
 
     def get_tree(self):
-        eqn = self.tree("eqn", self.equation)
+        eqn = self.tree("eqn")
         if eqn:
             return eqn
         else:
-            return self.tree("sub", self.equation)
+            return self.tree("sub")
 
-    def tree(self, rule, equation):
+    def tree(self, rule):
         split = re.findall(
             "[a-hj-z]|[\d.]+|[\d.]*i|[%s]" % "\\".join(TOKENS),
-            equation)
+            self.equation)
         tokens = [Token(TOKENS.get(x, "NUM"), x) for x in split]
         match = self.match(rule, tokens)[0]
         if match:
