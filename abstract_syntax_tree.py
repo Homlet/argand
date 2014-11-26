@@ -8,6 +8,7 @@ Written by Sam Hubbard -  samlhub@gmail.com
 """
 
 from collections import namedtuple
+from math import factorial
 import re
 import inspect
 
@@ -20,23 +21,26 @@ TOKENS = {
     "-": "SUB",
     "+": "ADD",
     "*": "MUL",
-    "/": "DIV"
+    "/": "DIV",
+    "^": "EXP"
 }
 OPERATORS = {
-    "eql": lambda x, y: x == y,
+    "eqn": lambda x, y: x == y,
     "sub": lambda x, y: x - y,
     "add": lambda x, y: x + y,
     "mul": lambda x, y: x * y,
     "div": lambda x, y: x / y,
+    "exp": lambda x, y: x ** y,
     "mod": lambda x: abs(x),
-    "neg": lambda x: -x
+    "neg": lambda x: -x,
 }
 GRAMMAR = {
     "eqn": ["add EQL add"],
     "sub": ["add SUB sub", "add"],
     "add": ["mul ADD add", "mul"],
     "mul": ["div MUL mul", "div"],
-    "div": ["atm DIV div", "atm"],
+    "div": ["exp DIV div", "exp"],
+    "exp": ["atm EXP exp", "atm"],
     "atm": ["NUM", "LPAR sub RPAR", "mod", "neg", "pos"],
     "mod": ["MOD sub MOD"],
     "neg": ["SUB atm"],
@@ -106,7 +110,7 @@ class SyntaxParser:
                 return Match(rule, chain), remaining
         return None, None
 
-    def fix_associativity(self, match, rules=["add", "mul"]):
+    def fix_associativity(self, match, rules=["sub", "div"]):
         def flatten(match):
             matched = recurse(match, flatten)
             if match.rule in rules \
