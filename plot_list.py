@@ -15,8 +15,6 @@ from plot import *
 COL_EQUATION = 0
 COL_BUTTON = 1
 
-BUTTON_WIDTH = 34
-
 
 class PlotListTable(QTableView):
     def __init__(self, model):
@@ -31,17 +29,19 @@ class PlotListTable(QTableView):
         self.verticalHeader().setVisible(False)
         self.horizontalHeader().setVisible(False)
 
-        self.horizontalHeader().setResizeMode(
-            COL_EQUATION, QHeaderView.Stretch)
-        self.horizontalHeader().setResizeMode(
-            COL_BUTTON, QHeaderView.ResizeToContents)
-        self.resizeColumnsToContents()
-
         self.viewport().setAttribute(Qt.WA_Hover, True)
         self.viewport().setMouseTracking(True)
 
         self.setSelectionMode(QAbstractItemView.SingleSelection)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
+        
+    def append(self, plot):
+        self.model().append(plot)
+        self.horizontalHeader().setResizeMode(
+            COL_EQUATION, QHeaderView.Stretch)
+        self.horizontalHeader().setResizeMode(
+            COL_BUTTON, QHeaderView.ResizeToContents)
+        self.resizeColumnsToContents()
 
     def mouseReleaseEvent(self, event):
         super(PlotListTable, self).mouseReleaseEvent(event)
@@ -76,7 +76,7 @@ class PlotListDelegate(QStyledItemDelegate):
         if index.column() == COL_EQUATION:
             return QSize(0, 24)
         if index.column() == COL_BUTTON:
-            return QSize(BUTTON_WIDTH, 24)
+            return QSize(34, 24)
 
     def paint(self, painter, option, index):
         # Load data from index.

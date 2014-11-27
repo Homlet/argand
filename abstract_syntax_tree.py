@@ -7,7 +7,6 @@ abstract_syntax_tree.py - Produces an abstract syntax tree
 Written by Sam Hubbard -  samlhub@gmail.com
 """
 
-from threading import Thread, Lock
 from collections import namedtuple
 from math import factorial
 import re
@@ -73,25 +72,21 @@ class Node:
         return s
 
 
-class SyntaxParser(Thread):
+class SyntaxParser:
     def __init__(self, equation, root="eqn", ruleset=GRAMMAR):
         super(SyntaxParser, self).__init__()
         self.equation = equation
         self.ruleset = ruleset
         self.root = root
-
-        self.lock = Lock()
-        self.success = False
         self.tree = None
+        self.parsed = False
 
     def get_tree(self):
-        with self.lock:
-            if self.success:
-                return self.tree
-            else:
-                return -1
+        if not self.parsed:
+            self.tree = self.parse()
+        return self.tree
 
-    def run(self):
+    def parse(self):
         try:
             split = re.findall(
                 "[a-hj-z]|[\d.]+|[\d.]*i|[%s]" % "\\".join(TOKENS),
@@ -101,15 +96,9 @@ class SyntaxParser(Thread):
             if match and len(remaining) == 0:
                 match = self.fix_associativity(match)
                 tree = self.build(match)
-                with self.lock:
-                    self.tree = tree
-                    self.success = True
-            else:
-                with self.lock:
-                    self.success = False
-        except Exception:
-            with self.lock:
-                self.success = False
+                self.tree = tree
+        finally:
+            self.parsed = True
 
     def match(self, rule, tokens):
         if tokens and rule == tokens[0].name:

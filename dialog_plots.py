@@ -13,10 +13,7 @@ from PyQt4.QtCore import *
 
 from plot import *
 from plot_list import *
-from abstract_syntax_tree import SyntaxParser, Node
-
-
-TIMEOUT = 0.5
+from abstract_syntax_tree import SyntaxParser
 
 
 class DialogPlots(QDockWidget):
@@ -46,9 +43,12 @@ class DialogPlots(QDockWidget):
         self.equation.setFont(font)
         self.equation.setPlaceholderText("Enter equation...")
         self.equation.textChanged.connect(self.equation_changed)
+        self.equation_movie = QLabel()
+        self.equation_movie.setMovie(QMovie("img/loader16.gif"))
+        self.equation_movie.movie().start()
         self.equation_validator = EquationValidator()
 
-        # Setup a button to open the color dialog.        
+        # Setup a button to open the color dialog.
         self.color_label = QWidget()
         self.color_label.setFixedHeight(20)
 
@@ -67,6 +67,7 @@ class DialogPlots(QDockWidget):
 
         # Add input widgets to the frame.
         input_grid.addWidget(self.equation, 0, 0, 1, 0)
+        input_grid.addWidget(self.equation_movie, 0, 1, Qt.AlignCenter)
         input_grid.addWidget(self.color_label, 1, 0)
         input_grid.addWidget(self.color_button, 1, 1)
 
@@ -107,7 +108,7 @@ class DialogPlots(QDockWidget):
     def add_plot(self):
         """Add a new plot to the plot list and select it."""
         plot = Plot("")
-        self.program.diagram.plots.append(plot)
+        self.list.append(plot)
         index = self.list.model().indexFromItem(plot)
         self.list.clearSelection()
         self.list.selectionModel().select(index,
@@ -143,16 +144,13 @@ class DialogPlots(QDockWidget):
         palette.setColor(QPalette.Base, color)
         self.equation.setPalette(palette)
 
+
 class EquationValidator(QValidator):
     def __init__(self):
         super(EquationValidator, self).__init__()
 
     def validate(self, input, pos):
-        parser = SyntaxParser(input)
-        parser.start()
-        parser.join(TIMEOUT)
-        tree = parser.get_tree()
-        if isinstance(tree, Node):
+        if SyntaxParser(input).get_tree():
             return (QValidator.Acceptable, input, pos)
         else:
             return (QValidator.Intermediate, input, pos)
