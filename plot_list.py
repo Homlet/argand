@@ -55,10 +55,10 @@ class PlotListTable(QTableView):
 class PlotListModel(QStandardItemModel):
     def __init__(self):
         super(PlotListModel, self).__init__()
-    
+
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled
-    
+
     def append(self, plot):
         self.appendRow([plot, QStandardItem()])
 
@@ -69,7 +69,7 @@ class PlotListDelegate(QStyledItemDelegate):
     def __init__(self):
         super(PlotListDelegate, self).__init__()
         self.hover = QModelIndex()
-    
+
     def sizeHint(self, option, index):
         if index.column() == COL_EQUATION:
             return QSize(0, 24)

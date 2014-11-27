@@ -39,6 +39,7 @@ class DialogPlots(QDockWidget):
         font.setPointSize(11)
         self.equation.setFont(font)
         self.equation.setPlaceholderText("Enter equation...")
+        self.equation.setValidator(EquationValidator())
 
         # Setup a button to open the color dialog.
         self.color_image = QLabel()
@@ -124,3 +125,14 @@ class DialogPlots(QDockWidget):
             self.equation.clear()
             self.reset_color_label()
         self.input_frame.setEnabled(valid)
+
+
+class EquationValidator(QValidator):
+    def __init__(self):
+        super(EquationValidator, self).__init__()
+
+    def validate(self, input, pos):
+        if SyntaxParser(input).get_tree():
+            return (QValidator.Acceptable, input, pos)
+        else:
+            return (QValidator.Invalid, input, pos)
