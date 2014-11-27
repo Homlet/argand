@@ -135,4 +135,4 @@ class EquationValidator(QValidator):
         if SyntaxParser(input).get_tree():
             return (QValidator.Acceptable, input, pos)
         else:
-            return (QValidator.Invalid, input, pos)
+            return (QValidator.Intermediate, input, pos)

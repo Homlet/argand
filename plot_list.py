@@ -46,6 +46,11 @@ class PlotListTable(QTableView):
     def append(self, plot):
         self.model().append(plot)
 
+    def mouseReleaseEvent(self, event):
+        super(PlotListTable, self).mouseReleaseEvent(event)
+        if not self.indexAt(event.pos()).isValid():
+            self.clearSelection()
+
     def eventFilter(self, object, event):
         if event.type() == QEvent.Leave:
             self.itemDelegate().mouseLeft(self.model())
