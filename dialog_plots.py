@@ -39,7 +39,8 @@ class DialogPlots(QDockWidget):
         font.setPointSize(11)
         self.equation.setFont(font)
         self.equation.setPlaceholderText("Enter equation...")
-        self.equation.setValidator(EquationValidator())
+        self.equation.textChanged.connect(self.equation_changed)
+        self.equation_validator = EquationValidator()
 
         # Setup a button to open the color dialog.
         self.color_image = QLabel()
@@ -126,13 +127,30 @@ class DialogPlots(QDockWidget):
             self.reset_color_label()
         self.input_frame.setEnabled(valid)
 
+    def equation_changed(self, text):
+        self.equation.valid = self.equation_validator.validate(text, 0)[0]        
+        if self.current_plot:
+            if self.equation.valid == QValidator.Acceptable:
+                color = QApplication.palette().color(QPalette.Base)
+                self.list.model().setData(self.current_plot,
+                    text, ROLE_EQUATION)
+            else:
+                color = QColor(250, 180, 180)
+        else:
+            color = QApplication.palette().color(QPalette.Base)
+
+        palette = QPalette()
+        palette.setColor(QPalette.Base, color)
+        self.equation.setPalette(palette)
 
 class EquationValidator(QValidator):
     def __init__(self):
         super(EquationValidator, self).__init__()
 
     def validate(self, input, pos):
-        if SyntaxParser(input).get_tree():
-            return (QValidator.Acceptable, input, pos)
-        else:
-            return (QValidator.Intermediate, input, pos)
+        try:
+            print(SyntaxParser(input).get_tree())
+            if SyntaxParser(input).get_tree():
+                return (QValidator.Acceptable, input, pos)
+        except: pass
+        return (QValidator.Intermediate, input, pos)
