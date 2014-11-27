@@ -6,11 +6,17 @@ dialog_plots.py - Creates a dockable dialog for creating and
 Written by Sam Hubbard - samlhub@gmail.com
 """
 
+from time import time
+
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
 from plot import *
 from plot_list import *
+from abstract_syntax_tree import SyntaxParser, Node
+
+
+TIMEOUT = 0.5
 
 
 class DialogPlots(QDockWidget):
@@ -42,10 +48,7 @@ class DialogPlots(QDockWidget):
         self.equation.textChanged.connect(self.equation_changed)
         self.equation_validator = EquationValidator()
 
-        # Setup a button to open the color dialog.
-        self.color_image = QLabel()
-        self.color_image.setPixmap(QPixmap("img/color16.png"))
-        
+        # Setup a button to open the color dialog.        
         self.color_label = QWidget()
         self.color_label.setFixedHeight(20)
 
@@ -58,15 +61,14 @@ class DialogPlots(QDockWidget):
         self.input_frame.setFrameStyle(QFrame.Box | QFrame.Sunken)
         self.input_frame.setEnabled(False)
         input_grid = QGridLayout()
-        input_grid.setColumnStretch(1, 1)
+        input_grid.setColumnStretch(0, 1)
         input_grid.setContentsMargins(3, 3, 3, 3)
         self.input_frame.setLayout(input_grid)
 
         # Add input widgets to the frame.
         input_grid.addWidget(self.equation, 0, 0, 1, 0)
-        input_grid.addWidget(self.color_image, 1, 0)
-        input_grid.addWidget(self.color_label, 1, 1)
-        input_grid.addWidget(self.color_button, 1, 2)
+        input_grid.addWidget(self.color_label, 1, 0)
+        input_grid.addWidget(self.color_button, 1, 1)
 
         # Create a grid layout in the widget.
         grid = QGridLayout()
@@ -104,8 +106,8 @@ class DialogPlots(QDockWidget):
 
     def add_plot(self):
         """Add a new plot to the plot list and select it."""
-        plot = Plot("333=3")
-        self.list.append(plot)
+        plot = Plot("")
+        self.program.diagram.plots.append(plot)
         index = self.list.model().indexFromItem(plot)
         self.list.clearSelection()
         self.list.selectionModel().select(index,
@@ -115,30 +117,28 @@ class DialogPlots(QDockWidget):
         """Update the current plot attributes.
            Enable the input area if the selection is valid."""
         indexes = selected.indexes()
-        valid = len(indexes) > 0
-
-        if valid:
+        if len(indexes) > 0:
             self.current_plot = indexes[0]
             self.equation.setText(self.current_plot.data(ROLE_EQUATION))
             self.change_color_label(self.current_plot.data(ROLE_COLOR))
+            self.input_frame.setEnabled(True)
+            self.equation.setFocus()
         else:
             self.current_plot = None
             self.equation.clear()
             self.reset_color_label()
-        self.input_frame.setEnabled(valid)
+            self.input_frame.setEnabled(False)
 
     def equation_changed(self, text):
-        self.equation.valid = self.equation_validator.validate(text, 0)[0]        
-        if self.current_plot:
-            if self.equation.valid == QValidator.Acceptable:
-                color = QApplication.palette().color(QPalette.Base)
+        self.equation.valid = self.equation_validator.validate(text, 0)[0]
+        if self.equation.valid == QValidator.Acceptable \
+        or not self.current_plot:
+            color = QApplication.palette().color(QPalette.Base)
+            if self.current_plot:
                 self.list.model().setData(self.current_plot,
                     text, ROLE_EQUATION)
-            else:
-                color = QColor(250, 180, 180)
         else:
-            color = QApplication.palette().color(QPalette.Base)
-
+            color = QColor(250, 180, 180)
         palette = QPalette()
         palette.setColor(QPalette.Base, color)
         self.equation.setPalette(palette)
@@ -148,9 +148,11 @@ class EquationValidator(QValidator):
         super(EquationValidator, self).__init__()
 
     def validate(self, input, pos):
-        try:
-            print(SyntaxParser(input).get_tree())
-            if SyntaxParser(input).get_tree():
-                return (QValidator.Acceptable, input, pos)
-        except: pass
-        return (QValidator.Intermediate, input, pos)
+        parser = SyntaxParser(input)
+        parser.start()
+        parser.join(TIMEOUT)
+        tree = parser.get_tree()
+        if isinstance(tree, Node):
+            return (QValidator.Acceptable, input, pos)
+        else:
+            return (QValidator.Intermediate, input, pos)

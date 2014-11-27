@@ -43,9 +43,6 @@ class PlotListTable(QTableView):
         self.setSelectionMode(QAbstractItemView.SingleSelection)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
 
-    def append(self, plot):
-        self.model().append(plot)
-
     def mouseReleaseEvent(self, event):
         super(PlotListTable, self).mouseReleaseEvent(event)
         if not self.indexAt(event.pos()).isValid():

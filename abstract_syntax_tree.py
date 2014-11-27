@@ -7,6 +7,7 @@ abstract_syntax_tree.py - Produces an abstract syntax tree
 Written by Sam Hubbard -  samlhub@gmail.com
 """
 
+from threading import Thread, Lock
 from collections import namedtuple
 from math import factorial
 import re
@@ -72,29 +73,43 @@ class Node:
         return s
 
 
-class SyntaxParser:
-    def __init__(self, equation, ruleset=GRAMMAR):
+class SyntaxParser(Thread):
+    def __init__(self, equation, root="eqn", ruleset=GRAMMAR):
+        super(SyntaxParser, self).__init__()
         self.equation = equation
         self.ruleset = ruleset
+        self.root = root
+
+        self.lock = Lock()
+        self.success = False
+        self.tree = None
 
     def get_tree(self):
-        eqn = self.tree("eqn")
-        if eqn:
-            return eqn
-        else:
-            return self.tree("sub")
+        with self.lock:
+            if self.success:
+                return self.tree
+            else:
+                return -1
 
-    def tree(self, rule):
-        split = re.findall(
-            "[a-hj-z]|[\d.]+|[\d.]*i|[%s]" % "\\".join(TOKENS),
-            self.equation)
-        tokens = [Token(TOKENS.get(x, "NUM"), x) for x in split]
-        match = self.match(rule, tokens)[0]
-        if match:
-            match = self.fix_associativity(match)
-            return self.build(match)
-        else:
-            return None
+    def run(self):
+        try:
+            split = re.findall(
+                "[a-hj-z]|[\d.]+|[\d.]*i|[%s]" % "\\".join(TOKENS),
+                self.equation)
+            tokens = [Token(TOKENS.get(x, "NUM"), x) for x in split]
+            match, remaining = self.match(self.root, tokens)
+            if match and len(remaining) == 0:
+                match = self.fix_associativity(match)
+                tree = self.build(match)
+                with self.lock:
+                    self.tree = tree
+                    self.success = True
+            else:
+                with self.lock:
+                    self.success = False
+        except Exception:
+            with self.lock:
+                self.success = False
 
     def match(self, rule, tokens):
         if tokens and rule == tokens[0].name:
