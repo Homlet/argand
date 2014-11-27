@@ -40,12 +40,12 @@ class DialogPlots(QDockWidget):
         self.equation.setFont(font)
         self.equation.setPlaceholderText("Enter equation...")
         self.equation.textChanged.connect(self.equation_changed)
+        self.equation_movie = QLabel()
+        self.equation_movie.setMovie(QMovie("img/loader16.gif"))
+        self.equation_movie.movie().start()
         self.equation_validator = EquationValidator()
 
         # Setup a button to open the color dialog.
-        self.color_image = QLabel()
-        self.color_image.setPixmap(QPixmap("img/color16.png"))
-        
         self.color_label = QWidget()
         self.color_label.setFixedHeight(20)
 
@@ -58,15 +58,15 @@ class DialogPlots(QDockWidget):
         self.input_frame.setFrameStyle(QFrame.Box | QFrame.Sunken)
         self.input_frame.setEnabled(False)
         input_grid = QGridLayout()
-        input_grid.setColumnStretch(1, 1)
+        input_grid.setColumnStretch(0, 1)
         input_grid.setContentsMargins(3, 3, 3, 3)
         self.input_frame.setLayout(input_grid)
 
         # Add input widgets to the frame.
         input_grid.addWidget(self.equation, 0, 0, 1, 0)
-        input_grid.addWidget(self.color_image, 1, 0)
-        input_grid.addWidget(self.color_label, 1, 1)
-        input_grid.addWidget(self.color_button, 1, 2)
+        input_grid.addWidget(self.equation_movie, 0, 1, Qt.AlignCenter)
+        input_grid.addWidget(self.color_label, 1, 0)
+        input_grid.addWidget(self.color_button, 1, 1)
 
         # Create a grid layout in the widget.
         grid = QGridLayout()
@@ -149,7 +149,6 @@ class EquationValidator(QValidator):
 
     def validate(self, input, pos):
         try:
-            print(SyntaxParser(input).get_tree())
             if SyntaxParser(input).get_tree():
                 return (QValidator.Acceptable, input, pos)
         except: pass
