@@ -95,8 +95,7 @@ class SyntaxParser:
             match, remaining = self.match(self.root, tokens)
             if match and len(remaining) == 0:
                 match = self.fix_associativity(match)
-                tree = self.build(match)
-                self.tree = tree
+                return self.build(match)
         finally:
             self.parsed = True
 
