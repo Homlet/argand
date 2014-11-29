@@ -41,11 +41,15 @@ class DialogPlots(QDockWidget):
         font = QApplication.font()
         font.setPointSize(11)
         self.equation.setFont(font)
+        self.equation.setFrame(False)
         self.equation.setPlaceholderText("Enter equation...")
         self.equation.textChanged.connect(self.equation_changed)
+
         self.equation_movie = QLabel()
         self.equation_movie.setMovie(QMovie("img/loader16.gif"))
         self.equation_movie.movie().start()
+        self.equation_movie.setVisible(False)
+
         self.equation_validator = EquationValidator()
 
         # Setup a button to open the color dialog.
@@ -62,7 +66,7 @@ class DialogPlots(QDockWidget):
         self.input_frame.setEnabled(False)
         input_grid = QGridLayout()
         input_grid.setColumnStretch(0, 1)
-        input_grid.setContentsMargins(3, 3, 3, 3)
+        input_grid.setContentsMargins(3, 3, 4, 3)
         self.input_frame.setLayout(input_grid)
 
         # Add input widgets to the frame.
@@ -131,7 +135,10 @@ class DialogPlots(QDockWidget):
             self.input_frame.setEnabled(False)
 
     def equation_changed(self, text):
+        self.equation_movie.setVisible(True)
         self.equation.valid = self.equation_validator.validate(text, 0)[0]
+        self.equation_movie.setVisible(False)
+
         if self.equation.valid == QValidator.Acceptable \
         or not self.current_plot:
             color = QApplication.palette().color(QPalette.Base)
@@ -140,6 +147,7 @@ class DialogPlots(QDockWidget):
                     text, ROLE_EQUATION)
         else:
             color = QColor(250, 180, 180)
+
         palette = QPalette()
         palette.setColor(QPalette.Base, color)
         self.equation.setPalette(palette)

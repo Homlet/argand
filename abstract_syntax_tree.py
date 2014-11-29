@@ -95,8 +95,9 @@ class SyntaxParser:
             match, remaining = self.match(self.root, tokens)
             if match and len(remaining) == 0:
                 match = self.fix_associativity(match)
-                tree = self.build(match)
-                self.tree = tree
+                return self.build(match)
+        except Exception as e:
+            print(e)
         finally:
             self.parsed = True
 
@@ -112,7 +113,7 @@ class SyntaxParser:
                 chain.append(matched)
             else:
                 return Match(rule, chain), remaining
-        return None, None
+        return None, []
 
     def fix_associativity(self, match, rules=["sub", "div"]):
         def flatten(match):

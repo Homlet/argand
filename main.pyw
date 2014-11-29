@@ -20,7 +20,7 @@ class Program:
         self.diagram = Diagram()
         self.preferences = Preferences()
         self.window = Window(self)
-
+    
     def exec_(self):
         return self.app.exec_()
 
