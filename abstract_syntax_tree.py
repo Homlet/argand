@@ -17,7 +17,11 @@ TOKENS = {
     "(": "LPAR",
     ")": "RPAR",
     "|": "MOD",
+    ">": "MORE",
+    ">=": "MEQL",
     "=": "EQL",
+    "<=": "LEQL",
+    "<": "LESS",
     "-": "SUB",
     "+": "ADD",
     "*": "MUL",
@@ -35,7 +39,8 @@ OPERATORS = {
     "neg": lambda x: -x,
 }
 GRAMMAR = {
-    "eqn": ["add EQL add"],
+    "eqn": ["sub rel sub"],
+    "rel": ["MORE", "MEQL", "EQL", "LEQL", "LESS"],
     "sub": ["add SUB sub", "add"],
     "add": ["mul ADD add", "mul"],
     "mul": ["div MUL mul", "div"],
@@ -67,7 +72,7 @@ class Node:
     def __repr__(self):
         s = "[" + str(self.value) + "]("
         for c in self.children:
-            s += " " + str(c)
+            s += str(c)
         s += ")"
         return s
 
@@ -88,16 +93,28 @@ class SyntaxParser:
 
     def parse(self):
         try:
+            # Alter the tokens to play nicely with regex.
+            regex_tokens = list(TOKENS)
+            for t in ["<", "<=", "=", ">=", ">"]: regex_tokens.remove(t)
+            for i in range(len(regex_tokens)):
+                regex_tokens[i] = "\\" + "\\".join(list(regex_tokens[i]))
+            regex_tokens.append("[<>]?=")
+            regex_tokens.append("[<>]")
+
+            # Get list of tokens from regex.
             split = re.findall(
-                "[a-hj-z]|[\d.]+|[\d.]*i|[%s]" % "\\".join(TOKENS),
+                "%s|[a-hj-z]|[\\d.]+|[\\d.]*i" % "|".join(regex_tokens),
                 self.equation)
+            print(split)
             tokens = [Token(TOKENS.get(x, "NUM"), x) for x in split]
+
+            # Attempt to match the tokens to the grammar.
             match, remaining = self.match(self.root, tokens)
             if match and len(remaining) == 0:
+                # Fix associativity issues caused by left recursion.
                 match = self.fix_associativity(match)
+                # Build and return the tree.
                 return self.build(match)
-        except Exception as e:
-            print(e)
         finally:
             self.parsed = True
 
