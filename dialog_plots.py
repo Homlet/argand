@@ -133,6 +133,7 @@ class DialogPlots(QDockWidget):
             self.equation.clear()
             self.reset_color_label()
             self.input_frame.setEnabled(False)
+        self.equation_changed(self.equation.text())
 
     def equation_changed(self, text):
         self.equation_movie.setVisible(True)
