@@ -103,7 +103,7 @@ class SyntaxParser:
 
             # Get list of tokens from regex.
             split = re.findall(
-                "%s|[a-hj-z]|[\\d.]+|[\\d.]*i" % "|".join(regex_tokens),
+                "%s|[a-hj-z]|[\\d.]*j|[\\d.]+" % "|".join(regex_tokens),
                 self.equation)
             print(split)
             tokens = [Token(TOKENS.get(x, "NUM"), x) for x in split]
@@ -153,7 +153,7 @@ class SyntaxParser:
     def build(self, match):
         if match.rule == "NUM":
             # Create a leaf node containing the number.
-            return Node(float(match.matched))
+            return Node(complex(match.matched))
 
         # Create an alias for the child matches, and
         # force it to be a list.
