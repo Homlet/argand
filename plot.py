@@ -22,8 +22,9 @@ TYPE_RAY = 5
 TYPE_SECTOR = 6
 
 ROLE_EQUATION = Qt.UserRole
-ROLE_COLOR = Qt.UserRole + 1
-ROLE_BUTTON_STATE = Qt.UserRole + 2
+ROLE_TREE = Qt.UserRole + 1
+ROLE_COLOR = Qt.UserRole + 2
+ROLE_BUTTON_STATE = Qt.UserRole + 3
 
 STATE_NORMAL = 0
 STATE_HOVER = 1
@@ -31,10 +32,16 @@ STATE_DOWN = 2
 
 
 class Plot(QStandardItem):
-    def __init__(self, equation, color=QColor(0, 0, 0)):
+    def __init__(self, equation="", color=QColor(0, 0, 0)):
         super(Plot, self).__init__()
 
-        self.setData(equation, ROLE_EQUATION)
+        self.set_equation(equation)
         self.setData(color, ROLE_COLOR)
-        
-        self.parser = SyntaxParser(equation)
+
+    def set_equation(self, equation):
+        tree = SyntaxParser(equation).get_tree()
+        if tree:
+            self.setData(equation, ROLE_EQUATION)
+            self.setData(tree, ROLE_TREE)
+            return True
+        return False

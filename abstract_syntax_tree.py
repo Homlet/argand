@@ -8,7 +8,7 @@ Written by Sam Hubbard -  samlhub@gmail.com
 """
 
 from collections import namedtuple
-from math import factorial
+from cmath import *
 import re
 import inspect
 
@@ -26,10 +26,18 @@ TOKENS = {
     "+": "ADD",
     "*": "MUL",
     "/": "DIV",
-    "^": "EXP"
+    "^": "EXP",
+    "sin": "SIN",
+    "cos": "COS",
+    "tan": "TAN",
+    "sqrt": "SQRT"
 }
-OPERATORS = {
-    "eqn": lambda x, y: x == y,
+CODE = {
+    "MORE": lambda x, y: x.real > y.real,
+    "MEQL": lambda x, y: x.real >= y.real,
+    "EQL":  lambda x, y: x == y,
+    "LEQL": lambda x, y: x.real <= y.real,
+    "LESS": lambda x, y: x.real < y.real,
     "sub": lambda x, y: x - y,
     "add": lambda x, y: x + y,
     "mul": lambda x, y: x * y,
@@ -37,7 +45,12 @@ OPERATORS = {
     "exp": lambda x, y: x ** y,
     "mod": lambda x: abs(x),
     "neg": lambda x: -x,
+    "SIN": lambda x: sin(x),
+    "COS": lambda x: cos(x),
+    "TAN": lambda x: tan(x),
+    "SQRT": lambda x: sqrt(x)
 }
+FUNCTIONS = ["SIN", "COS", "TAN", "SQRT"]
 GRAMMAR = {
     "eqn": ["sub rel sub"],
     "rel": ["MORE", "MEQL", "EQL", "LEQL", "LESS"],
@@ -46,10 +59,11 @@ GRAMMAR = {
     "mul": ["div MUL mul", "div"],
     "div": ["exp DIV div", "exp"],
     "exp": ["atm EXP exp", "atm"],
-    "atm": ["NUM", "LPAR sub RPAR", "mod", "neg", "pos"],
+    "atm": ["NUM", "LPAR sub RPAR", "mod", "neg", "pos", "fun"],
     "mod": ["MOD sub MOD"],
     "neg": ["SUB atm"],
-    "pos": ["ADD atm"]
+    "pos": ["ADD atm"],
+    "fun": [fun + " atm" for fun in FUNCTIONS]
 }
 
 
@@ -96,14 +110,16 @@ class SyntaxParser:
             # Alter the tokens to play nicely with regex.
             regex_tokens = list(TOKENS)
             for t in ["<", "<=", "=", ">=", ">"]: regex_tokens.remove(t)
+            escape = re.compile(
+                r"[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]", re.IGNORECASE)
             for i in range(len(regex_tokens)):
-                regex_tokens[i] = "\\" + "\\".join(list(regex_tokens[i]))
-            regex_tokens.append("[<>]?=")
-            regex_tokens.append("[<>]")
+                regex_tokens[i] = escape.sub(r"\\\g<0>", regex_tokens[i])
+            regex_tokens.append(r"[<>]?=")
+            regex_tokens.append(r"[<>]")
 
             # Get list of tokens from regex.
             split = re.findall(
-                "%s|[a-hj-z]|[\\d.]*j|[\\d.]+" % "|".join(regex_tokens),
+                r"%s|[a-hj-z]|[\d.]*j|[\d.]+" % r"|".join(regex_tokens),
                 self.equation)
             tokens = [Token(TOKENS.get(x, "NUM"), x) for x in split]
 
@@ -165,21 +181,60 @@ class SyntaxParser:
         i = 0
         while i < len(matched):
             if matched[i].rule not in self.ruleset \
-            and matched[i].rule != "NUM":
+            and matched[i].rule not in FUNCTIONS + ["NUM"]:
                 del matched[i]
             else:
                 i += 1
 
-        if match.rule in OPERATORS:
-            # We have a rule node. We need to determine
+        if match.rule in ["eqn", "fun"]:
+            # We need a special case for relations (equations)
+            # as we need to snoop further down the tree to find
+            # which type of relation to use.
+            # We need a special case for functions for the same
+            # reason, but the implementation is slightly different.
+            operator = None
+            if match.rule == "eqn":
+                # This is a relation node.
+                for i in range(len(matched)):
+                    if matched[i].rule == "rel":
+                        # Find and use the correct relation.
+                        operator = matched[i].matched[0].rule
+                        del matched[i]
+                        break
+            elif match.rule == "fun":
+                # This is a function node.
+                for i in range(len(matched)):
+                    if matched[i].rule in FUNCTIONS:
+                        # Find and use the correct function.
+                        operator = matched[i].rule
+                        del matched[i]
+                        break
+
+            # If we found an operator deeper in the tree, try to
+            # create a node for it.
+            if operator:
+                # We have a supported operator, but do we have
+                # the right number of arguments?
+                args = inspect.getargspec(CODE[operator])[0]
+                if len(matched) == len(args):
+                    # We have the correct number of arguments.
+                    return Node(
+                        CODE[operator],
+                        *[self.build(child) for child in matched])
+                else:
+                    raise Exception("Incorrect number of arguments.")
+            else:
+                raise Exception("Operator not found where expected.")
+        elif match.rule in CODE:
+            # We have a general rule node. We need to determine
             # if it is being used as a container or operator.
             # Then, we check if the number of child matches left is
             # the same as the expected number of arguments for the func.
-            args = inspect.getargspec(OPERATORS[match.rule])[0]
+            args = inspect.getargspec(CODE[match.rule])[0]
             if len(matched) == len(args):
                 # We have an operator node.
                 return Node(
-                    OPERATORS[match.rule],
+                    CODE[match.rule],
                     *[self.build(child) for child in matched])
             else:
                 # We just have a container (like sub), so build its child.

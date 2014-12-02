@@ -16,7 +16,7 @@ from plot_list import *
 from abstract_syntax_tree import SyntaxParser
 
 
-VALIDATION_DELAY = 1200
+VALIDATION_DELAY = 800
 
 
 class DialogPlots(QDockWidget):
@@ -53,8 +53,6 @@ class DialogPlots(QDockWidget):
         self.validation_indicator.setMovie(QMovie("img/loader16.gif"))
         self.validation_indicator.movie().start()
         self.validation_indicator.setVisible(False)
-
-        self.validator = EquationValidator()
 
         self.validation_timer = QTimer()
         self.validation_timer.setSingleShot(True)
@@ -119,7 +117,7 @@ class DialogPlots(QDockWidget):
 
     def add_plot(self):
         """Add a new plot to the plot list and select it."""
-        plot = Plot("")
+        plot = Plot()
         self.list.append(plot)
         index = self.list.model().indexFromItem(plot)
         self.list.clearSelection()
@@ -153,29 +151,16 @@ class DialogPlots(QDockWidget):
         """Validates the input and changes the plot and the
            background of the input area accordingly."""
         self.validation_indicator.setVisible(False)
+        self.validation_timer.stop()
 
         text = self.equation.text()
-        self.equation.valid = self.validator.validate(text, 0)[0]
-        if self.equation.valid == QValidator.Acceptable \
-        or not self.current_plot:
-            color = QApplication.palette().color(QPalette.Base)
-            if self.current_plot:
-                self.list.model().setData(self.current_plot,
-                    text, ROLE_EQUATION)
-        else:
-            color = QColor(250, 180, 180)
+        color = QApplication.palette().color(QPalette.Base)
+        if self.current_plot:
+            plot = self.list.model().itemFromIndex(self.current_plot)
+            if text != plot.data(ROLE_EQUATION):
+                if not plot.set_equation(text):
+                    color = QColor(250, 180, 180)
 
         palette = QPalette()
         palette.setColor(QPalette.Base, color)
         self.equation.setPalette(palette)
-
-
-class EquationValidator(QValidator):
-    def __init__(self):
-        super(EquationValidator, self).__init__()
-
-    def validate(self, input, pos):
-        if SyntaxParser(input).get_tree():
-            return (QValidator.Acceptable, input, pos)
-        else:
-            return (QValidator.Intermediate, input, pos)
