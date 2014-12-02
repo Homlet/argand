@@ -105,7 +105,6 @@ class SyntaxParser:
             split = re.findall(
                 "%s|[a-hj-z]|[\\d.]*j|[\\d.]+" % "|".join(regex_tokens),
                 self.equation)
-            print(split)
             tokens = [Token(TOKENS.get(x, "NUM"), x) for x in split]
 
             # Attempt to match the tokens to the grammar.

@@ -16,6 +16,9 @@ from plot_list import *
 from abstract_syntax_tree import SyntaxParser
 
 
+VALIDATION_DELAY = 1200
+
+
 class DialogPlots(QDockWidget):
     def __init__(self, parent, program):
         super(DialogPlots, self).__init__("Plots", parent)
@@ -45,12 +48,17 @@ class DialogPlots(QDockWidget):
         self.equation.setPlaceholderText("Enter equation...")
         self.equation.textChanged.connect(self.equation_changed)
 
-        self.equation_movie = QLabel()
-        self.equation_movie.setMovie(QMovie("img/loader16.gif"))
-        self.equation_movie.movie().start()
-        self.equation_movie.setVisible(False)
+        # Create objects for validating the input.
+        self.validation_indicator = QLabel()
+        self.validation_indicator.setMovie(QMovie("img/loader16.gif"))
+        self.validation_indicator.movie().start()
+        self.validation_indicator.setVisible(False)
 
-        self.equation_validator = EquationValidator()
+        self.validator = EquationValidator()
+
+        self.validation_timer = QTimer()
+        self.validation_timer.setSingleShot(True)
+        self.validation_timer.timeout.connect(self.validate)
 
         # Setup a button to open the color dialog.
         self.color_label = QWidget()
@@ -71,7 +79,7 @@ class DialogPlots(QDockWidget):
 
         # Add input widgets to the frame.
         input_grid.addWidget(self.equation, 0, 0, 1, 0)
-        input_grid.addWidget(self.equation_movie, 0, 1, Qt.AlignCenter)
+        input_grid.addWidget(self.validation_indicator, 0, 1, Qt.AlignCenter)
         input_grid.addWidget(self.color_label, 1, 0)
         input_grid.addWidget(self.color_button, 1, 1)
 
@@ -133,13 +141,21 @@ class DialogPlots(QDockWidget):
             self.equation.clear()
             self.reset_color_label()
             self.input_frame.setEnabled(False)
-        self.equation_changed(self.equation.text())
+        self.validate()
 
     def equation_changed(self, text):
-        self.equation_movie.setVisible(True)
-        self.equation.valid = self.equation_validator.validate(text, 0)[0]
-        self.equation_movie.setVisible(False)
+        """Called when the equation input is changed by the user.
+           Starts the validation timer."""
+        self.validation_indicator.setVisible(True)
+        self.validation_timer.start(VALIDATION_DELAY)
 
+    def validate(self):
+        """Validates the input and changes the plot and the
+           background of the input area accordingly."""
+        self.validation_indicator.setVisible(False)
+
+        text = self.equation.text()
+        self.equation.valid = self.validator.validate(text, 0)[0]
         if self.equation.valid == QValidator.Acceptable \
         or not self.current_plot:
             color = QApplication.palette().color(QPalette.Base)
