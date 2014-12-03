@@ -51,6 +51,15 @@ class PlotListTable(QTableView):
     def eventFilter(self, object, event):
         if event.type() == QEvent.Leave:
             self.itemDelegate().mouseLeft(self.model())
+        if event.type() == QEvent.KeyPress:
+            if event.key() == Qt.Key_Tab:
+                event.ignore()
+                return True
+            elif event.key() in [Qt.Key_Delete, Qt.Key_Backspace]:
+                if self.selectionModel().hasSelection():
+                    index = self.selectionModel().currentIndex()
+                    if index.isValid():
+                        self.itemDelegate().delete_item(self.model(), index)
         return False
 
 
@@ -93,7 +102,11 @@ class PlotListDelegate(QStyledItemDelegate):
             # Highlight the row when selected.
             painter.save()
             painter.setPen(Qt.NoPen)
-            painter.setBrush(QBrush(option.palette.highlight()))
+            if option.state & QStyle.State_Active:
+                painter.setBrush(option.palette.highlight())
+            else:
+                painter.setBrush(option.palette.brush(
+                    QPalette.Inactive, QPalette.Highlight))
             painter.drawRect(bounds)
             painter.restore()
 
