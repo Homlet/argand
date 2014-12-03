@@ -62,9 +62,12 @@ class DialogPlots(QDockWidget):
         self.color_label = QWidget()
         self.color_label.setFixedHeight(20)
 
-        self.color_button = QPushButton("...")
+        self.color_button = QPushButton()
+        color_button_pixmap = QPixmap("img/color16.png")
+        color_button_icon = QIcon(color_button_pixmap)
+        self.color_button.setIcon(color_button_icon)
+        self.color_button.setIconSize(color_button_pixmap.rect().size())
         self.color_button.clicked.connect(self.change_color)
-        self.color_button.setFixedWidth(26)
 
         # Create a frame for the input area.
         self.input_frame = QFrame()
@@ -73,6 +76,7 @@ class DialogPlots(QDockWidget):
         input_grid = QGridLayout()
         input_grid.setColumnStretch(0, 1)
         input_grid.setContentsMargins(3, 3, 4, 3)
+        input_grid.setSpacing(2)
         self.input_frame.setLayout(input_grid)
 
         # Add input widgets to the frame.
@@ -121,8 +125,7 @@ class DialogPlots(QDockWidget):
         plot = Plot()
         self.list.append(plot)
         index = self.list.model().indexFromItem(plot)
-        self.list.clearSelection()
-        self.list.selectionModel().select(index,
+        self.list.selectionModel().setCurrentIndex(index,
             QItemSelectionModel.ClearAndSelect | QItemSelectionModel.Rows)
 
     def plot_changed(self, selected, deselected):
@@ -134,7 +137,6 @@ class DialogPlots(QDockWidget):
             self.equation.setText(self.current_plot.data(ROLE_EQUATION))
             self.change_color_label(self.current_plot.data(ROLE_COLOR))
             self.input_frame.setEnabled(True)
-            self.equation.setFocus()
         else:
             self.current_plot = None
             self.equation.clear()
