@@ -11,6 +11,7 @@ from collections import namedtuple
 from cmath import *
 import re
 import inspect
+import traceback
 
 
 TOKENS = {
@@ -59,7 +60,7 @@ GRAMMAR = {
     "mul": ["div MUL mul", "div"],
     "div": ["exp DIV div", "exp"],
     "exp": ["atm EXP exp", "atm"],
-    "atm": ["NUM", "LPAR sub RPAR", "mod", "neg", "pos", "fun"],
+    "atm": ["NUM", "VAR", "LPAR sub RPAR", "mod", "neg", "pos", "fun"],
     "mod": ["MOD sub MOD"],
     "neg": ["SUB atm"],
     "pos": ["ADD atm"],
@@ -121,7 +122,9 @@ class SyntaxParser:
             split = re.findall(
                 r"%s|[a-hj-z]|[\d.]*j|[\d.]+" % r"|".join(regex_tokens),
                 self.equation)
-            tokens = [Token(TOKENS.get(x, "NUM"), x) for x in split]
+            tokens = [
+                Token(TOKENS.get(x, "VAR" if x.isalpha() else "NUM"), x)
+                for x in split]
 
             # Attempt to match the tokens to the grammar.
             match, remaining = self.match(self.root, tokens)
@@ -130,6 +133,10 @@ class SyntaxParser:
                 match = self.fix_associativity(match)
                 # Build and return the tree.
                 return self.build(match)
+            else:
+                raise Exception("Tokens invalid for grammar.")
+        except:
+            pass
         finally:
             self.parsed = True
 
@@ -166,15 +173,18 @@ class SyntaxParser:
         return build_left(flatten(match))
 
     def build(self, match):
-        if match.rule == "NUM":
-            # Create a leaf node containing the number.
-            return Node(complex(match.matched))
-
         # Create an alias for the child matches, and
         # force it to be a list.
         matched = match.matched
         if not isinstance(matched, list):
             matched = [matched]
+
+        if match.rule == "NUM":
+            # Create a leaf node containing the number.
+            return Node(complex(matched[0]))
+        elif match.rule == "VAR":
+            # Create a leaf node representing a variable.
+            return Node(matched[0])
 
         # Delete all child matches that just contain an
         # operator character, since they're useless now.
