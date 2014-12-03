@@ -57,9 +57,8 @@ class PlotListTable(QTableView):
                 return True
             elif event.key() in [Qt.Key_Delete, Qt.Key_Backspace]:
                 if self.selectionModel().hasSelection():
-                    index = self.selectionModel().currentIndex()
-                    if index.isValid():
-                        self.itemDelegate().delete_item(self.model(), index)
+                    self.itemDelegate().delete_item(
+                        self.model(), self.selectionModel().currentIndex())
         return False
 
 
