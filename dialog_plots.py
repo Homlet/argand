@@ -58,6 +58,20 @@ class DialogPlots(QDockWidget):
         self.validation_timer.setSingleShot(True)
         self.validation_timer.timeout.connect(self.validate)
 
+        # Set the standard colors in the QColorDialog.
+        index = 0
+        for i in range(0, 16):
+            h = i * 22.5
+            for j in range(0, 3):
+                s = 255 - j * 20
+                v = 255 - j * 65
+                QColorDialog.setStandardColor(index,
+                    QColor.fromHsv(h, s, v).rgb())
+                index += 1
+            index += 3
+            if index >= 48:
+                index = (index % 48) + 3
+
         # Setup a button to open the color dialog.
         self.color_label = QWidget()
         self.color_label.setFixedHeight(20)
