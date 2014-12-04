@@ -107,8 +107,9 @@ class DialogPlots(QDockWidget):
         if self.current_plot:
             color = QColorDialog.getColor(
                 QColor(), self, "Select Color", QColorDialog.ShowAlphaChannel)
-            self.change_color_label(color)
-            self.list.model().setData(self.current_plot, color, ROLE_COLOR)
+            if color.isValid():
+                self.change_color_label(color)
+                self.list.model().setData(self.current_plot, color, ROLE_COLOR)
 
     def change_color_label(self, color):
         """Change the color of the label in the input area."""
