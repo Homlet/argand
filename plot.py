@@ -61,6 +61,8 @@ class Plot(QStandardItem):
             if node.type == NODE_TYPE_OP:
                 if len(node.children) == 2:
                     if node.value == CODE["add"]:
+                        # Annoyingly, we have to create a and b inside each
+                        # case to avoid wasting processing on recursion.
                         a = values(node.children[0])
                         b = values(node.children[1])
                         return (a[0] + b[0], a[1] + b[1])
@@ -71,13 +73,15 @@ class Plot(QStandardItem):
                     if node.value == CODE["mul"]:
                         a = values(node.children[0])
                         b = values(node.children[1])
-                        if a[0]:
+                        # Only one child of a mul node may have a variable.
+                        if (a[0] ^ b[0]) and a[0]:
                             return (a[0] * b[1], a[1] * b[1])
-                        else:
+                        if (a[0] ^ b[0]) and b[0]:
                             return (a[1] * b[0], a[1] * b[1])
                     if node.value == CODE["div"]:
                         a = values(node.children[0])
                         b = values(node.children[1])
+                        # Only the left child of a div node may have a var.
                         if b[0] == 0:
                             return (a[0] / b[1], a[1] / b[1])
                 
@@ -86,8 +90,8 @@ class Plot(QStandardItem):
                 # Just evaluate it numerically, and treat as an offset.
                 return (0, node.resolve())
         
-        print(values(tree.children[0]))
+        # Get the right and left halves of the equation.
+        left = tree.children[0]
+        right = tree.children[1]
+        print(values(left), values(right))
         return False
-
-def vals(dictionary, keys):
-    return [dictionary[key] for key in keys]
