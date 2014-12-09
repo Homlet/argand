@@ -16,7 +16,7 @@ from plot_list import *
 from abstract_syntax_tree import SyntaxParser
 
 
-VALIDATION_DELAY = 1400
+VALIDATION_DELAY = 1200
 
 
 class DialogPlots(QDockWidget):
@@ -142,6 +142,7 @@ class DialogPlots(QDockWidget):
         index = self.list.model().indexFromItem(plot)
         self.list.selectionModel().setCurrentIndex(index,
             QItemSelectionModel.ClearAndSelect | QItemSelectionModel.Rows)
+        self.equation.setFocus()
 
     def plot_changed(self, selected, deselected):
         """Update the current plot attributes.

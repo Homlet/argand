@@ -86,7 +86,9 @@ class Node:
         self.type = type
         self.value = value
         self.children = children
-        self.leaf = (len(children) == 0)
+        self.parent = None
+        for child in self.children:
+            child.parent = self
 
     def resolve(self):
         if self.type == NODE_TYPE_OP:
