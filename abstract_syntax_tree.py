@@ -96,9 +96,6 @@ class Node:
         else:
             return self.value
 
-    def next_child(self, index):
-        return self.children[(index + 1) % len(self.children)]
-
     def __repr__(self):
         s = "[" + str(self.value) + "]("
         for c in self.children:

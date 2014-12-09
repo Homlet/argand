@@ -24,9 +24,13 @@ TYPE_RAY = 5
 TYPE_SECTOR = 6
 
 ROLE_EQUATION = Qt.UserRole
-ROLE_TREE = Qt.UserRole + 1
-ROLE_COLOR = Qt.UserRole + 2
-ROLE_BUTTON_STATE = Qt.UserRole + 3
+ROLE_TYPE = Qt.UserRole + 1
+# Circle specific:
+ROLE_CENTER = Qt.UserRole + 2
+ROLE_RADIUS = Qt.UserRole + 3
+# UI specific:
+ROLE_COLOR = Qt.UserRole + 10
+ROLE_BUTTON_STATE = Qt.UserRole + 11
 
 STATE_NORMAL = 0
 STATE_HOVER = 1
@@ -44,7 +48,6 @@ class Plot(QStandardItem):
         tree = SyntaxParser(equation).get_tree()
         if tree and self.classify(tree):
             self.setData(equation, ROLE_EQUATION)
-            self.setData(tree, ROLE_TREE)
             return True
         return False
 
@@ -90,8 +93,28 @@ class Plot(QStandardItem):
                 # Just evaluate it numerically, and treat as an offset.
                 return (0, node.resolve())
         
-        # Get the right and left halves of the equation.
-        left = tree.children[0]
-        right = tree.children[1]
-        print(values(left), values(right))
+        # If the code throws an error, the input is probably wrong.
+        try:
+            # Get the right and left halves of the equation.
+            left = tree.children[0]
+            right = tree.children[1]
+            
+            # Handle all the cases!
+            if left.value == CODE["mod"]:
+                left_values = values(left.children[0])
+                if right.value == CODE["mod"]:
+                    # We have a perpendicular bisector (line).
+                    pass
+                else:
+                    # We have a circle (hopefully).
+                    right_values = values(right)
+                    if left_values[0] == 1 and right_values[0] == 0:
+                        center = (-left_values[1].real, -left_values[1].imag)
+                        radius = right_values[1].real
+                        self.setData(TYPE_CIRCLE, ROLE_TYPE)
+                        self.setData(center, ROLE_CENTER)
+                        self.setData(radius, ROLE_RADIUS)
+                        return True
+        except:
+            pass
         return False
