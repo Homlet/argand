@@ -31,7 +31,8 @@ TOKENS = {
     "sin": "SIN",
     "cos": "COS",
     "tan": "TAN",
-    "sqrt": "SQRT"
+    "sqrt": "SQRT",
+    "arg": "ARG"
 }
 CODE = {
     "MORE": lambda x, y: x.real > y.real,
@@ -39,29 +40,32 @@ CODE = {
     "EQL":  lambda x, y: x == y,
     "LEQL": lambda x, y: x.real <= y.real,
     "LESS": lambda x, y: x.real < y.real,
-    "sub": lambda x, y: x - y,
     "add": lambda x, y: x + y,
+    "sub": lambda x, y: x - y,
     "mul": lambda x, y: x * y,
     "div": lambda x, y: x / y,
     "exp": lambda x, y: x ** y,
     "mod": lambda x: abs(x),
+    "pos": lambda x: x,
     "neg": lambda x: -x,
     "SIN": lambda x: sin(x),
     "COS": lambda x: cos(x),
     "TAN": lambda x: tan(x),
-    "SQRT": lambda x: sqrt(x)
+    "SQRT": lambda x: sqrt(x),
+    "ARG": lambda x: phase(x)
 }
-FUNCTIONS = ["SIN", "COS", "TAN", "SQRT"]
+FUNCTIONS = ["SIN", "COS", "TAN", "SQRT", "ARG"]
 GRAMMAR = {
-    "eqn": ["sub rel sub"],
+    "eqn": ["add rel add"],
     "rel": ["MORE", "MEQL", "EQL", "LEQL", "LESS"],
-    "sub": ["add SUB sub", "add"],
-    "add": ["mul ADD add", "mul"],
+    "add": ["sub ADD add", "sub"],
+    "sub": ["mul SUB sub", "mul"],
     "mul": ["div MUL mul", "div"],
     "div": ["exp DIV div", "exp"],
     "exp": ["atm EXP exp", "atm"],
-    "atm": ["NUM", "VAR", "LPAR sub RPAR", "mod", "neg", "pos", "fun"],
-    "mod": ["MOD sub MOD"],
+    "atm": ["NUM", "VAR", "par", "mod", "neg", "pos", "fun"],
+    "par": ["LPAR add RPAR"],
+    "mod": ["MOD add MOD"],
     "neg": ["SUB atm"],
     "pos": ["ADD atm"],
     "fun": [fun + " atm" for fun in FUNCTIONS]
@@ -72,17 +76,26 @@ Token = namedtuple("Token", ["name", "value"])
 Match = namedtuple("Match", ["rule", "matched"])
 
 
+NODE_TYPE_NUM = 0
+NODE_TYPE_VAR = 1
+NODE_TYPE_OP = 2
+
+
 class Node:
-    def __init__(self, value, *children):
+    def __init__(self, type, value, *children):
+        self.type = type
         self.value = value
         self.children = children
         self.leaf = (len(children) == 0)
 
     def resolve(self):
-        if callable(self.value):
+        if self.type == NODE_TYPE_OP:
             return self.value(*[child.resolve() for child in self.children])
         else:
             return self.value
+
+    def next_child(self, index):
+        return self.children[(index + 1) % len(self.children)]
 
     def __repr__(self):
         s = "[" + str(self.value) + "]("
@@ -181,17 +194,17 @@ class SyntaxParser:
 
         if match.rule == "NUM":
             # Create a leaf node containing the number.
-            return Node(complex(matched[0]))
+            return Node(NODE_TYPE_NUM, complex(matched[0]))
         elif match.rule == "VAR":
             # Create a leaf node representing a variable.
-            return Node(matched[0])
+            return Node(NODE_TYPE_VAR, matched[0])
 
         # Delete all child matches that just contain an
         # operator character, since they're useless now.
         i = 0
         while i < len(matched):
             if matched[i].rule not in self.ruleset \
-            and matched[i].rule not in FUNCTIONS + ["NUM"]:
+            and matched[i].rule not in FUNCTIONS + ["NUM", "VAR"]:
                 del matched[i]
             else:
                 i += 1
@@ -229,6 +242,7 @@ class SyntaxParser:
                 if len(matched) == len(args):
                     # We have the correct number of arguments.
                     return Node(
+                        NODE_TYPE_OP,
                         CODE[operator],
                         *[self.build(child) for child in matched])
                 else:
@@ -244,6 +258,7 @@ class SyntaxParser:
             if len(matched) == len(args):
                 # We have an operator node.
                 return Node(
+                    NODE_TYPE_OP,
                     CODE[match.rule],
                     *[self.build(child) for child in matched])
             else:
