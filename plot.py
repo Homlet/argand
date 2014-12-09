@@ -51,17 +51,6 @@ class Plot(QStandardItem):
     def classify(self, tree):
         """Attempt to classify the AST as a particular type
            Argand diagram. Returns true if successful."""
-        def get_variables(tree):
-            """Returns a list of variable node references,
-               sorted by depth (deepest first)."""
-            queue = [tree]
-            variables = []
-            while queue:
-                node = queue.pop(0)
-                if node.type == NODE_TYPE_VAR:
-                    variables.insert(0, node)
-                queue.extend(node.children)
-            return variables
         def values(node):
             """Calculates coefficients and offsets for each node.
                Returns a tuple: (coefficient, offset)."""
@@ -70,20 +59,31 @@ class Plot(QStandardItem):
             if node.type == NODE_TYPE_NUM:
                 return (0, node.value)
             if node.type == NODE_TYPE_OP:
-                # TODO: validation here.
-                a = values(node.children[0])
-                b = values(node.children[1])
-                if node.value == CODE["add"]:
-                    return (a[0] + b[0], a[1] + b[1])
-                if node.value == CODE["sub"]:
-                    return (a[0] - b[0], a[1] - b[1])
-                if node.value == CODE["mul"]:
-                    if a[0]:
-                        return (a[0] * b[1], a[1] * b[1])
-                    else:
-                        return (a[1] * b[0], a[1] * b[1])
-                if node.value == CODE["div"]:
-                    return (a[0] / b[1], a[1] / b[1])
+                if len(node.children) == 2:
+                    if node.value == CODE["add"]:
+                        a = values(node.children[0])
+                        b = values(node.children[1])
+                        return (a[0] + b[0], a[1] + b[1])
+                    if node.value == CODE["sub"]:
+                        a = values(node.children[0])
+                        b = values(node.children[1])
+                        return (a[0] - b[0], a[1] - b[1])
+                    if node.value == CODE["mul"]:
+                        a = values(node.children[0])
+                        b = values(node.children[1])
+                        if a[0]:
+                            return (a[0] * b[1], a[1] * b[1])
+                        else:
+                            return (a[1] * b[0], a[1] * b[1])
+                    if node.value == CODE["div"]:
+                        a = values(node.children[0])
+                        b = values(node.children[1])
+                        if b[0] == 0:
+                            return (a[0] / b[1], a[1] / b[1])
+                
+                # This node doesn't support variable children (unless
+                # it is a root node, but we've already accounted for those).
+                # Just evaluate it numerically, and treat as an offset.
                 return (0, node.resolve())
         
         print(values(tree.children[0]))
