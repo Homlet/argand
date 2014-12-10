@@ -52,11 +52,13 @@ class ViewDiagram(QGraphicsView):
         super(ViewDiagram, self).mouseReleaseEvent(event)
 
     def wheelEvent(self, event):
-        if event.delta() > 0:
-            self.program.diagram.zoom *= event.delta() / 90
-        if event.delta() < 0:
-            self.program.diagram.zoom /= abs(event.delta() / 90)
-        print(event.delta())
+        delta = event.delta()
+        while delta >= 120:
+            self.program.diagram.zoom *= 1.2
+            delta -= 120
+        while delta <= -120:
+            self.program.diagram.zoom /= 1.2
+            delta += 120
         self.draw()
         super(ViewDiagram, self).wheelEvent(event)
         
