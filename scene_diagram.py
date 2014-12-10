@@ -7,7 +7,7 @@ scene_diagram.py - Implements QGraphicsScene for
 Written by Sam Hubbard - samlhub@gmail.com
 """
 
-from math import log, hypot
+from math import log, ceil
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -99,7 +99,7 @@ class SceneDiagram(QGraphicsScene):
             form = "{:." + str(max(0, int(log(zoom)) - 3)) + "f}"
 
             diff_x = origin.x - cling_x  # Correct labelling when clinging.
-            horizontal_steps = int(width / LABEL_SPACING)
+            horizontal_steps = ceil(width / LABEL_SPACING / 2)
             for i in range(-horizontal_steps, horizontal_steps):
                 if i == 0: continue
                 self.addItem(FlippedText(
@@ -115,7 +115,7 @@ class SceneDiagram(QGraphicsScene):
                 )
 
             diff_y = origin.y - cling_y  # Correct labelling when clinging.
-            vertical_steps = int(height / LABEL_SPACING)
+            vertical_steps = ceil(height / LABEL_SPACING / 2)
             for i in range(-vertical_steps, vertical_steps):
                 if i == 0: continue
                 self.addItem(FlippedText(
