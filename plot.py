@@ -10,6 +10,7 @@ from functools import reduce
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
+from geometry import *
 from abstract_syntax_tree import *
 
 
@@ -25,10 +26,7 @@ TYPE_SECTOR = 6
 
 ROLE_EQUATION = Qt.UserRole
 ROLE_TYPE = Qt.UserRole + 1
-# Circle specific:
-ROLE_CENTER = Qt.UserRole + 2
-ROLE_RADIUS = Qt.UserRole + 3
-# UI specific:
+ROLE_SHAPE = Qt.UserRole + 2
 ROLE_COLOR = Qt.UserRole + 10
 ROLE_BUTTON_STATE = Qt.UserRole + 11
 
@@ -109,12 +107,13 @@ class Plot(QStandardItem):
                     # We have a circle (hopefully).
                     right_values = values(right)
                     if left_values[0] == 1 and right_values[0] == 0:
-                        center = (-left_values[1].real, -left_values[1].imag)
+                        center = Point(
+                            -left_values[1].real,
+                            -left_values[1].imag)
                         radius = right_values[1].real
                         self.setData(TYPE_CIRCLE, ROLE_TYPE)
-                        self.setData(center, ROLE_CENTER)
-                        self.setData(radius, ROLE_RADIUS)
+                        self.setData(Circle(center, radius), ROLE_SHAPE)
                         return True
-        except:
-            pass
+        except Exception as e:
+            print(e)
         return False

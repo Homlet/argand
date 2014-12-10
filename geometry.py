@@ -52,3 +52,24 @@ class Point:
         if index == 1:
             self.y = value
         raise KeyError(KEY_ERROR_MSG)
+
+class Circle:
+    def __init__(self, center, radius):
+        self.center = center
+        self.radius = radius
+    
+    def origin(self):
+        return Point(self.center.x - self.radius, self.center.y - self.radius)
+    
+    def diameter(self):
+        return 2 * self.radius
+
+class Line:
+    def __init__(self, gradient, intercept):
+        self.gradient = gradient
+        self.intercept = intercept
+
+class Ray:
+    def __init__(self, angle, origin):
+        self.origin = origin
+        self.angle = angle

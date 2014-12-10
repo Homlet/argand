@@ -16,7 +16,7 @@ from plot_list import *
 from abstract_syntax_tree import SyntaxParser
 
 
-VALIDATION_DELAY = 1200
+VALIDATION_DELAY = 800
 
 
 class DialogPlots(QDockWidget):
@@ -124,6 +124,7 @@ class DialogPlots(QDockWidget):
             if color.isValid():
                 self.change_color_label(color)
                 self.list.model().setData(self.current_plot, color, ROLE_COLOR)
+                self.program.window.diagram.draw()
 
     def change_color_label(self, color):
         """Change the color of the label in the input area."""
@@ -179,6 +180,8 @@ class DialogPlots(QDockWidget):
             if text != plot.data(ROLE_EQUATION):
                 if not plot.set_equation(text):
                     color = QColor(250, 180, 180)
+                else:
+                    self.program.window.diagram.draw()
 
         palette = QPalette()
         palette.setColor(QPalette.Base, color)

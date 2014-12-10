@@ -12,6 +12,8 @@ from math import log, hypot
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
+from plot import *
+from geometry import *
 from utils import clamp
 
 
@@ -143,14 +145,36 @@ class SceneDiagram(QGraphicsScene):
         translation = self.program.diagram.translation
         zoom = self.program.diagram.zoom
         
-#        for plot in self.program.diagram.plots:
-#            diagonal = hypot(5, 5)
-#            self.addEllipse(
-#                width / 2 + (plot[0] - diagonal - translation.x) * zoom,
-#                height / 2 + (plot[1] - diagonal - translation.y) * zoom,
-#                10 * zoom,
-#                10 * zoom
-#            )
+        for i in range(self.program.diagram.plots.rowCount()):
+            plot = self.program.diagram.plots.item(i)
+            type = plot.data(ROLE_TYPE)
+            shape = plot.data(ROLE_SHAPE)
+            color = plot.data(ROLE_COLOR)
+            
+            # TODO: Check if on screen.
+            if isinstance(shape, Circle):
+                if type == TYPE_CIRCLE:
+                    self.addEllipse(
+                        width / 2 + (shape.origin().x - translation.x) * zoom,
+                        height / 2 + (shape.origin().y - translation.y) * zoom,
+                        shape.diameter() * zoom, shape.diameter() * zoom,
+                        QPen(color))
+                if type == TYPE_DISK:
+                    pass
+                if type == TYPE_NEGATIVE_DISK:
+                    pass
+
+            if isinstance(shape, Line):
+                if type == TYPE_LINE:
+                    pass
+                if type == TYPE_HALF_PLANE:
+                    pass
+
+            if isinstance(shape, Ray):
+                if type == TYPE_RAY:
+                    pass
+                if type == TYPE_SECTOR:
+                    pass
 
     def set_viewport(self, viewport):
         """Called when the size of the parent widget changes."""

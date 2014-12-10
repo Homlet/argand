@@ -8,10 +8,9 @@ Written by Sam Hubbard -  samlhub@gmail.com
 """
 
 from collections import namedtuple
-from cmath import *
+from cmath import sin, cos, tan, sqrt, phase
 import re
 import inspect
-import traceback
 
 
 TOKENS = {
@@ -132,7 +131,7 @@ class SyntaxParser:
 
             # Get list of tokens from regex.
             split = re.findall(
-                r"%s|[a-hj-z]|[\d.]*j|[\d.]+" % r"|".join(regex_tokens),
+                r"%s|[a-ik-z]|[\d.]*j|[\d.]+" % r"|".join(regex_tokens),
                 self.equation)
             tokens = [
                 Token(TOKENS.get(x, "VAR" if x.isalpha() else "NUM"), x)
