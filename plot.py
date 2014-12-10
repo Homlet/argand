@@ -100,7 +100,7 @@ class Plot(QStandardItem):
                 left_values = values(left.children[0])
                 if right.value == CODE["mod"]:
                     # We have a perpendicular bisector (line).
-                    pass
+                    right_values = values(right.children[0])
                 else:
                     # We have a circle (hopefully).
                     right_values = values(right)

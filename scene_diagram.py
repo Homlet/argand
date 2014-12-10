@@ -144,6 +144,7 @@ class SceneDiagram(QGraphicsScene):
         
         translation = self.program.diagram.translation
         zoom = self.program.diagram.zoom
+        stroke = self.program.preferences.stroke
         
         for i in range(self.program.diagram.plots.rowCount()):
             plot = self.program.diagram.plots.item(i)
@@ -151,14 +152,16 @@ class SceneDiagram(QGraphicsScene):
             shape = plot.data(ROLE_SHAPE)
             color = plot.data(ROLE_COLOR)
             
+            pen = QPen(color)
+            pen.setWidth(stroke)
+            
             # TODO: Check if on screen.
             if isinstance(shape, Circle):
                 if type == TYPE_CIRCLE:
                     self.addEllipse(
                         width / 2 + (shape.origin().x - translation.x) * zoom,
                         height / 2 + (shape.origin().y - translation.y) * zoom,
-                        shape.diameter() * zoom, shape.diameter() * zoom,
-                        QPen(color))
+                        shape.diameter() * zoom, shape.diameter() * zoom, pen)
                 if type == TYPE_DISK:
                     pass
                 if type == TYPE_NEGATIVE_DISK:
