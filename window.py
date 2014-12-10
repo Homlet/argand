@@ -72,6 +72,9 @@ class Window(QMainWindow):
         # Add the plot list docking dialog.
         self.plots = DialogPlots(self, self.program)
         self.addDockWidget(Qt.LeftDockWidgetArea, self.plots)
+        
+        # Create an about dialog for the program.
+        self.about = QMessageBox()
 
     def create_actions(self):        
         self.a_exit = QAction("&Exit", self)
@@ -84,6 +87,11 @@ class Window(QMainWindow):
         self.a_show_prefs = QAction("&Preferences...", self)
         self.a_show_prefs.setShortcut("Ctrl+,")
         self.a_show_prefs.triggered.connect(self.show_preferences)
+        
+        self.a_show_about = QAction("&About Argand Plotter", self)
+        self.a_show_about.triggered.connect(self.show_about)
+        self.a_show_about_qt = QAction("About &Qt", self)
+        self.a_show_about_qt.triggered.connect(qApp.aboutQt)
 
     def setup_menubar(self):
         menubar = self.menuBar()
@@ -100,12 +108,25 @@ class Window(QMainWindow):
         menu_view.addAction(self.a_show_prefs)
 
         menu_help = menubar.addMenu("&Help")
-        #menu_file.addAction(self.a_show_docs)
-        #menu_file.addAction(self.a_show_about)
+        #menu_help.addAction(self.a_show_docs)
+        menu_help.addAction(self.a_show_about)
+        menu_help.addAction(self.a_show_about_qt)
     
     def show_preferences(self):
         DialogPreferences(self, self.program.preferences).exec_()
         self.diagram.draw()
+
+    def show_about(self):
+        QMessageBox.about(self, "About Argand Plotter",
+            "Argand Plotter is blah.\n\n"
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, "
+            "sed do eiusmod tempor incididunt ut labore et dolore "
+            "magna aliqua. Ut enim ad minim veniam, quis nostrud "
+            "exercitation ullamco laboris nisi ut aliquip ex ea "
+            "commodo consequat. Duis aute irure dolor in reprehenderit "
+            "voluptate velit esse cillum dolore eu fugiat nulla pariatur. "
+            "Excepteur sint occaecat cupidatat non proident, sunt in culpa "
+            "qui officia deserunt mollit anim id est laborum.")
     
     def change_zoom(self):
         self.program.diagram.zoom = 10 ** (self.zoom_slider.value() / 25)
