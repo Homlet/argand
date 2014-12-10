@@ -91,12 +91,10 @@ class Plot(QStandardItem):
                 # Just evaluate it numerically, and treat as an offset.
                 return (0, node.resolve())
         
-        # If the code throws an error, the input is probably wrong.
-        try:
-            # Get the right and left halves of the equation.
-            left = tree.children[0]
-            right = tree.children[1]
-            
+        def inspect(left, right):
+            """Attempts to classify the equation based
+               on its two halves. Call with the halves
+               switched to account for all possibilities."""
             # Handle all the cases!
             if left.value == CODE["mod"]:
                 left_values = values(left.children[0])
@@ -114,6 +112,15 @@ class Plot(QStandardItem):
                         self.setData(TYPE_CIRCLE, ROLE_TYPE)
                         self.setData(Circle(center, radius), ROLE_SHAPE)
                         return True
+            return False
+        
+        # If the code throws an error, the input is probably wrong.
+        try:
+            # Get the right and left halves of the equation.
+            left = tree.children[0]
+            right = tree.children[1]
+            if inspect(left, right): return True
+            if inspect(right, left): return True
         except Exception as e:
             print(e)
         return False
