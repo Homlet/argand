@@ -10,6 +10,7 @@ Written by Sam Hubbard - samlhub@gmail.com
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
+from geometry import Point
 from scene_diagram import SceneDiagram
 
 
@@ -19,12 +20,45 @@ class ViewDiagram(QGraphicsView):
         self.program = program
         self.scene = SceneDiagram(program)
         self.setScene(self.scene)
+        
         self.scale(1, -1)
+        
+        self.setDragMode(QGraphicsView.ScrollHandDrag)
+        self.dragging = False
+        self.last_pos = Point(0, 0)
     
     def draw(self):
         self.scene.clear()
         self.scene.draw_axes()
         self.scene.draw_plots()
+
+    def mousePressEvent(self, event):
+        self.dragging = True
+        self.last_pos = Point(event.x(), self.viewport().height() - event.y())
+        super(ViewDiagram, self).mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if self.dragging:
+            zoom = self.program.diagram.zoom
+            mouse_pos = Point(event.x(), self.viewport().height() - event.y())
+            delta = (mouse_pos - self.last_pos) * (1 / zoom)
+            self.program.diagram.translation -= delta
+            self.last_pos = mouse_pos
+            self.draw()
+        super(ViewDiagram, self).mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        self.dragging = False
+        super(ViewDiagram, self).mouseReleaseEvent(event)
+
+    def wheelEvent(self, event):
+        if event.delta() > 0:
+            self.program.diagram.zoom *= event.delta() / 90
+        if event.delta() < 0:
+            self.program.diagram.zoom /= abs(event.delta() / 90)
+        print(event.delta())
+        self.draw()
+        super(ViewDiagram, self).wheelEvent(event)
         
     def resizeEvent(self, event):
         self.scene.set_viewport(self.viewport())
