@@ -7,7 +7,7 @@ scene_diagram.py - Implements QGraphicsScene for
 Written by Sam Hubbard - samlhub@gmail.com
 """
 
-from math import log, ceil
+from math import log10, floor, ceil
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -19,7 +19,6 @@ from utils import clamp
 
 CLING_THRES = 10
 LABEL_PAD = 20
-LABEL_SPACING = 50
 TICK_SIZE = 2
 
 
@@ -52,7 +51,7 @@ class SceneDiagram(QGraphicsScene):
         """Draws the real and imaginary axes.
         
         If the current preferences allow it, the axes will
-        be labelled at regular intervals.
+        be labelled. Labels will expand as the zoom increases.
         
         If the axes are too far from the viewport, they will
         'cling' to the edges of the screen, but the labels
@@ -95,48 +94,78 @@ class SceneDiagram(QGraphicsScene):
                 height - LABEL_PAD
             ))
             
-            # Set the style of label based on how zoomed in we are.
-            form = "{:." + str(max(0, int(log(zoom)) - 3)) + "f}"
-
-            diff_x = origin.x - cling_x  # Correct labelling when clinging.
-            horizontal_steps = ceil(width / LABEL_SPACING / 2)
-            for i in range(-horizontal_steps, horizontal_steps):
+            # Set the step using the order of magnitude of the current zoom.
+            step = 10 ** floor(2 - log10(zoom))
+            pixels = step * zoom
+            re_steps = ceil(width / pixels / 2)
+            im_steps = ceil(height / pixels / 2)
+            for i in range(-re_steps, re_steps):
                 if i == 0: continue
                 self.addItem(FlippedText(
-                    form.format((i * LABEL_SPACING - diff_x) / zoom),
-                    width / 2 + cling_x + i * LABEL_SPACING,
-                    height / 2 + cling_y
-                ))
+                    "{:n}".format(i * step),
+                    width / 2 + cling_x + i * pixels,
+                    height / 2 + cling_y))
                 self.addLine(
-                    width / 2 + cling_x + i * LABEL_SPACING,
+                    width / 2 + cling_x + i * pixels,
                     height / 2 + cling_y + TICK_SIZE,
-                    width / 2 + cling_x + i * LABEL_SPACING,
-                    height / 2 + cling_y - TICK_SIZE,
-                )
-
-            diff_y = origin.y - cling_y  # Correct labelling when clinging.
-            vertical_steps = ceil(height / LABEL_SPACING / 2)
-            for i in range(-vertical_steps, vertical_steps):
+                    width / 2 + cling_x + i * pixels,
+                    height / 2 + cling_y - TICK_SIZE)
+                
+            for i in range(-im_steps, im_steps):
                 if i == 0: continue
                 self.addItem(FlippedText(
-                    form.format((i * LABEL_SPACING - diff_y) / zoom),
+                    "{:n}".format(i * step),
                     width / 2 + cling_x,
-                    height / 2 + cling_y + i * LABEL_SPACING
-                ))
+                    height / 2 + cling_y + i * pixels))
                 self.addLine(
                     width / 2 + cling_x + TICK_SIZE,
-                    height / 2 + cling_y + i * LABEL_SPACING,
+                    height / 2 + cling_y + i * pixels,
                     width / 2 + cling_x - TICK_SIZE,
-                    height / 2 + cling_y + i * LABEL_SPACING
-                )
-
-            # Only label origin if it is actually in viewport (not clinging).
-            if diff_x == diff_y == 0:
-                self.addItem(FlippedText(
-                    "0",
-                    width / 2 + cling_x,
-                    height / 2 + cling_y
-                ))
+                    height / 2 + cling_y + i * pixels)
+            
+# OLD CODE:
+#            # Set the style of label based on how zoomed in we are.
+#            form = "{:." + str(max(0, int(log(zoom)) - 3)) + "f}"
+#
+#            diff_x = origin.x - cling_x  # Correct labelling when clinging.
+#            horizontal_steps = ceil(width / LABEL_SPACING / 2)
+#            for i in range(-horizontal_steps, horizontal_steps):
+#                if i == 0: continue
+#                self.addItem(FlippedText(
+#                    form.format((i * LABEL_SPACING - diff_x) / zoom),
+#                    width / 2 + cling_x + i * LABEL_SPACING,
+#                    height / 2 + cling_y
+#                ))
+#                self.addLine(
+#                    width / 2 + cling_x + i * LABEL_SPACING,
+#                    height / 2 + cling_y + TICK_SIZE,
+#                    width / 2 + cling_x + i * LABEL_SPACING,
+#                    height / 2 + cling_y - TICK_SIZE,
+#                )
+#
+#            diff_y = origin.y - cling_y  # Correct labelling when clinging.
+#            vertical_steps = ceil(height / LABEL_SPACING / 2)
+#            for i in range(-vertical_steps, vertical_steps):
+#                if i == 0: continue
+#                self.addItem(FlippedText(
+#                    form.format((i * LABEL_SPACING - diff_y) / zoom),
+#                    width / 2 + cling_x,
+#                    height / 2 + cling_y + i * LABEL_SPACING
+#                ))
+#                self.addLine(
+#                    width / 2 + cling_x + TICK_SIZE,
+#                    height / 2 + cling_y + i * LABEL_SPACING,
+#                    width / 2 + cling_x - TICK_SIZE,
+#                    height / 2 + cling_y + i * LABEL_SPACING
+#                )
+#
+#            # Only label origin if it is actually in viewport (not clinging).
+#            if diff_x == diff_y == 0:
+#                self.addItem(FlippedText(
+#                    "0",
+#                    width / 2 + cling_x,
+#                    height / 2 + cling_y
+#                ))
     
     def draw_plots(self):
         width = self.sceneRect().width()
