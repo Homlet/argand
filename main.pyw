@@ -16,7 +16,7 @@ from window import Window
 class Program:
     def __init__(self):
         self.app = QApplication(sys.argv)
-        self.app.setWindowIcon(QIcon("img/logo16.png"))
+        self.app.setWindowIcon(QIcon("img/half_disk.ico"))
         self.diagram = Diagram()
         self.preferences = Preferences()
         self.window = Window(self)
