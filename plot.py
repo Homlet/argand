@@ -99,16 +99,29 @@ class Plot(QStandardItem):
             if left.value == CODE["mod"]:
                 left_values = values(left.children[0])
                 if right.value == CODE["mod"]:
-                    # We have a perpendicular bisector (line).
                     right_values = values(right.children[0])
-                else:
-                    # We have a circle (hopefully).
-                    right_values = values(right)
-                    if left_values[0] == 1 and right_values[0] == 0:
-                        center = Point(
+                    if left_values[0] == 1 and right_values[0] == 1:
+                        # We have a perpendicular bisector (line).
+                        p0 = Point(
                             -left_values[1].real,
                             -left_values[1].imag)
-                        radius = right_values[1].real
+                        p1 = Point(
+                            -right_values[1].real,
+                            -right_values[1].imag)
+                        center = Point((p0.x + p1.x) / 2, (p0.y + p1.y) / 2)
+                        gradient = -(p1.x - p0.x) / (p1.y - p0.y)
+                        intercept = center.x - (center.y / gradient)
+                        self.setData(TYPE_LINE, ROLE_TYPE)
+                        self.setData(Line(gradient, intercept), ROLE_SHAPE)
+                        return True
+                else:
+                    right_values = values(right)
+                    if right_values[0] == 0:
+                        # We have a circle.
+                        center = Point(
+                            -left_values[1].real / left_values[0].real,
+                            -left_values[1].imag / left_values[0].real)
+                        radius = right_values[1].real / abs(left_values[0])
                         self.setData(TYPE_CIRCLE, ROLE_TYPE)
                         self.setData(Circle(center, radius), ROLE_SHAPE)
                         return True

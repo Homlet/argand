@@ -23,7 +23,10 @@ class ViewDiagram(QGraphicsView):
         
         self.scale(1, -1)
         
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setDragMode(QGraphicsView.ScrollHandDrag)
+        
         self.dragging = False
         self.last_pos = Point(0, 0)
     

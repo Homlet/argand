@@ -8,7 +8,7 @@ Written by Sam Hubbard -  samlhub@gmail.com
 """
 
 from collections import namedtuple
-from cmath import sin, cos, tan, sqrt, phase
+import cmath
 import re
 import inspect
 
@@ -47,11 +47,11 @@ CODE = {
     "mod": lambda x: abs(x),
     "pos": lambda x: x,
     "neg": lambda x: -x,
-    "SIN": lambda x: sin(x),
-    "COS": lambda x: cos(x),
-    "TAN": lambda x: tan(x),
-    "SQRT": lambda x: sqrt(x),
-    "ARG": lambda x: phase(x)
+    "SIN": lambda x: cmath.sin(x),
+    "COS": lambda x: cmath.cos(x),
+    "TAN": lambda x: cmath.tan(x),
+    "SQRT": lambda x: cmath.sqrt(x),
+    "ARG": lambda x: cmath.phase(x)
 }
 FUNCTIONS = ["SIN", "COS", "TAN", "SQRT", "ARG"]
 GRAMMAR = {
