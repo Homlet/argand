@@ -69,6 +69,12 @@ class Line:
         self.gradient = gradient
         self.intercept = intercept
 
+    def y(self, x):
+        return self.gradient * x + self.intercept
+
+    def x(self, y):
+        return (y - self.intercept) / self.gradient
+
 class Ray:
     def __init__(self, angle, origin):
         self.origin = origin

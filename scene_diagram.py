@@ -7,14 +7,14 @@ scene_diagram.py - Implements QGraphicsScene for
 Written by Sam Hubbard - samlhub@gmail.com
 """
 
-from math import log10, floor, ceil
+from math import *
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
 from plot import *
 from geometry import *
-from utils import clamp
+from utils import clamp, floor_to
 
 
 CLING_THRES = 10
@@ -93,36 +93,37 @@ class SceneDiagram(QGraphicsScene):
                 width / 2 + cling_x - 2 * CLING_THRES,
                 height - LABEL_PAD
             ))
-            
+
             # Set the step using the order of magnitude of the current zoom.
-            step = 10 ** floor(2 - log10(zoom))
+            step = 10 ** floor_to(2 - log10(zoom), log10(5))
             pixels = step * zoom
+
             re_steps = ceil(width / pixels / 2)
-            im_steps = ceil(height / pixels / 2)
             for i in range(-re_steps, re_steps):
                 if i == 0: continue
                 self.addItem(FlippedText(
                     "{:n}".format(i * step),
-                    width / 2 + cling_x + i * pixels,
+                    width / 2 + origin.x + i * pixels,
                     height / 2 + cling_y))
                 self.addLine(
-                    width / 2 + cling_x + i * pixels,
+                    width / 2 + origin.x + i * pixels,
                     height / 2 + cling_y + TICK_SIZE,
-                    width / 2 + cling_x + i * pixels,
+                    width / 2 + origin.x + i * pixels,
                     height / 2 + cling_y - TICK_SIZE)
-                
+
+            im_steps = ceil(height / pixels / 2)
             for i in range(-im_steps, im_steps):
                 if i == 0: continue
                 self.addItem(FlippedText(
                     "{:n}".format(i * step),
                     width / 2 + cling_x,
-                    height / 2 + cling_y + i * pixels))
+                    height / 2 + origin.y + i * pixels))
                 self.addLine(
                     width / 2 + cling_x + TICK_SIZE,
-                    height / 2 + cling_y + i * pixels,
+                    height / 2 + origin.y + i * pixels,
                     width / 2 + cling_x - TICK_SIZE,
-                    height / 2 + cling_y + i * pixels)
-            
+                    height / 2 + origin.y + i * pixels)
+
 # OLD CODE:
 #            # Set the style of label based on how zoomed in we are.
 #            form = "{:." + str(max(0, int(log(zoom)) - 3)) + "f}"
@@ -198,7 +199,8 @@ class SceneDiagram(QGraphicsScene):
 
             if isinstance(shape, Line):
                 if type == TYPE_LINE:
-                    pass
+                    # TODO: Draw line.
+                    print(shape.gradient, shape.intercept)
                 if type == TYPE_HALF_PLANE:
                     pass
 
