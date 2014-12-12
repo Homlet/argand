@@ -103,7 +103,7 @@ class SceneDiagram(QGraphicsScene):
             for i in range(-re_steps, re_steps):
                 if i == 0: continue
                 self.addItem(FlippedText(
-                    "a".format(i * step),
+                    "{:n}".format(i * step),
                     width / 2 + origin.x + i * pixels,
                     height / 2 + cling_y))
                 self.addLine(
@@ -116,7 +116,7 @@ class SceneDiagram(QGraphicsScene):
             for i in range(-im_steps, im_steps):
                 if i == 0: continue
                 self.addItem(FlippedText(
-                    "a".format(i * step),
+                    "{:n}".format(i * step),
                     width / 2 + cling_x,
                     height / 2 + origin.y + i * pixels))
                 self.addLine(
