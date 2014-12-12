@@ -36,7 +36,7 @@ class ViewDiagram(QGraphicsView):
         self.scene.clear()
         self.scene.draw_axes()
         self.scene.draw_plots()
-        self.viewport().update()
+        self.viewport().repaint()
 
     def mousePressEvent(self, event):
         self.dragging = True
