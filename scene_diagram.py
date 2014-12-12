@@ -46,6 +46,7 @@ class SceneDiagram(QGraphicsScene):
     def __init__(self, program):
         super(SceneDiagram, self).__init__()
         self.program = program
+        self.setItemIndexMethod(QGraphicsScene.NoIndex)
 
     def draw_axes(self):
         """Draws the real and imaginary axes.
@@ -124,49 +125,13 @@ class SceneDiagram(QGraphicsScene):
                     width / 2 + cling_x - TICK_SIZE,
                     height / 2 + origin.y + i * pixels)
 
-# OLD CODE:
-#            # Set the style of label based on how zoomed in we are.
-#            form = "{:." + str(max(0, int(log(zoom)) - 3)) + "f}"
-#
-#            diff_x = origin.x - cling_x  # Correct labelling when clinging.
-#            horizontal_steps = ceil(width / LABEL_SPACING / 2)
-#            for i in range(-horizontal_steps, horizontal_steps):
-#                if i == 0: continue
-#                self.addItem(FlippedText(
-#                    form.format((i * LABEL_SPACING - diff_x) / zoom),
-#                    width / 2 + cling_x + i * LABEL_SPACING,
-#                    height / 2 + cling_y
-#                ))
-#                self.addLine(
-#                    width / 2 + cling_x + i * LABEL_SPACING,
-#                    height / 2 + cling_y + TICK_SIZE,
-#                    width / 2 + cling_x + i * LABEL_SPACING,
-#                    height / 2 + cling_y - TICK_SIZE,
-#                )
-#
-#            diff_y = origin.y - cling_y  # Correct labelling when clinging.
-#            vertical_steps = ceil(height / LABEL_SPACING / 2)
-#            for i in range(-vertical_steps, vertical_steps):
-#                if i == 0: continue
-#                self.addItem(FlippedText(
-#                    form.format((i * LABEL_SPACING - diff_y) / zoom),
-#                    width / 2 + cling_x,
-#                    height / 2 + cling_y + i * LABEL_SPACING
-#                ))
-#                self.addLine(
-#                    width / 2 + cling_x + TICK_SIZE,
-#                    height / 2 + cling_y + i * LABEL_SPACING,
-#                    width / 2 + cling_x - TICK_SIZE,
-#                    height / 2 + cling_y + i * LABEL_SPACING
-#                )
-#
-#            # Only label origin if it is actually in viewport (not clinging).
-#            if diff_x == diff_y == 0:
-#                self.addItem(FlippedText(
-#                    "0",
-#                    width / 2 + cling_x,
-#                    height / 2 + cling_y
-#                ))
+            # Only label origin if it is actually in viewport (not clinging).
+            if cling_x - origin.x == 0 and cling_y - origin.y == 0:
+                self.addItem(FlippedText(
+                    "0",
+                    width / 2 + cling_x,
+                    height / 2 + cling_y
+                ))
     
     def draw_plots(self):
         width = self.sceneRect().width()
