@@ -99,7 +99,7 @@ class SceneDiagram(QGraphicsScene):
             step = 10 ** floor_to(2 - log10(zoom), log10(5))
             pixels = step * zoom
 
-            re_steps = ceil(width / pixels / 2)
+            re_steps = ceil(width / pixels * 0.75)
             for i in range(-re_steps, re_steps):
                 if i == 0: continue
                 self.addItem(FlippedText(
@@ -112,7 +112,7 @@ class SceneDiagram(QGraphicsScene):
                     width / 2 + origin.x + i * pixels,
                     height / 2 + cling_y - TICK_SIZE)
 
-            im_steps = ceil(height / pixels / 2)
+            im_steps = ceil(height / pixels * 0.75)
             for i in range(-im_steps, im_steps):
                 if i == 0: continue
                 self.addItem(FlippedText(
@@ -137,7 +137,7 @@ class SceneDiagram(QGraphicsScene):
         width = self.sceneRect().width()
         height = self.sceneRect().height()
         
-        translation = self.program.diagram.translation
+        offset = self.program.diagram.translation
         zoom = self.program.diagram.zoom
         stroke = self.program.preferences.stroke
         
@@ -154,8 +154,8 @@ class SceneDiagram(QGraphicsScene):
             if isinstance(shape, Circle):
                 if type == TYPE_CIRCLE:
                     self.addEllipse(
-                        width / 2 + (shape.origin().x - translation.x) * zoom,
-                        height / 2 + (shape.origin().y - translation.y) * zoom,
+                        width / 2 + (shape.origin().x - offset.x) * zoom,
+                        height / 2 + (shape.origin().y - offset.y) * zoom,
                         shape.diameter() * zoom, shape.diameter() * zoom, pen)
                 if type == TYPE_DISK:
                     pass
@@ -164,8 +164,7 @@ class SceneDiagram(QGraphicsScene):
 
             if isinstance(shape, Line):
                 if type == TYPE_LINE:
-                    # TODO: Draw line.
-                    print(shape.gradient, shape.intercept)
+                    pass
                 if type == TYPE_HALF_PLANE:
                     pass
 

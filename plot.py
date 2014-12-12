@@ -110,9 +110,11 @@ class Plot(QStandardItem):
                             -right_values[1].imag)
                         center = Point((p0.x + p1.x) / 2, (p0.y + p1.y) / 2)
                         gradient = -(p1.x - p0.x) / (p1.y - p0.y)
-                        intercept = center.x - (center.y / gradient)
+                        intercept = center.y - gradient * center.x
                         self.setData(TYPE_LINE, ROLE_TYPE)
                         self.setData(Line(gradient, intercept), ROLE_SHAPE)
+                        print("Gradient: ", gradient,
+                            "\nIntercept: ", intercept)
                         return True
                 else:
                     right_values = values(right)
