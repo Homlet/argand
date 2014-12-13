@@ -22,6 +22,8 @@ class ViewDiagram(QGraphicsView):
         self.setScene(self.scene)
         
         self.scale(1, -1)
+        self.setOptimizationFlag(QGraphicsView.DontAdjustForAntialiasing)
+        self.setViewportUpdateMode(QGraphicsView.NoViewportUpdate)
         
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -34,6 +36,7 @@ class ViewDiagram(QGraphicsView):
         self.scene.clear()
         self.scene.draw_axes()
         self.scene.draw_plots()
+        self.viewport().repaint()
 
     def mousePressEvent(self, event):
         self.dragging = True
@@ -45,8 +48,9 @@ class ViewDiagram(QGraphicsView):
             zoom = self.program.diagram.zoom
             mouse_pos = Point(event.x(), self.viewport().height() - event.y())
             delta = (mouse_pos - self.last_pos) * (1 / zoom)
-            self.program.diagram.translation -= delta
             self.last_pos = mouse_pos
+
+            self.program.diagram.translation -= delta
             self.draw()
         super(ViewDiagram, self).mouseMoveEvent(event)
 
