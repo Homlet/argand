@@ -70,8 +70,10 @@ class Plot(QStandardItem):
             """Calculates coefficients and offsets for each node.
                Returns a tuple: (coefficient, offset)."""
             if node.type == NODE_TYPE_VAR:
+                # All variables have coefficient 1.
                 return (1, 0)
             if node.type == NODE_TYPE_NUM:
+                # All numbers represent an offset of their value.
                 return (0, node.value)
             if node.type == NODE_TYPE_OP:
                 if len(node.children) == 2:
