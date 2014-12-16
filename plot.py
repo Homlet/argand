@@ -30,6 +30,13 @@ REL_EQL = "EQL"
 REL_MEQL = "MEQL"
 REL_MORE = "MORE"
 
+def invert_relation(relation):
+    if relation == REL_MORE: return REL_LESS
+    if relation == REL_MEQL: return REL_LEQL
+    if relation == REL_EQL: return REL_EQL
+    if relation == REL_LEQL: return REL_MEQL
+    if relation == REL_LESS: return REL_MORE
+
 ROLE_EQUATION = Qt.UserRole
 ROLE_TYPE = Qt.UserRole + 1
 ROLE_RELATION = Qt.UserRole + 2
@@ -161,8 +168,10 @@ class Plot(QStandardItem):
             # Get the right and left halves of the equation.
             left = tree.children[0]
             right = tree.children[1]
+            # inspect() will fill out the data if successful.
             if inspect(left, right, relation): return True
-            if inspect(right, left, relation): return True
+            # Try the equation the other way round.
+            if inspect(right, left, invert_relation(relation)): return True
         except Exception as e:
             print(e)
         return False

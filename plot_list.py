@@ -90,8 +90,6 @@ class PlotListDelegate(QStyledItemDelegate):
         # Load data from index.
         equation = index.data(ROLE_EQUATION)
         color = index.data(ROLE_COLOR)
-        if color:
-            color.setAlpha(255)
         button_state = index.data(ROLE_BUTTON_STATE)
         bounds = option.rect
         bounds.adjust(0, 0, 0, -1)
