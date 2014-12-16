@@ -5,7 +5,7 @@ plot.py - Class for storing a single drawable plot.
 Written by Sam Hubbard - samlhub@gmail.com
 """
 
-from functools import reduce
+from math import pi, atan2
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -24,9 +24,16 @@ TYPE_HALF_PLANE = 4
 TYPE_RAY = 5
 TYPE_SECTOR = 6
 
+REL_LESS = "LESS"
+REL_LEQL = "LEQL"
+REL_EQL = "EQL"
+REL_MEQL = "MEQL"
+REL_MORE = "MORE"
+
 ROLE_EQUATION = Qt.UserRole
 ROLE_TYPE = Qt.UserRole + 1
-ROLE_SHAPE = Qt.UserRole + 2
+ROLE_RELATION = Qt.UserRole + 2
+ROLE_SHAPE = Qt.UserRole + 3
 ROLE_COLOR = Qt.UserRole + 10
 ROLE_BUTTON_STATE = Qt.UserRole + 11
 
@@ -36,7 +43,7 @@ STATE_DOWN = 2
 
 
 class Plot(QStandardItem):
-    def __init__(self, equation="", color=QColor(0, 0, 0)):
+    def __init__(self, equation="", color=QColor(0, 0, 0, 80)):
         super(Plot, self).__init__()
 
         self.set_equation(equation)
@@ -91,7 +98,7 @@ class Plot(QStandardItem):
                 # Just evaluate it numerically, and treat as an offset.
                 return (0, node.resolve())
         
-        def inspect(left, right):
+        def inspect(left, right, relation="EQL"):
             """Attempts to classify the equation based
                on its two halves. Call with the halves
                switched to account for all possibilities."""
@@ -102,6 +109,7 @@ class Plot(QStandardItem):
                     right_values = values(right.children[0])
                     if left_values[0] == 1 and right_values[0] == 1:
                         # We have a perpendicular bisector (line).
+                        # p0 and p1 are the points to bisect.
                         p0 = Point(
                             -left_values[1].real,
                             -left_values[1].imag)
@@ -109,33 +117,52 @@ class Plot(QStandardItem):
                             -right_values[1].real,
                             -right_values[1].imag)
                         center = Point((p0.x + p1.x) / 2, (p0.y + p1.y) / 2)
-                        gradient = -(p1.x - p0.x) / (p1.y - p0.y)
-                        intercept = center.y - gradient * center.x
+                        # Store the vector from p0 to p1.
+                        diff = Point(p1.x - p0.x, p1.y - p0.y)
+                        # Store the angle of this vector from the +ve x-axis,
+                        # rotated by a right angle.
+                        angle = atan2(diff.y, diff.x) + pi / 2
+                        # atan2 returns an angle mod 2pi. We're using the pi
+                        # convention, so a conversion must be made.
+                        angle = (angle + pi) % (2 * pi) - pi
                         self.setData(TYPE_LINE, ROLE_TYPE)
-                        self.setData(Line(gradient, intercept), ROLE_SHAPE)
-                        print("Gradient: ", gradient,
-                            "\nIntercept: ", intercept)
+                        self.setData(relation, ROLE_RELATION)
+                        self.setData(Line(center, angle), ROLE_SHAPE)
                         return True
                 else:
                     right_values = values(right)
                     if right_values[0] == 0:
-                        # We have a circle.
+                        if relation == REL_EQL:
+                            # We have a circle.
+                            type = TYPE_CIRCLE
+                        elif relation in [REL_LEQL, REL_LESS]:
+                            # We have a disk.
+                            type = TYPE_DISK
+                        else:
+                            # Negative disks not supported yet.
+                            return False
                         center = Point(
                             -left_values[1].real / left_values[0].real,
                             -left_values[1].imag / left_values[0].real)
                         radius = right_values[1].real / abs(left_values[0])
-                        self.setData(TYPE_CIRCLE, ROLE_TYPE)
+                        self.setData(type, ROLE_TYPE)
+                        self.setData(relation, ROLE_RELATION)
                         self.setData(Circle(center, radius), ROLE_SHAPE)
                         return True
             return False
         
         # If the code throws an error, the input is probably wrong.
         try:
+            # Get the relation from the root node,
+            # which is probably a relation node.
+            for operator, function in CODE.items():
+                if tree.value == function:
+                    relation = operator
             # Get the right and left halves of the equation.
             left = tree.children[0]
             right = tree.children[1]
-            if inspect(left, right): return True
-            if inspect(right, left): return True
+            if inspect(left, right, relation): return True
+            if inspect(right, left, relation): return True
         except Exception as e:
             print(e)
         return False
