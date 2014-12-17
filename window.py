@@ -5,6 +5,7 @@ window.py - Creates the main window of the program.
 Written by Sam Hubbard - samlhub@gmail.com
 """
 
+from math import log10
 import sys
 
 from PyQt4.QtGui import *
@@ -52,6 +53,7 @@ class Window(QMainWindow):
         self.zoom_slider.setFixedWidth(150)
         self.zoom_slider.setRange(-50, 100)
         self.zoom_slider.valueChanged.connect(self.change_zoom)
+        self.program.diagram.zoom_changed.connect(self.set_zoom_slider)
 
         # Create a grid layout in the central widget.
         self.grid = QGridLayout()
@@ -132,6 +134,9 @@ class Window(QMainWindow):
     def change_zoom(self):
         self.program.diagram.zoom = 10 ** (self.zoom_slider.value() / 25)
         self.diagram.draw()
+
+    def set_zoom_slider(self, value):
+        self.zoom_slider.setValue(25 * log10(value))
         
     def initialize(self):
         self.setGeometry(200, 150, 800, 600)

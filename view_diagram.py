@@ -60,12 +60,14 @@ class ViewDiagram(QGraphicsView):
 
     def wheelEvent(self, event):
         delta = event.delta()
+        zoom = self.program.diagram.zoom
         while delta >= 120:
-            self.program.diagram.zoom *= 1.2
+            zoom *= 1.2
             delta -= 120
         while delta <= -120:
-            self.program.diagram.zoom /= 1.2
+            zoom /= 1.2
             delta += 120
+        self.program.diagram.set_zoom(zoom)
         self.draw()
         super(ViewDiagram, self).wheelEvent(event)
         
