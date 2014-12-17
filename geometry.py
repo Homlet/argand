@@ -70,10 +70,24 @@ class Circle:
 
 
 class Line:
-    """A simple line stored in the form y = mx + c."""
-    def __init__(self, gradient, intercept):
-        self.gradient = gradient
-        self.intercept = intercept
+    """A simple line in the form y = mx + c.
+    
+       The gradient stored is always between -1 and 1. Steep lines
+       are stored by a flag that rotates the line 90 degrees.
+       This is handy for avoiding infinite gradients. When rotated,
+       the intercept stored is with the x axis.
+       
+       The flag is handled internally, and can be ignored when
+       interfacing with the class."""
+    def __init__(self, gradient, y_intercept=None, x_intercept=None):
+        if -1 <= gradient <= 1:
+            self.gradient = gradient
+            self.intercept = y_intercept
+            self.rotated = False
+        else:
+            self.gradient = -1 / gradient
+            self.intercept = x_intercept
+            self.rotated = True
 
     def y(self, x):
         """Calculate a y coordinate from an x coordinate."""
