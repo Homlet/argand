@@ -56,6 +56,7 @@ class Point:
             self.y = value
         raise KeyError(KEY_ERROR_MSG)
 
+
 class Circle:
     def __init__(self, center, radius):
         self.center = center
@@ -67,13 +68,48 @@ class Circle:
     def diameter(self):
         return 2 * self.radius
 
+
 class Line:
+    """A simple line stored in the form y = mx + c."""
     def __init__(self, gradient, intercept):
         self.gradient = gradient
         self.intercept = intercept
 
     def y(self, x):
+        """Calculate a y coordinate from an x coordinate."""
         return x * self.gradient + self.intercept
+
+    def x(self, y):
+        """Calculate an x coordinate from a y coordinate."""
+        return (y - self.intercept) / self.gradient
+
+    def collide(self, other):
+        """Find the point where this and another line intercept.
+           Return None if lines are parallel."""
+        # Store the gradients and intercepts in temp variables.
+        m0 = self.gradient
+        m1 = other.gradient
+        c0 = self.intercept
+        c1 = other.intercept
+        if m0 == m1:
+            return None
+
+        # Rotate everything 90 degrees if either line is vertical,
+        # except when the other is horizontal.
+        if m0 == float("inf"):
+            if m1 == 0: pass  # TODO: something.
+            m0 = 0
+            m1 = -1 / m1
+        elif m1 == float("inf"):
+            if m0 == 0: pass  # TODO: something.
+            m0 = -1 / m0
+            m1 = 0
+
+        # It doesn't matter which way round each individual
+        # difference is, as long as the two are opposite.
+        x = (c1 - c0) / (m0 - m1)
+        return Point(x, self.y(x))
+
 
 class Ray:
     def __init__(self, angle, origin):
