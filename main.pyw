@@ -6,6 +6,7 @@ Written by Sam Hubbard - samlhub@gmail.com
 
 import sys
 
+from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from preferences import Preferences
@@ -16,7 +17,12 @@ from window import Window
 class Program:
     def __init__(self):
         self.app = QApplication(sys.argv)
-        self.app.setWindowIcon(QIcon("img/half_disk.ico"))
+        icon = QIcon()
+        for i in range(16, 33, 8):
+            reader = QImageReader("img/half_disk{}.png".format(i))
+            icon.addPixmap(QPixmap(reader.read()))
+        self.app.setWindowIcon(icon)
+        
         self.diagram = Diagram()
         self.preferences = Preferences()
         self.window = Window(self)
