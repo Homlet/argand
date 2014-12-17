@@ -5,6 +5,9 @@ geometry.py - Impletements vector maths types.
 Written by Sam Hubbard - samlhub@gmail.com
 """
 
+from math import pi, tan
+
+
 class Point:
     KEY_ERROR_MSG = "Invalid key for two-dimensional point."
     
@@ -65,15 +68,15 @@ class Circle:
         return 2 * self.radius
 
 class Line:
-    def __init__(self, gradient, intercept):
-        self.gradient = gradient
-        self.intercept = intercept
+    def __init__(self, point, angle):
+        self.point = point
+        self.angle = angle
+        self.gradient = tan(angle)
 
-    def y(self, x):
-        return self.gradient * x + self.intercept
-
-    def x(self, y):
-        return (y - self.intercept) / self.gradient
+    def entry(self, rect):
+        """Returns the point at which the line enters a rectangle.
+           If the line does not intersect, return None."""
+        pass
 
 class Ray:
     def __init__(self, angle, origin):

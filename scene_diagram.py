@@ -144,11 +144,18 @@ class SceneDiagram(QGraphicsScene):
         for i in range(self.program.diagram.plots.rowCount()):
             plot = self.program.diagram.plots.item(i)
             type = plot.data(ROLE_TYPE)
+            relation = plot.data(ROLE_RELATION)
             shape = plot.data(ROLE_SHAPE)
-            color = plot.data(ROLE_COLOR)
+            fill_color = plot.data(ROLE_COLOR)
+            stroke_color = QColor(fill_color)
+            stroke_color.setAlpha(255)
             
-            pen = QPen(color)
+            pen = QPen(stroke_color)
             pen.setWidth(stroke)
+            if relation in [REL_LESS, REL_MORE]:
+                pen.setStyle(Qt.DashLine)
+            
+            brush = QBrush(fill_color)
             
             # TODO: Check if on screen.
             if isinstance(shape, Circle):
@@ -158,7 +165,11 @@ class SceneDiagram(QGraphicsScene):
                         height / 2 + (shape.origin().y - offset.y) * zoom,
                         shape.diameter() * zoom, shape.diameter() * zoom, pen)
                 if type == TYPE_DISK:
-                    pass
+                    self.addEllipse(
+                        width / 2 + (shape.origin().x - offset.x) * zoom,
+                        height / 2 + (shape.origin().y - offset.y) * zoom,
+                        shape.diameter() * zoom, shape.diameter() * zoom,
+                        pen, brush)
                 if type == TYPE_NEGATIVE_DISK:
                     pass
 

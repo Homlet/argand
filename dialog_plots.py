@@ -16,7 +16,7 @@ from plot_list import *
 from abstract_syntax_tree import SyntaxParser
 
 
-VALIDATION_DELAY = 800
+VALIDATION_DELAY = 0
 
 
 class DialogPlots(QDockWidget):
@@ -119,8 +119,9 @@ class DialogPlots(QDockWidget):
     def change_color(self):
         """Change the color of the currently selected equation."""
         if self.current_plot:
-            color = QColorDialog.getColor(
-                QColor(), self, "Select Color", QColorDialog.ShowAlphaChannel)
+            old_color = self.current_plot.data(ROLE_COLOR)
+            color = QColorDialog.getColor(old_color, self, "Select Color",
+                QColorDialog.ShowAlphaChannel)
             if color.isValid():
                 self.change_color_label(color)
                 self.list.model().setData(self.current_plot, color, ROLE_COLOR)
