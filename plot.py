@@ -126,17 +126,12 @@ class Plot(QStandardItem):
                             -right_values[1].real,
                             -right_values[1].imag)
                         center = Point((p0.x + p1.x) / 2, (p0.y + p1.y) / 2)
-                        # Store the vector from p0 to p1.
-                        diff = Point(p1.x - p0.x, p1.y - p0.y)
-                        # Store the angle of this vector from the +ve x-axis,
-                        # rotated by a right angle.
-                        angle = atan2(diff.y, diff.x) + pi / 2
-                        # atan2 returns an angle mod 2pi. We're using the pi
-                        # convention, so a conversion must be made.
-                        angle = (angle + pi) % (2 * pi) - pi
+                        # The gradient of the bisector is -1/m. 
+                        gradient = -(p1.x - p0.x) / (p1.y - p0.y)
+                        intercept = center.y - gradient * center.x
                         self.setData(TYPE_LINE, ROLE_TYPE)
                         self.setData(relation, ROLE_RELATION)
-                        self.setData(Line(center, angle), ROLE_SHAPE)
+                        self.setData(Line(gradient, intercept), ROLE_SHAPE)
                         return True
                 else:
                     right_values = values(right)

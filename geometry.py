@@ -68,15 +68,12 @@ class Circle:
         return 2 * self.radius
 
 class Line:
-    def __init__(self, point, angle):
-        self.point = point
-        self.angle = angle
-        self.gradient = tan(angle)
+    def __init__(self, gradient, intercept):
+        self.gradient = gradient
+        self.intercept = intercept
 
-    def entry(self, rect):
-        """Returns the point at which the line enters a rectangle.
-           If the line does not intersect, return None."""
-        pass
+    def y(self, x):
+        return x * self.gradient + self.intercept
 
 class Ray:
     def __init__(self, angle, origin):
