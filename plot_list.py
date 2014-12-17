@@ -17,12 +17,15 @@ COL_BUTTON = 1
 
 
 class PlotListTable(QTableView):
+    deleted_item = pyqtSignal()
+    
     def __init__(self, model):
         super(PlotListTable, self).__init__()
 
         self.setModel(model)
         self.setItemDelegate(PlotListDelegate())
         self.itemDelegate().deleted_item.connect(self.clearSelection)
+        self.itemDelegate().deleted_item.connect(self.deleted_item)
         self.installEventFilter(self)
 
         self.setShowGrid(False)

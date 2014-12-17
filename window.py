@@ -71,6 +71,7 @@ class Window(QMainWindow):
 
         # Add the plot list docking dialog.
         self.plots = DialogPlots(self, self.program)
+        self.plots.list.deleted_item.connect(self.diagram.draw)
         self.addDockWidget(Qt.LeftDockWidgetArea, self.plots)
         
         # Create an about dialog for the program.

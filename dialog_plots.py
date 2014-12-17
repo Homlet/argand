@@ -151,11 +151,13 @@ class DialogPlots(QDockWidget):
            Enable the input area if the selection is valid."""
         indexes = selected.indexes()
         if len(indexes) > 0:
+            # We've selected a new plot.
             self.current_plot = indexes[0]
             self.equation.setText(self.current_plot.data(ROLE_EQUATION))
             self.change_color_label(self.current_plot.data(ROLE_COLOR))
             self.input_frame.setEnabled(True)
         else:
+            # We either deleted a plot or deselected one.
             self.current_plot = None
             self.equation.clear()
             self.reset_color_label()
