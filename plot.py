@@ -127,8 +127,14 @@ class Plot(QStandardItem):
                             -right_values[1].imag)
                         center = Point((p0.x + p1.x) / 2, (p0.y + p1.y) / 2)
                         # The gradient of the bisector is -1/m.
-                        gradient = -(p1.x - p0.x) / (p1.y - p0.y)
-                        intercept = center.y - gradient * center.x
+                        try:
+                            gradient = -(p1.x - p0.x) / (p1.y - p0.y)
+                            intercept = center.y - gradient * center.x
+                        except:
+                            # If a division by zero occurred, the bisector
+                            # must be vertical.
+                            gradient = float("inf")
+                            intercept = center.x
                         self.setData(TYPE_LINE, ROLE_TYPE)
                         self.setData(relation, ROLE_RELATION)
                         self.setData(Line(gradient, intercept), ROLE_SHAPE)

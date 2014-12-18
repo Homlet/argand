@@ -70,24 +70,12 @@ class Circle:
 
 
 class Line:
-    """A simple line in the form y = mx + c.
-    
-       The gradient stored is always between -1 and 1. Steep lines
-       are stored by a flag that rotates the line 90 degrees.
-       This is handy for avoiding infinite gradients. When rotated,
-       the intercept stored is with the x axis.
-       
-       The flag is handled internally, and can be ignored when
-       interfacing with the class."""
-    def __init__(self, gradient, y_intercept=None, x_intercept=None):
-        if -1 <= gradient <= 1:
-            self.gradient = gradient
-            self.intercept = y_intercept
-            self.rotated = False
-        else:
-            self.gradient = -1 / gradient
-            self.intercept = x_intercept
-            self.rotated = True
+    """A simple line in the form y = mx + c."""
+    def __init__(self, gradient, intercept):
+        self.gradient = gradient
+        # Note: Iff the line is vertical, the intercept is
+        #       assumed to be with the x-axis.
+        self.intercept = intercept
 
     def y(self, x):
         """Calculate a y coordinate from an x coordinate."""
@@ -95,29 +83,27 @@ class Line:
 
     def x(self, y):
         """Calculate an x coordinate from a y coordinate."""
+        # This will throw an error if line is horizontal.
         return (y - self.intercept) / self.gradient
 
-    def collide(self, other):
-        """Find the point where this and another line intercept.
+    def intersect(self, other):
+        """Find the point where this and another line intersect.
            Return None if lines are parallel."""
         # Store the gradients and intercepts in temp variables.
         m0 = self.gradient
         m1 = other.gradient
         c0 = self.intercept
         c1 = other.intercept
+        
+        # If the gradients are the same, the lines are parallel.
+        # Parallel lines never intersect at one point.
         if m0 == m1:
             return None
 
-        # Rotate everything 90 degrees if either line is vertical,
-        # except when the other is horizontal.
         if m0 == float("inf"):
-            if m1 == 0: pass  # TODO: something.
-            m0 = 0
-            m1 = -1 / m1
-        elif m1 == float("inf"):
-            if m0 == 0: pass  # TODO: something.
-            m0 = -1 / m0
-            m1 = 0
+            return Point(self.intercept, other.y(self.intercept))
+        if m1 == float("inf"):
+            return Point(other.intercept, self.y(other.intercept))
 
         # It doesn't matter which way round each individual
         # difference is, as long as the two are opposite.

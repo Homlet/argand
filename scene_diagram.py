@@ -136,6 +136,7 @@ class SceneDiagram(QGraphicsScene):
     def draw_plots(self):
         width = self.sceneRect().width()
         height = self.sceneRect().height()
+        center = Point(width / 2, height / 2)
         
         offset = self.program.diagram.translation
         zoom = self.program.diagram.zoom
@@ -161,13 +162,13 @@ class SceneDiagram(QGraphicsScene):
             if isinstance(shape, Circle):
                 if type == TYPE_CIRCLE:
                     self.addEllipse(
-                        width / 2 + (shape.origin().x - offset.x) * zoom,
-                        height / 2 + (shape.origin().y - offset.y) * zoom,
+                        center.x + (shape.origin().x - offset.x) * zoom,
+                        center.y + (shape.origin().y - offset.y) * zoom,
                         shape.diameter() * zoom, shape.diameter() * zoom, pen)
                 if type == TYPE_DISK:
                     self.addEllipse(
-                        width / 2 + (shape.origin().x - offset.x) * zoom,
-                        height / 2 + (shape.origin().y - offset.y) * zoom,
+                        center.x + (shape.origin().x - offset.x) * zoom,
+                        center.y + (shape.origin().y - offset.y) * zoom,
                         shape.diameter() * zoom, shape.diameter() * zoom,
                         pen, brush)
                 if type == TYPE_NEGATIVE_DISK:
@@ -175,7 +176,16 @@ class SceneDiagram(QGraphicsScene):
 
             if isinstance(shape, Line):
                 if type == TYPE_LINE:
-                    pass
+                    left = Line(float("inf"), -center.x / zoom + offset.x)
+                    right = Line(float("inf"), center.x / zoom + offset.x)
+                    p0 = shape.intersect(left)
+                    p1 = shape.intersect(right)
+                    self.addLine(
+                        center.x + (p0.x - offset.x) * zoom,
+                        center.y + (p0.y - offset.y) * zoom,
+                        center.x + (p1.x - offset.x) * zoom,
+                        center.y + (p1.y - offset.y) * zoom, pen)
+                        
                 if type == TYPE_HALF_PLANE:
                     pass
 
