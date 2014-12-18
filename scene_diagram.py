@@ -176,10 +176,16 @@ class SceneDiagram(QGraphicsScene):
 
             if isinstance(shape, Line):
                 if type == TYPE_LINE:
-                    left = Line(float("inf"), -center.x / zoom + offset.x)
-                    right = Line(float("inf"), center.x / zoom + offset.x)
-                    p0 = shape.intersect(left)
-                    p1 = shape.intersect(right)
+                    if -1 <= shape.gradient <= 1:
+                        left = Line(float("inf"), -center.x / zoom + offset.x)
+                        right = Line(float("inf"), center.x / zoom + offset.x)
+                        p0 = shape.intersect(left)
+                        p1 = shape.intersect(right)
+                    else:
+                        bottom = Line(0, -center.y / zoom + offset.y)
+                        top = Line(0, center.y / zoom + offset.y)
+                        p0 = shape.intersect(bottom)
+                        p1 = shape.intersect(top)
                     self.addLine(
                         center.x + (p0.x - offset.x) * zoom,
                         center.y + (p0.y - offset.y) * zoom,
