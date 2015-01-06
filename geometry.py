@@ -112,6 +112,6 @@ class Line:
 
 
 class Ray:
-    def __init__(self, angle, origin):
-        self.origin = origin
+    def __init__(self, angle, endpoint):
+        self.endpoint = endpoint
         self.angle = angle

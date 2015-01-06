@@ -149,6 +149,8 @@ class Plot(QStandardItem):
                             # We have a disk.
                             type = TYPE_DISK
                         else:
+                            # We have a negative disk.
+                            type = TYPE_NEGATIVE_DISK
                             # Negative disks not supported yet.
                             return False
                         center = Point(
@@ -159,6 +161,27 @@ class Plot(QStandardItem):
                         self.setData(relation, ROLE_RELATION)
                         self.setData(Circle(center, radius), ROLE_SHAPE)
                         return True
+            if left.value == CODE["arg"]:
+                left_values = values(left.children[0])
+                right_values = values(right)
+                if relation == REL_EQL:
+                    # We have a ray.
+                    type == TYPE_RAY
+                else:
+                    # We have a sector.
+                    type == TYPE_SECTOR
+                    # Sectors are not supported yet.
+                    return False
+                if left_values[0] != 1:
+                    # Coefficients aren't supported here.
+                    return False
+                endpoint = Point(
+                    -left_values[1].real,
+                    -left_values[1].image)
+                angle = right_values[1].real
+                self.setData(type, ROLE_TYPE)
+                self.setData(relation, ROLE_RELATION)
+                self.setData(Ray(angle, endpoint), ROLE_SHAPE)
             return False
         
         # If the code throws an error, the input is probably wrong.
