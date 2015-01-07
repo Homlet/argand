@@ -128,4 +128,7 @@ class Ray:
         p = l.intersect(line)
         
         # Make sure the point is on the correct side of the ray's endpoint.
-        return p
+        if p.x > self.endpoint.x:
+            return p
+        else:
+            return None
