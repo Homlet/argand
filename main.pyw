@@ -19,6 +19,7 @@ class Program:
         self.app = QApplication(sys.argv)
         icon = QIcon()
         for i in range(16, 33, 8):
+            # Load the application icon.
             reader = QImageReader("img/half_disk{}.png".format(i))
             icon.addPixmap(QPixmap(reader.read()))
         self.app.setWindowIcon(icon)

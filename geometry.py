@@ -113,5 +113,19 @@ class Line:
 
 class Ray:
     def __init__(self, angle, endpoint):
-        self.endpoint = endpoint
         self.angle = angle
+        self.endpoint = endpoint
+
+    def intersect(self, line):
+        """Intersect this ray with a line.
+           Return None if no intersection found."""
+        # Create a temporary line representing this ray.
+        m = tan(self.angle)
+        c = self.endpoint.y - self.endpoint.x * m
+        l = Line(m, c)
+        
+        # Find the intersection between this line and the argument.
+        p = l.intersect(line)
+        
+        # Make sure the point is on the correct side of the ray's endpoint.
+        return p

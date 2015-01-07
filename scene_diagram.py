@@ -165,12 +165,14 @@ class SceneDiagram(QGraphicsScene):
                         center.x + (shape.origin().x - offset.x) * zoom,
                         center.y + (shape.origin().y - offset.y) * zoom,
                         shape.diameter() * zoom, shape.diameter() * zoom, pen)
+
                 if type == TYPE_DISK:
                     self.addEllipse(
                         center.x + (shape.origin().x - offset.x) * zoom,
                         center.y + (shape.origin().y - offset.y) * zoom,
                         shape.diameter() * zoom, shape.diameter() * zoom,
                         pen, brush)
+
                 if type == TYPE_NEGATIVE_DISK:
                     pass
 
@@ -191,13 +193,38 @@ class SceneDiagram(QGraphicsScene):
                         center.y + (p0.y - offset.y) * zoom,
                         center.x + (p1.x - offset.x) * zoom,
                         center.y + (p1.y - offset.y) * zoom, pen)
-                        
+
                 if type == TYPE_HALF_PLANE:
                     pass
 
             if isinstance(shape, Ray):
                 if type == TYPE_RAY:
-                    pass
+                    def find_intersections(near, far):
+                        p0 = shape.intersect(near)
+                        p1 = shape.intersect(far)
+                        if not p0 or not p1:
+                            if not p0:
+                                p0 = shape.endpoint
+                            elif not p1:
+                                p1 = shape.endpoint
+                            else:
+                                return None
+                        return (p0, p1)
+
+                    left = Line(float("inf"), -center.x / zoom + offset.x)
+                    right = Line(float("inf"), center.x / zoom + offset.x)
+                    bottom = Line(0, -center.y / zoom + offset.y)
+                    top = Line(0, center.y / zoom + offset.y)
+                    if pi / 4 <= shape.angle % pi < 3 * pi / 4:
+                        points = find_intersections(bottom, top)
+                    else:
+                        points = find_intersections(left, right)
+                    self.addLine(
+                        center.x + (points[0].x - offset.x) * zoom,
+                        center.y + (points[0].y - offset.y) * zoom,
+                        center.x + (points[1].x - offset.x) * zoom,
+                        center.y + (points[1].y - offset.y) * zoom, pen)
+
                 if type == TYPE_SECTOR:
                     pass
 

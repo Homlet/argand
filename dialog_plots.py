@@ -16,7 +16,7 @@ from plot_list import *
 from abstract_syntax_tree import SyntaxParser
 
 
-VALIDATION_DELAY = 0
+VALIDATION_DELAY = 300
 
 
 class DialogPlots(QDockWidget):

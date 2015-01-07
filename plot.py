@@ -91,9 +91,9 @@ class Plot(QStandardItem):
                         a = values(node.children[0])
                         b = values(node.children[1])
                         # Only one child of a mul node may have a variable.
-                        if (a[0] ^ b[0]) and a[0]:
+                        if (bool(a[0]) ^ bool(b[0])) and bool(a[0]):
                             return (a[0] * b[1], a[1] * b[1])
-                        if (a[0] ^ b[0]) and b[0]:
+                        if (bool(a[0]) ^ bool(b[0])) and bool(b[0]):
                             return (a[1] * b[0], a[1] * b[1])
                     if node.value == CODE["div"]:
                         a = values(node.children[0])
@@ -161,15 +161,15 @@ class Plot(QStandardItem):
                         self.setData(relation, ROLE_RELATION)
                         self.setData(Circle(center, radius), ROLE_SHAPE)
                         return True
-            if left.value == CODE["arg"]:
+            if left.value == CODE["ARG"]:
                 left_values = values(left.children[0])
                 right_values = values(right)
                 if relation == REL_EQL:
                     # We have a ray.
-                    type == TYPE_RAY
+                    type = TYPE_RAY
                 else:
                     # We have a sector.
-                    type == TYPE_SECTOR
+                    type = TYPE_SECTOR
                     # Sectors are not supported yet.
                     return False
                 if left_values[0] != 1:
@@ -177,11 +177,12 @@ class Plot(QStandardItem):
                     return False
                 endpoint = Point(
                     -left_values[1].real,
-                    -left_values[1].image)
+                    -left_values[1].imag)
                 angle = right_values[1].real
                 self.setData(type, ROLE_TYPE)
                 self.setData(relation, ROLE_RELATION)
                 self.setData(Ray(angle, endpoint), ROLE_SHAPE)
+                return True
             return False
         
         # If the code throws an error, the input is probably wrong.
