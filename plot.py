@@ -178,7 +178,7 @@ class Plot(QStandardItem):
                 endpoint = Point(
                     -left_values[1].real,
                     -left_values[1].imag)
-                angle = right_values[1].real
+                angle = right_values[1].real % (2 * pi)
                 self.setData(type, ROLE_TYPE)
                 self.setData(relation, ROLE_RELATION)
                 self.setData(Ray(angle, endpoint), ROLE_SHAPE)
