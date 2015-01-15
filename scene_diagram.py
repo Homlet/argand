@@ -228,6 +228,8 @@ class SceneDiagram(QGraphicsScene):
                         points = find_intersections(bottom, top)
                     else:
                         points = find_intersections(left, right)
+                    if not points[0] or not points[1]:
+                        continue
                     self.addLine(
                         center.x + (points[0].x - offset.x) * zoom,
                         center.y + (points[0].y - offset.y) * zoom,
