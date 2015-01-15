@@ -129,6 +129,7 @@ class DialogPlots(QDockWidget):
 
     def change_color_label(self, color):
         """Change the color of the label in the input area."""
+        color = QColor(color.rgb())
         self.color_label.setPalette(QPalette(color))
         self.color_label.setAutoFillBackground(True)
 
