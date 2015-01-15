@@ -99,31 +99,40 @@ class SceneDiagram(QGraphicsScene):
             step = 10 ** floor_to(2 - log10(zoom), log10(5))
             pixels = step * zoom
 
-            re_steps = ceil(width / pixels * 0.75)
+            re_steps = ceil(0.6 * width / pixels)
+            re_offset = origin.x % pixels
             for i in range(-re_steps, re_steps):
-                if i == 0: continue
+                # Store the tick x coordinate in screen space and global space.
+                screen_tick = re_offset + i * pixels
+                global_tick = (screen_tick - origin.x) / zoom
+                if abs(global_tick) < 10**-10:  # Floats aren't perfect.
+                    continue
                 self.addItem(FlippedText(
-                    "{:n}".format(i * step),
-                    width / 2 + origin.x + i * pixels,
+                    "{:n}".format(global_tick),
+                    width / 2 + screen_tick,
                     height / 2 + cling_y))
                 self.addLine(
-                    width / 2 + origin.x + i * pixels,
+                    width / 2 + screen_tick,
                     height / 2 + cling_y + TICK_SIZE,
-                    width / 2 + origin.x + i * pixels,
+                    width / 2 + screen_tick,
                     height / 2 + cling_y - TICK_SIZE)
 
-            im_steps = ceil(height / pixels * 0.75)
+            im_steps = ceil(0.6 * height / pixels)
+            im_offset = origin.y % pixels
             for i in range(-im_steps, im_steps):
-                if i == 0: continue
+                screen_tick = im_offset + i * pixels
+                global_tick = (screen_tick - origin.y) / zoom
+                if abs(global_tick) < 10**-10:
+                    continue
                 self.addItem(FlippedText(
-                    "{:n}".format(i * step),
+                    "{:n}".format(global_tick),
                     width / 2 + cling_x,
-                    height / 2 + origin.y + i * pixels))
+                    height / 2 + screen_tick))
                 self.addLine(
                     width / 2 + cling_x + TICK_SIZE,
-                    height / 2 + origin.y + i * pixels,
+                    height / 2 + screen_tick,
                     width / 2 + cling_x - TICK_SIZE,
-                    height / 2 + origin.y + i * pixels)
+                    height / 2 + screen_tick)
 
             # Only label origin if it is actually in viewport (not clinging).
             if cling_x - origin.x == 0 and cling_y - origin.y == 0:
