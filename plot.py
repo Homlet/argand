@@ -109,7 +109,7 @@ class Plot(QStandardItem):
         
         def inspect(left, right, relation="EQL"):
             """Attempts to classify the equation based
-               on its two halves. Call with the halves
+               on its two halves. Call with the halves' order
                switched to account for all possibilities."""
             # Handle all the cases!
             if left.value == CODE["mod"]:
@@ -186,6 +186,7 @@ class Plot(QStandardItem):
             return False
         
         # If the code throws an error, the input is probably wrong.
+        # TODO: tool-tips.
         try:
             # Get the relation from the root node,
             # which is probably a relation node.
