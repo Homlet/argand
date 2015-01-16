@@ -117,7 +117,12 @@ class Plot(QStandardItem):
                 if right.value == CODE["mod"]:
                     right_values = values(right.children[0])
                     if left_values[0] == 1 and right_values[0] == 1:
-                        # We have a perpendicular bisector (line).
+                        if relation == REL_EQL:
+                            # We have a perpendicular bisector (line).
+                            type = TYPE_LINE
+                        else:
+                            # We have a half plane.
+                            type = TYPE_HALF_PLANE
                         # p0 and p1 are the points to bisect.
                         p0 = Point(
                             -left_values[1].real,
@@ -135,7 +140,7 @@ class Plot(QStandardItem):
                             # must be vertical.
                             gradient = float("inf")
                             intercept = center.x
-                        self.setData(TYPE_LINE, ROLE_TYPE)
+                        self.setData(type, ROLE_TYPE)
                         self.setData(relation, ROLE_RELATION)
                         self.setData(Line(gradient, intercept), ROLE_SHAPE)
                         return True

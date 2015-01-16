@@ -167,7 +167,6 @@ class SceneDiagram(QGraphicsScene):
             
             brush = QBrush(fill_color)
             
-            # TODO: Check if on screen.
             if isinstance(shape, Circle):
                 if type == TYPE_CIRCLE:
                     self.addEllipse(
@@ -204,7 +203,33 @@ class SceneDiagram(QGraphicsScene):
                         center.y + (p1.y - offset.y) * zoom, pen)
 
                 if type == TYPE_HALF_PLANE:
-                    pass
+                    if -1 <= shape.gradient <= 1:
+                        left = Line(float("inf"), -center.x / zoom + offset.x)
+                        right = Line(float("inf"), center.x / zoom + offset.x)
+                        p0 = shape.intersect(left)
+                        p1 = shape.intersect(right)
+                    else:
+                        bottom = Line(0, -center.y / zoom + offset.y)
+                        top = Line(0, center.y / zoom + offset.y)
+                        p0 = shape.intersect(bottom)
+                        p1 = shape.intersect(top)
+                    # Construct the polygon.
+                    polygon = QPolygonF()
+                    polygon.append(QPointF(
+                        center.x + (p0.x - offset.x) * zoom,
+                        center.y + (p0.y - offset.y) * zoom))
+                    polygon.append(QPointF(
+                        center.x + (p1.x - offset.x) * zoom,
+                        center.y + (p1.y - offset.y) * zoom))
+                    if (shape.gradient > 0) \
+                     ^ (relation in [REL_MORE, REL_MEQL]):
+                        polygon.append(QPointF(width + 1, height + 1))
+                        polygon.append(QPointF(-1, height + 1))
+                    else:
+                        polygon.append(QPointF(width + 1, -1))
+                        polygon.append(QPointF(-1, -1))
+                    self.addPolygon(polygon, pen, brush)
+                    
 
             if isinstance(shape, Ray):
                 if type == TYPE_RAY:
