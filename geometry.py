@@ -8,6 +8,10 @@ Written by Sam Hubbard - samlhub@gmail.com
 from math import pi, tan
 
 
+ABOVE = 1
+BELOW = -1
+
+
 class Point:
     KEY_ERROR_MSG = "Invalid key for two-dimensional point."
     
@@ -111,6 +115,16 @@ class Line:
         return Point(x, self.y(x))
 
 
+class HalfPlane(Line):
+    def __init__(self, gradient, intercept, side):
+        super(HalfPlane, self).__init__(gradient, intercept)
+        self.side = side
+
+    def __contains__(self, point):
+        error = point.y - self.gradient * point.x - self.intercept * self.side
+        return error >= 0
+
+
 class Ray:
     def __init__(self, angle, endpoint):
         self.angle = angle
@@ -138,3 +152,11 @@ class Ray:
             return p
         else:
             return None
+
+
+def project(point, offset, zoom):
+    return (point - offset) * zoom
+
+
+def unproject(point, offset, zoom):
+    return (point / zoom) + offset

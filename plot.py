@@ -135,6 +135,9 @@ class Plot(QStandardItem):
                         try:
                             gradient = -(p1.x - p0.x) / (p1.y - p0.y)
                             intercept = center.y - gradient * center.x
+                            if type == TYPE_HALF_PLANE:
+                                above = ((relation in [REL_MORE, REL_MEQL])
+                                       ^ (p0.y > p1.y))
                         except:
                             # If a division by zero occurred, the bisector
                             # must be vertical.
@@ -142,7 +145,11 @@ class Plot(QStandardItem):
                             intercept = center.x
                         self.setData(type, ROLE_TYPE)
                         self.setData(relation, ROLE_RELATION)
-                        self.setData(Line(gradient, intercept), ROLE_SHAPE)
+                        if type == TYPE_LINE:
+                            self.setData(Line(gradient, intercept), ROLE_SHAPE)
+                        else:
+                            self.setData(HalfPlane(gradient, intercept, above),
+                                ROLE_SHAPE)
                         return True
                 else:
                     right_values = values(right)

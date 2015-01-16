@@ -184,50 +184,33 @@ class SceneDiagram(QGraphicsScene):
                 if type == TYPE_NEGATIVE_DISK:
                     pass
 
-            if isinstance(shape, Line):
+            if isinstance(shape, Line):                
+                if -1 <= shape.gradient <= 1:
+                    left = Line(float("inf"), -center.x / zoom + offset.x)
+                    right = Line(float("inf"), center.x / zoom + offset.x)
+                    p0 = shape.intersect(left)
+                    p1 = shape.intersect(right)
+                else:
+                    bottom = Line(0, -center.y / zoom + offset.y)
+                    top = Line(0, center.y / zoom + offset.y)
+                    p0 = shape.intersect(bottom)
+                    p1 = shape.intersect(top)
+                q0 = project(p0, offset, zoom)
+                q1 = project(p1, offset, zoom)
+
                 if type == TYPE_LINE:
-                    if -1 <= shape.gradient <= 1:
-                        left = Line(float("inf"), -center.x / zoom + offset.x)
-                        right = Line(float("inf"), center.x / zoom + offset.x)
-                        p0 = shape.intersect(left)
-                        p1 = shape.intersect(right)
-                    else:
-                        bottom = Line(0, -center.y / zoom + offset.y)
-                        top = Line(0, center.y / zoom + offset.y)
-                        p0 = shape.intersect(bottom)
-                        p1 = shape.intersect(top)
                     self.addLine(
-                        center.x + (p0.x - offset.x) * zoom,
-                        center.y + (p0.y - offset.y) * zoom,
-                        center.x + (p1.x - offset.x) * zoom,
-                        center.y + (p1.y - offset.y) * zoom, pen)
+                        center.x + q0.x, center.y + q0.y,
+                        center.x + q1.x, center.y + q1.y)
 
                 if type == TYPE_HALF_PLANE:
-                    if -1 <= shape.gradient <= 1:
-                        left = Line(float("inf"), -center.x / zoom + offset.x)
-                        right = Line(float("inf"), center.x / zoom + offset.x)
-                        p0 = shape.intersect(left)
-                        p1 = shape.intersect(right)
-                    else:
-                        bottom = Line(0, -center.y / zoom + offset.y)
-                        top = Line(0, center.y / zoom + offset.y)
-                        p0 = shape.intersect(bottom)
-                        p1 = shape.intersect(top)
-                    # Construct the polygon.
                     polygon = QPolygonF()
-                    polygon.append(QPointF(
-                        center.x + (p0.x - offset.x) * zoom,
-                        center.y + (p0.y - offset.y) * zoom))
-                    polygon.append(QPointF(
-                        center.x + (p1.x - offset.x) * zoom,
-                        center.y + (p1.y - offset.y) * zoom))
-                    if (shape.gradient > 0) \
-                     ^ (relation in [REL_MORE, REL_MEQL]):
-                        polygon.append(QPointF(width + 1, height + 1))
-                        polygon.append(QPointF(-1, height + 1))
-                    else:
-                        polygon.append(QPointF(width + 1, -1))
-                        polygon.append(QPointF(-1, -1))
+                    polygon.append(QPointF(center.x + q0.x, center.y + q0.y))
+                    polygon.append(QPointF(center.x + q1.x, center.y + q1.y))
+                    
+                    if project(Point(width, height), offset, zoom) in shape:
+                        pass
+
                     self.addPolygon(polygon, pen, brush)
                     
 
