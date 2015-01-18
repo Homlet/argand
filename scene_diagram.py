@@ -24,7 +24,7 @@ TICK_SIZE = 2
 
 class FlippedText(QGraphicsTextItem):
     """A vertically flipped text item.
-    
+
     This is needed for using a properly oriented Cartesian
     coordinate system with QGraphicsScene, unfortunately.
     """
@@ -50,10 +50,10 @@ class SceneDiagram(QGraphicsScene):
 
     def draw_axes(self):
         """Draws the real and imaginary axes.
-        
+
         If the current preferences allow it, the axes will
         be labelled. Labels will expand as the zoom increases.
-        
+
         If the axes are too far from the viewport, they will
         'cling' to the edges of the screen, but the labels
         will still change.
@@ -64,7 +64,7 @@ class SceneDiagram(QGraphicsScene):
         translation = self.program.diagram.translation
         zoom = self.program.diagram.zoom
         origin = -translation * zoom
-        
+
         # Clamp coordinates so the axes cling to the edge of the screen.
         cling_x = clamp(
             origin.x,
@@ -76,11 +76,11 @@ class SceneDiagram(QGraphicsScene):
             CLING_THRES - height / 2,
             height / 2 - CLING_THRES
         )
-        
+
         # Draw the axes.
         self.addLine(width / 2 + cling_x, 0, width / 2 + cling_x, height)
         self.addLine(0, height / 2 + cling_y, width, height / 2 + cling_y)
-        
+
         # If enabled, label the axes.
         if self.program.preferences.label_axes:
             # Draw the Re and Im labels.
@@ -141,16 +141,16 @@ class SceneDiagram(QGraphicsScene):
                     width / 2 + cling_x,
                     height / 2 + cling_y
                 ))
-    
+
     def draw_plots(self):
         width = self.sceneRect().width()
         height = self.sceneRect().height()
         center = Point(width / 2, height / 2)
-        
+
         offset = self.program.diagram.translation
         zoom = self.program.diagram.zoom
         stroke = self.program.preferences.stroke
-        
+
         for i in range(self.program.diagram.plots.rowCount()):
             plot = self.program.diagram.plots.item(i)
             type = plot.data(ROLE_TYPE)
@@ -159,14 +159,14 @@ class SceneDiagram(QGraphicsScene):
             fill_color = plot.data(ROLE_COLOR)
             stroke_color = QColor(fill_color)
             stroke_color.setAlpha(255)
-            
+
             pen = QPen(stroke_color)
             pen.setWidth(stroke)
             if relation in [REL_LESS, REL_MORE]:
                 pen.setStyle(Qt.DashLine)
-            
+
             brush = QBrush(fill_color)
-            
+
             if isinstance(shape, Circle):
                 if type == TYPE_CIRCLE:
                     self.addEllipse(
@@ -184,7 +184,7 @@ class SceneDiagram(QGraphicsScene):
                 if type == TYPE_NEGATIVE_DISK:
                     pass
 
-            if isinstance(shape, Line):                
+            if isinstance(shape, Line):
                 if -1 <= shape.gradient <= 1:
                     left = Line(float("inf"), -center.x / zoom + offset.x)
                     right = Line(float("inf"), center.x / zoom + offset.x)
@@ -207,12 +207,12 @@ class SceneDiagram(QGraphicsScene):
                     polygon = QPolygonF()
                     polygon.append(QPointF(center.x + q0.x, center.y + q0.y))
                     polygon.append(QPointF(center.x + q1.x, center.y + q1.y))
-                    
+
                     if project(Point(width, height), offset, zoom) in shape:
                         pass
 
                     self.addPolygon(polygon, pen, brush)
-                    
+
 
             if isinstance(shape, Ray):
                 if type == TYPE_RAY:

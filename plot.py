@@ -101,12 +101,12 @@ class Plot(QStandardItem):
                         # Only the left child of a div node may have a var.
                         if b[0] == 0:
                             return (a[0] / b[1], a[1] / b[1])
-                
+
                 # This node doesn't support variable children (unless
                 # it is a root node, but we've already accounted for those).
                 # Just evaluate it numerically, and treat as an offset.
                 return (0, node.resolve())
-        
+
         def inspect(left, right, relation="EQL"):
             """Attempts to classify the equation based
                on its two halves. Call with the halves' order
@@ -196,7 +196,7 @@ class Plot(QStandardItem):
                 self.setData(Ray(angle, endpoint), ROLE_SHAPE)
                 return True
             return False
-        
+
         # If the code throws an error, the input is probably wrong.
         # TODO: tool-tips.
         try:

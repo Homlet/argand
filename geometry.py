@@ -14,7 +14,7 @@ BELOW = -1
 
 class Point:
     KEY_ERROR_MSG = "Invalid key for two-dimensional point."
-    
+
     def __init__(self, x=0.0, y=0.0):
         self.x = x
         self.y = y
@@ -65,10 +65,10 @@ class Circle:
     def __init__(self, center, radius):
         self.center = center
         self.radius = radius
-    
+
     def origin(self):
         return Point(self.center.x - self.radius, self.center.y - self.radius)
-    
+
     def diameter(self):
         return 2 * self.radius
 
@@ -98,7 +98,7 @@ class Line:
         m1 = other.gradient
         c0 = self.intercept
         c1 = other.intercept
-        
+
         # If the gradients are the same, the lines are parallel.
         # Parallel lines never intersect at one point.
         if m0 == m1:
@@ -137,10 +137,10 @@ class Ray:
         m = tan(self.angle)
         c = self.endpoint.y - self.endpoint.x * m
         l = Line(m, c)
-        
+
         # Find the intersection between this line and the argument.
         p = l.intersect(line)
-        
+
         # Make sure the point is on the correct side of the ray's endpoint.
         if 0 < self.angle < pi and p.y > self.endpoint.y:
             return p
