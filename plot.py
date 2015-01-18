@@ -130,6 +130,10 @@ class Plot(QStandardItem):
                         p1 = Point(
                             -right_values[1].real,
                             -right_values[1].imag)
+                        if p0 == p1:
+                            # If the points are the same, they cannot have
+                            # a perpendicular bisector.
+                            return False
                         center = Point((p0.x + p1.x) / 2, (p0.y + p1.y) / 2)
                         # The gradient of the bisector is -1/m.
                         try:
