@@ -140,19 +140,22 @@ class Plot(QStandardItem):
                             gradient = -(p1.x - p0.x) / (p1.y - p0.y)
                             intercept = center.y - gradient * center.x
                             if type == TYPE_HALF_PLANE:
-                                above = ((relation in [REL_MORE, REL_MEQL])
-                                       ^ (p0.y > p1.y))
+                                # Should we shade above or below the line.
+                                side = ((relation in [REL_MORE, REL_MEQL])
+                                      ^ (p0.y > p1.y)) * 2 - 1
                         except:
                             # If a division by zero occurred, the bisector
                             # must be vertical.
                             gradient = float("inf")
                             intercept = center.x
+                            side = ((relation in [REL_MORE, REL_MEQL])
+                                  ^ (p0.x > p0.y)) * 2 - 1
                         self.setData(type, ROLE_TYPE)
                         self.setData(relation, ROLE_RELATION)
                         if type == TYPE_LINE:
                             self.setData(Line(gradient, intercept), ROLE_SHAPE)
                         else:
-                            self.setData(HalfPlane(gradient, intercept, above),
+                            self.setData(HalfPlane(gradient, intercept, side),
                                 ROLE_SHAPE)
                         return True
                 else:

@@ -8,8 +8,8 @@ Written by Sam Hubbard - samlhub@gmail.com
 from math import pi, tan
 
 
-ABOVE = 1
-BELOW = -1
+ABOVE_LEFT = 1
+BELOW_RIGHT = -1
 
 
 class Point:

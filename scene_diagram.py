@@ -185,7 +185,7 @@ class SceneDiagram(QGraphicsScene):
                     pass
 
             if isinstance(shape, Line):
-                if -1 <= shape.gradient <= 1:
+                if abs(shape.gradient) <= 1:
                     left = Line(float("inf"), -center.x / zoom + offset.x)
                     right = Line(float("inf"), center.x / zoom + offset.x)
                     p0 = shape.intersect(left)
@@ -204,12 +204,24 @@ class SceneDiagram(QGraphicsScene):
                         center.x + q1.x, center.y + q1.y)
 
                 if type == TYPE_HALF_PLANE:
+                    # Construct a polygon.
                     polygon = QPolygonF()
                     polygon.append(QPointF(center.x + q0.x, center.y + q0.y))
                     polygon.append(QPointF(center.x + q1.x, center.y + q1.y))
-
-                    if project(Point(width, height), offset, zoom) in shape:
-                        pass
+                    if abs(shape.gradient) <= 1:
+                        polygon.append(QPointF(
+                            center.x + q1.x,
+                            center.y + q1.y + height * shape.side))
+                        polygon.append(QPointF(
+                            center.x + q0.x,
+                            center.y + q0.y + height * shape.side))
+                    else:
+                        polygon.append(QPointF(
+                            center.x + q1.x + width * shape.side,
+                            center.y + q1.y))
+                        polygon.append(QPointF(
+                            center.x + q0.x + width * shape.side,
+                            center.y + q0.y))
 
                     self.addPolygon(polygon, pen, brush)
 
