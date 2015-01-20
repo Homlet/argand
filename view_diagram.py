@@ -50,7 +50,7 @@ class ViewDiagram(QGraphicsView):
             delta = (mouse_pos - self.last_pos) * (1 / zoom)
             self.last_pos = mouse_pos
 
-            self.program.diagram.translation -= delta
+            self.program.diagram.translate(-delta)
             self.draw()
         super(ViewDiagram, self).mouseMoveEvent(event)
 

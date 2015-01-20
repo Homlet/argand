@@ -15,6 +15,7 @@ from dialog_plots import DialogPlots
 from dialog_preferences import DialogPreferences
 from preferences import Preferences
 from view_diagram import ViewDiagram
+from geometry import Point
 
 
 class Window(QMainWindow):
@@ -35,18 +36,22 @@ class Window(QMainWindow):
         self.diagram = ViewDiagram(self.program)
 
         # Create a control region under the diagram.
-        self.position_label = QLabel()
-        self.position_label.setPixmap(QPixmap("img/position16.png"))
+        self.translation_label = QLabel()
+        self.translation_label.setPixmap(QPixmap("img/position16.png"))
 
-        self.position_input_x = QLineEdit("0")
-        self.position_input_x.setFixedWidth(40)
-        self.position_input_x.setAlignment(Qt.AlignRight)
-        self.position_input_x.setValidator(QDoubleValidator())
+        self.translation_input_x = QLineEdit("0")
+        self.translation_input_x.setFixedWidth(40)
+        self.translation_input_x.setAlignment(Qt.AlignRight)
+        self.translation_input_x.setValidator(QDoubleValidator())
+        self.translation_input_x.textChanged.connect(self.change_translation)
 
-        self.position_input_y = QLineEdit("0")
-        self.position_input_y.setFixedWidth(40)
-        self.position_input_y.setAlignment(Qt.AlignRight)
-        self.position_input_y.setValidator(QDoubleValidator())
+        self.translation_input_y = QLineEdit("0")
+        self.translation_input_y.setFixedWidth(40)
+        self.translation_input_y.setAlignment(Qt.AlignRight)
+        self.translation_input_y.setValidator(QDoubleValidator())
+        self.translation_input_y.textChanged.connect(self.change_translation)
+
+        self.program.diagram.translation_changed.connect(self.set_translation)
 
         self.zoom_label = QLabel()
         self.zoom_label.setPixmap(QPixmap("img/zoom16.png"))
@@ -66,9 +71,9 @@ class Window(QMainWindow):
 
         # Add everything to the grid.
         self.grid.addWidget(self.diagram, 0, 0, 1, 0)
-        self.grid.addWidget(self.position_label, 1, 1)
-        self.grid.addWidget(self.position_input_x, 1, 2)
-        self.grid.addWidget(self.position_input_y, 1, 3)
+        self.grid.addWidget(self.translation_label, 1, 1)
+        self.grid.addWidget(self.translation_input_x, 1, 2)
+        self.grid.addWidget(self.translation_input_y, 1, 3)
         self.grid.addItem(QSpacerItem(8, 0), 1, 4)
         self.grid.addWidget(self.zoom_label, 1, 5)
         self.grid.addWidget(self.zoom_slider, 1, 6)
@@ -132,13 +137,29 @@ class Window(QMainWindow):
             "voluptate velit esse cillum dolore eu fugiat nulla pariatur. "
             "Excepteur sint occaecat cupidatat non proident, sunt in culpa "
             "qui officia deserunt mollit anim id est laborum.")
+
+    def change_translation(self):
+        self.program.diagram.translation = Point(
+            float(self.translation_input_x.text()),
+            float(self.translation_input_y.text()))
+        self.diagram.draw()
+
+    def set_translation(self, value):
+        self.translation_input_x.blockSignals(True)
+        self.translation_input_y.blockSignals(True)
+        self.translation_input_x.setText(str(value.x))
+        self.translation_input_y.setText(str(value.y))
+        self.translation_input_x.blockSignals(False)
+        self.translation_input_y.blockSignals(False)
     
     def change_zoom(self):
         self.program.diagram.zoom = 10 ** (self.zoom_slider.value() / 25)
         self.diagram.draw()
 
     def set_zoom_slider(self, value):
+        self.zoom_slider.blockSignals(True)
         self.zoom_slider.setValue(25 * log10(value))
+        self.zoom_slider.blockSignals(False)
         
     def initialize(self):
         self.setGeometry(200, 150, 800, 600)

@@ -32,3 +32,6 @@ class Diagram(QObject):
     def set_translation(self, value):
         self.translation = value
         self.translation_changed.emit(value)
+
+    def translate(self, delta):
+        self.set_translation(self.translation + delta)
