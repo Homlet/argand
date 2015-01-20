@@ -111,6 +111,7 @@ class Window(QMainWindow):
         #menu_file.addAction(self.a_open)
         #menu_file.addAction(self.a_save)
         #menu_file.addAction(self.a_save_as)
+        menu_file.addSeparator
         menu_file.addAction(self.a_exit)
 
         menu_view = menubar.addMenu("&View")
@@ -119,6 +120,7 @@ class Window(QMainWindow):
 
         menu_help = menubar.addMenu("&Help")
         #menu_help.addAction(self.a_show_docs)
+        menu_help.addSeparator()
         menu_help.addAction(self.a_show_about)
         menu_help.addAction(self.a_show_about_qt)
     
