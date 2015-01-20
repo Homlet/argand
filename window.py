@@ -38,13 +38,15 @@ class Window(QMainWindow):
         self.position_label = QLabel()
         self.position_label.setPixmap(QPixmap("img/position16.png"))
 
-        self.position_input_x = QLineEdit()
+        self.position_input_x = QLineEdit("0")
         self.position_input_x.setFixedWidth(40)
         self.position_input_x.setAlignment(Qt.AlignRight)
+        self.position_input_x.setValidator(QDoubleValidator())
 
-        self.position_input_y = QLineEdit()
+        self.position_input_y = QLineEdit("0")
         self.position_input_y.setFixedWidth(40)
         self.position_input_y.setAlignment(Qt.AlignRight)
+        self.position_input_y.setValidator(QDoubleValidator())
 
         self.zoom_label = QLabel()
         self.zoom_label.setPixmap(QPixmap("img/zoom16.png"))
