@@ -1,6 +1,6 @@
 """Argand Diagram Plotter
 
-geometry.py - Impletements vector maths types.
+geometry.py - Implements vector maths types.
 
 Written by Sam Hubbard - samlhub@gmail.com
 """
