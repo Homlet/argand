@@ -208,19 +208,21 @@ class SceneDiagram(QGraphicsScene):
                     polygon = QPolygonF()
                     polygon.append(QPointF(center.x + q0.x, center.y + q0.y))
                     polygon.append(QPointF(center.x + q1.x, center.y + q1.y))
+                    above = bool(shape.side & ABOVE) * 2 - 1
+                    right = bool(shape.side & RIGHT) * 2 - 1
                     if abs(shape.gradient) <= 1:
                         polygon.append(QPointF(
                             center.x + q1.x,
-                            center.y + q1.y + height * shape.side))
+                            center.y + (height/2 + 1) * above))
                         polygon.append(QPointF(
                             center.x + q0.x,
-                            center.y + q0.y + height * shape.side))
+                            center.y + (height/2 + 1) * above))
                     else:
                         polygon.append(QPointF(
-                            center.x + q1.x + width * shape.side,
+                            center.x + (width/2 + 1) * right,
                             center.y + q1.y))
                         polygon.append(QPointF(
-                            center.x + q0.x + width * shape.side,
+                            center.x + (width/2 + 1) * right,
                             center.y + q0.y))
 
                     self.addPolygon(polygon, pen, brush)

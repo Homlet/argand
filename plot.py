@@ -136,20 +136,25 @@ class Plot(QStandardItem):
                             return False
                         center = Point((p0.x + p1.x) / 2, (p0.y + p1.y) / 2)
                         # The gradient of the bisector is -1/m.
+                        side = 0
                         try:
                             gradient = -(p1.x - p0.x) / (p1.y - p0.y)
                             intercept = center.y - gradient * center.x
                             if type == TYPE_HALF_PLANE:
                                 # Should we shade above or below the line.
-                                side = ((relation in [REL_MORE, REL_MEQL])
-                                      ^ (p0.y > p1.y)) * 2 - 1
+                                if p0.x > p1.x:
+                                    side |= RIGHT
+                                if p0.y > p1.y:
+                                    side |= ABOVE
                         except:
                             # If a division by zero occurred, the bisector
                             # must be vertical.
                             gradient = float("inf")
                             intercept = center.x
-                            side = ((relation in [REL_MORE, REL_MEQL])
-                                  ^ (p0.x > p0.y)) * 2 - 1
+                            if p0.x > p1.x:
+                                side |= RIGHT
+                        if relation in [REL_MORE, REL_MEQL]:
+                            side = ~side
                         self.setData(type, ROLE_TYPE)
                         self.setData(relation, ROLE_RELATION)
                         if type == TYPE_LINE:
