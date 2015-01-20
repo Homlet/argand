@@ -40,15 +40,15 @@ class Window(QMainWindow):
         self.translation_label.setPixmap(QPixmap("img/position16.png"))
 
         self.translation_input_x = QLineEdit("0")
-        self.translation_input_x.setFixedWidth(40)
+        self.translation_input_x.setFixedWidth(53)
         self.translation_input_x.setAlignment(Qt.AlignRight)
-        self.translation_input_x.setValidator(QDoubleValidator())
+        self.translation_input_x.setValidator(QDoubleValidator(decimals=4))
         self.translation_input_x.textChanged.connect(self.change_translation)
 
         self.translation_input_y = QLineEdit("0")
-        self.translation_input_y.setFixedWidth(40)
+        self.translation_input_y.setFixedWidth(53)
         self.translation_input_y.setAlignment(Qt.AlignRight)
-        self.translation_input_y.setValidator(QDoubleValidator())
+        self.translation_input_y.setValidator(QDoubleValidator(decimals=4))
         self.translation_input_y.textChanged.connect(self.change_translation)
 
         self.program.diagram.translation_changed.connect(self.set_translation)
@@ -147,8 +147,8 @@ class Window(QMainWindow):
     def set_translation(self, value):
         self.translation_input_x.blockSignals(True)
         self.translation_input_y.blockSignals(True)
-        self.translation_input_x.setText(str(value.x))
-        self.translation_input_y.setText(str(value.y))
+        self.translation_input_x.setText(str(round(value.x, 4)))
+        self.translation_input_y.setText(str(round(value.y, 4)))
         self.translation_input_x.blockSignals(False)
         self.translation_input_y.blockSignals(False)
     
