@@ -5,7 +5,7 @@ geometry.py - Implements vector maths types.
 Written by Sam Hubbard - samlhub@gmail.com
 """
 
-from math import pi, tan
+from math import pi, tan, atan2
 
 
 ABOVE = 0x01
@@ -152,6 +152,12 @@ class Ray:
             return p
         else:
             return None
+
+class DualRay:
+    def __init__(self, endpoints):
+        angle = atan2(endpoints[1].y - endpoints[0].y,
+                      endpoints[1].x - endpoints[0].x)
+        self.rays = (Ray(angle, endpoints[1]), Ray(angle + pi, endpoints[0]))
 
 
 def project(point, offset, zoom):

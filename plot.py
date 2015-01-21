@@ -22,7 +22,8 @@ TYPE_LINE = 3
 TYPE_HALF_PLANE = 4
 
 TYPE_RAY = 5
-TYPE_SECTOR = 6
+TYPE_DUAL_RAY = 6
+TYPE_SECTOR = 7
 
 REL_LESS = "LESS"
 REL_LEQL = "LEQL"
@@ -116,97 +117,121 @@ class Plot(QStandardItem):
                 left_values = values(left.children[0])
                 if right.value == CODE["mod"]:
                     right_values = values(right.children[0])
-                    if left_values[0] == 1 and right_values[0] == 1:
-                        if relation == REL_EQL:
-                            # We have a perpendicular bisector (line).
-                            type = TYPE_LINE
-                        else:
-                            # We have a half plane.
-                            type = TYPE_HALF_PLANE
-                        # p0 and p1 are the points to bisect.
-                        p0 = Point(
-                            -left_values[1].real,
-                            -left_values[1].imag)
-                        p1 = Point(
-                            -right_values[1].real,
-                            -right_values[1].imag)
-                        if p0 == p1:
-                            # If the points are the same, they cannot have
-                            # a perpendicular bisector.
-                            return False
-                        center = Point((p0.x + p1.x) / 2, (p0.y + p1.y) / 2)
+                    if left_values[0] != 1 or right_values[0] != 1:
+                        # Lines only work where the coefficient
+                        # of both sides is 1.
+                        return False
+                    if relation == REL_EQL:
+                        # We have a perpendicular bisector (line).
+                        type = TYPE_LINE
+                    else:
+                        # We have a half plane.
+                        type = TYPE_HALF_PLANE
+                    # p0 and p1 are the points to bisect.
+                    p0 = Point(
+                        -left_values[1].real,
+                        -left_values[1].imag)
+                    p1 = Point(
+                        -right_values[1].real,
+                        -right_values[1].imag)
+                    if p0 == p1:
+                        # If the points are the same, they cannot have
+                        # a perpendicular bisector.
+                        return False
+                    center = Point((p0.x + p1.x) / 2, (p0.y + p1.y) / 2)
+                    side = 0
+                    try:
                         # The gradient of the bisector is -1/m.
-                        side = 0
-                        try:
-                            gradient = -(p1.x - p0.x) / (p1.y - p0.y)
-                            intercept = center.y - gradient * center.x
-                            if type == TYPE_HALF_PLANE:
-                                # Should we shade above or below the line.
-                                if p0.x > p1.x:
-                                    side |= RIGHT
-                                if p0.y > p1.y:
-                                    side |= ABOVE
-                        except:
-                            # If a division by zero occurred, the bisector
-                            # must be vertical.
-                            gradient = float("inf")
-                            intercept = center.x
+                        gradient = -(p1.x - p0.x) / (p1.y - p0.y)
+                        intercept = center.y - gradient * center.x
+                        if type == TYPE_HALF_PLANE:
+                            # Should we shade above or below the line.
                             if p0.x > p1.x:
                                 side |= RIGHT
-                        if relation in [REL_MORE, REL_MEQL]:
-                            side = ~side
-                        self.setData(type, ROLE_TYPE)
-                        self.setData(relation, ROLE_RELATION)
-                        if type == TYPE_LINE:
-                            self.setData(Line(gradient, intercept), ROLE_SHAPE)
-                        else:
-                            self.setData(HalfPlane(gradient, intercept, side),
-                                ROLE_SHAPE)
-                        return True
+                            if p0.y > p1.y:
+                                side |= ABOVE
+                    except:
+                        # If a division by zero occurred, the bisector
+                        # must be vertical.
+                        gradient = float("inf")
+                        intercept = center.x
+                        if p0.x > p1.x:
+                            side |= RIGHT
+                    if relation in [REL_MORE, REL_MEQL]:
+                        side = ~side
+                    self.setData(type, ROLE_TYPE)
+                    self.setData(relation, ROLE_RELATION)
+                    if type == TYPE_LINE:
+                        self.setData(Line(gradient, intercept), ROLE_SHAPE)
+                    else:
+                        self.setData(HalfPlane(gradient, intercept, side),
+                            ROLE_SHAPE)
+                    return True
                 else:
                     right_values = values(right)
-                    if right_values[0] == 0:
-                        if relation == REL_EQL:
-                            # We have a circle.
-                            type = TYPE_CIRCLE
-                        elif relation in [REL_LEQL, REL_LESS]:
-                            # We have a disk.
-                            type = TYPE_DISK
-                        else:
-                            # We have a negative disk.
-                            type = TYPE_NEGATIVE_DISK
-                            # Negative disks not supported yet.
-                            return False
-                        center = Point(
-                            -left_values[1].real / left_values[0].real,
-                            -left_values[1].imag / left_values[0].real)
-                        radius = right_values[1].real / abs(left_values[0])
-                        self.setData(type, ROLE_TYPE)
-                        self.setData(relation, ROLE_RELATION)
-                        self.setData(Circle(center, radius), ROLE_SHAPE)
-                        return True
+                    if right_values[0] != 0 or right_values[1].imag != 0:
+                        # The right half must be a real constant.
+                        return False
+                    if relation == REL_EQL:
+                        # We have a circle.
+                        type = TYPE_CIRCLE
+                    elif relation in [REL_LEQL, REL_LESS]:
+                        # We have a disk.
+                        type = TYPE_DISK
+                    else:
+                        # We have a negative disk.
+                        type = TYPE_NEGATIVE_DISK
+                        # Negative disks not supported yet.
+                        return False
+                    center = Point(
+                        -left_values[1].real / left_values[0].real,
+                        -left_values[1].imag / left_values[0].real)
+                    radius = right_values[1].real / abs(left_values[0])
+                    self.setData(type, ROLE_TYPE)
+                    self.setData(relation, ROLE_RELATION)
+                    self.setData(Circle(center, radius), ROLE_SHAPE)
+                    return True
             if left.value == CODE["ARG"]:
                 left_values = values(left.children[0])
-                right_values = values(right)
-                if relation == REL_EQL:
-                    # We have a ray.
-                    type = TYPE_RAY
+                if right.value == CODE["ARG"]:
+                    right_values = values(right.children[0])
+                    if left_values[0] != 1 or right_values[0] != 1:
+                        # The coefficient of both sides must be 1.
+                        return False
+                    if relation == REL_EQL:
+                        # We have a dual ray.
+                        type = TYPE_DUAL_RAY
+                    else:
+                        # Inequalities are not supported for dual rays.
+                        return False
+                    endpoints = (
+                        Point(-left_values[1].real, -left_values[1].imag),
+                        Point(-right_values[1].real, -right_values[1].imag))
+                    self.setData(type, ROLE_TYPE)
+                    self.setData(relation, ROLE_RELATION)
+                    self.setData(DualRay(endpoints), ROLE_SHAPE)
+                    return True
                 else:
-                    # We have a sector.
-                    type = TYPE_SECTOR
-                    # Sectors are not supported yet.
-                    return False
-                if left_values[0] != 1:
-                    # Coefficients aren't supported here.
-                    return False
-                endpoint = Point(
-                    -left_values[1].real,
-                    -left_values[1].imag)
-                angle = right_values[1].real % (2 * pi)
-                self.setData(type, ROLE_TYPE)
-                self.setData(relation, ROLE_RELATION)
-                self.setData(Ray(angle, endpoint), ROLE_SHAPE)
-                return True
+                    right_values = values(right)
+                    if left_values[0] != 1:
+                        # The coefficient must be 1.
+                        return False
+                    if relation == REL_EQL:
+                        # We have a ray.
+                        type = TYPE_RAY
+                    else:
+                        # We have a sector.
+                        type = TYPE_SECTOR
+                        # Sectors are not supported yet.
+                        return False
+                    endpoint = Point(
+                        -left_values[1].real,
+                        -left_values[1].imag)
+                    angle = right_values[1].real % (2 * pi)
+                    self.setData(type, ROLE_TYPE)
+                    self.setData(relation, ROLE_RELATION)
+                    self.setData(Ray(angle, endpoint), ROLE_SHAPE)
+                    return True
             return False
 
         # If the code throws an error, the input is probably wrong.

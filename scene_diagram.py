@@ -228,35 +228,45 @@ class SceneDiagram(QGraphicsScene):
                     self.addPolygon(polygon, pen, brush)
 
 
-            if isinstance(shape, Ray):
-                if type == TYPE_RAY:
-                    def find_intersections(near, far):
-                        p0 = shape.intersect(near)
-                        p1 = shape.intersect(far)
-                        if not p0 or not p1:
-                            if not p0:
-                                p0 = shape.endpoint
-                            elif not p1:
-                                p1 = shape.endpoint
-                            else:
-                                return None
-                        return (p0, p1)
+            if isinstance(shape, Ray) or isinstance(shape, DualRay):            
+                def find_intersections(ray, near, far):
+                    """Try to intersect a ray with edges of the screen. If the
+                       endpoint is on-screen, return it as an intersection.
+                    """
+                    p0 = ray.intersect(near)
+                    p1 = ray.intersect(far)
+                    if not p0 or not p1:
+                        if not p0:
+                            p0 = ray.endpoint
+                        elif not p1:
+                            p1 = ray.endpoint
+                        else:
+                            return None
+                    return (p0, p1)
 
+                def draw_ray(ray):
                     left = Line(float("inf"), -center.x / zoom + offset.x)
                     right = Line(float("inf"), center.x / zoom + offset.x)
                     bottom = Line(0, -center.y / zoom + offset.y)
                     top = Line(0, center.y / zoom + offset.y)
-                    if pi / 4 <= shape.angle % pi < 3 * pi / 4:
-                        points = find_intersections(bottom, top)
+                    if pi / 4 <= ray.angle % pi < 3 * pi / 4:
+                        points = find_intersections(ray, bottom, top)
                     else:
-                        points = find_intersections(left, right)
+                        points = find_intersections(ray, left, right)
                     if not points[0] or not points[1]:
-                        continue
+                        return
                     self.addLine(
                         center.x + (points[0].x - offset.x) * zoom,
                         center.y + (points[0].y - offset.y) * zoom,
                         center.x + (points[1].x - offset.x) * zoom,
                         center.y + (points[1].y - offset.y) * zoom, pen)
+
+                if type == TYPE_RAY:
+                    draw_ray(shape)
+
+                if type == TYPE_DUAL_RAY:
+                    for ray in shape.rays:
+                        draw_ray(ray)
 
                 if type == TYPE_SECTOR:
                     pass
