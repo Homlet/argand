@@ -15,9 +15,13 @@ RIGHT = 0x10
 class Point:
     KEY_ERROR_MSG = "Invalid key for two-dimensional point."
 
-    def __init__(self, x=0.0, y=0.0):
-        self.x = x
-        self.y = y
+    def __init__(self, x=0.0, y=0.0, c=None):
+        if c != None:
+            self.x = c.real
+            self.y = c.imag
+        else:
+            self.x = x
+            self.y = y
 
     def __add__(self, other):
         return Point(self.x + other[0], self.y + other[1])

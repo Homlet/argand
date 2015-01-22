@@ -232,6 +232,14 @@ class Plot(QStandardItem):
                     self.setData(relation, ROLE_RELATION)
                     self.setData(Ray(angle, endpoint), ROLE_SHAPE)
                     return True
+            left_values = values(left)
+            right_values = values(right)
+            coefficient = left_values[0] - right_values[0]
+            value = (right_values[1] - left_values[1]) / coefficient
+            self.setData(TYPE_CIRCLE, ROLE_TYPE)
+            self.setData(relation, ROLE_RELATION)
+            self.setData(Circle(Point(c=value), 0.1), ROLE_SHAPE)
+            return True
             return False
 
         # If the code throws an error, the input is probably wrong.
