@@ -90,6 +90,13 @@ class Window(QMainWindow):
         self.a_exit = QAction("&Exit", self)
         self.a_exit.setShortcut("Ctrl+W")
         self.a_exit.triggered.connect(qApp.quit)
+        
+        self.a_reset_view = QAction("&Reset View", self)
+        self.a_reset_view.setShortcut("Ctrl+R")
+        self.a_reset_view.triggered.connect(
+            lambda: self.set_translation(Point(0, 0), False))
+        self.a_reset_view.triggered.connect(
+            lambda: self.set_zoom_slider(1, False))
 
         self.a_toggle_plots = self.plots.toggleViewAction()
         self.a_toggle_plots.setShortcut("Ctrl+P")
@@ -111,10 +118,12 @@ class Window(QMainWindow):
         #menu_file.addAction(self.a_open)
         #menu_file.addAction(self.a_save)
         #menu_file.addAction(self.a_save_as)
-        menu_file.addSeparator
+        menu_file.addSeparator()
         menu_file.addAction(self.a_exit)
 
         menu_view = menubar.addMenu("&View")
+        menu_view.addAction(self.a_reset_view)
+        menu_view.addSeparator()
         menu_view.addAction(self.a_toggle_plots)
         menu_view.addAction(self.a_show_prefs)
 
@@ -146,9 +155,9 @@ class Window(QMainWindow):
             float(self.translation_input_y.text()))
         self.diagram.draw()
 
-    def set_translation(self, value):
-        self.translation_input_x.blockSignals(True)
-        self.translation_input_y.blockSignals(True)
+    def set_translation(self, value, block=True):
+        self.translation_input_x.blockSignals(block)
+        self.translation_input_y.blockSignals(block)
         self.translation_input_x.setText(str(round(value.x, 4)))
         self.translation_input_y.setText(str(round(value.y, 4)))
         self.translation_input_x.blockSignals(False)
@@ -158,8 +167,8 @@ class Window(QMainWindow):
         self.program.diagram.zoom = 10 ** (self.zoom_slider.value() / 25)
         self.diagram.draw()
 
-    def set_zoom_slider(self, value):
-        self.zoom_slider.blockSignals(True)
+    def set_zoom_slider(self, value, block=True):
+        self.zoom_slider.blockSignals(block)
         self.zoom_slider.setValue(25 * log10(value))
         self.zoom_slider.blockSignals(False)
         
