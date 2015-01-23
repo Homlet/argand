@@ -140,8 +140,7 @@ class SceneDiagram(QGraphicsScene):
                 self.addItem(FlippedText(
                     "0",
                     width / 2 + cling_x,
-                    height / 2 + cling_y
-                ))
+                    height / 2 + cling_y))
 
     def draw_plots(self):
         width = self.sceneRect().width()
@@ -169,14 +168,22 @@ class SceneDiagram(QGraphicsScene):
             brush = QBrush(fill_color)
             
             if isinstance(shape, Point) and type == TYPE_POINT:
+                # Draw the point as a cross.
                 p = project(shape, offset, zoom)
-                pen.setWidth(2)
+                pen.setWidth(1)
                 self.addLine(
-                    center.x + p.x - 2, center.y + p.y - 2,
-                    center.x + p.x + 2, center.y + p.y + 2, pen)
+                    center.x + p.x - 1.5, center.y + p.y - 1.5,
+                    center.x + p.x + 1.5, center.y + p.y + 1.5, pen)
                 self.addLine(
-                    center.x + p.x - 2, center.y + p.y + 2,
-                    center.x + p.x + 2, center.y + p.y - 2, pen)
+                    center.x + p.x - 1.5, center.y + p.y + 1.5,
+                    center.x + p.x + 1.5, center.y + p.y - 1.5, pen)
+
+                # Label the point if set in preferences.
+                if self.program.preferences.label_points:
+                    self.addItem(FlippedText(
+                        "{:n}+{:n}j".format(shape.x, shape.y),
+                        center.x + p.x + 3,
+                        center.y + p.y - 3))
 
             if isinstance(shape, Circle):
                 p = project(shape.origin(), offset, zoom)
