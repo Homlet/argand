@@ -168,10 +168,14 @@ class SceneDiagram(QGraphicsScene):
             brush = QBrush(fill_color)
             
             if isinstance(shape, Point) and type == TYPE_POINT:
-                p = project(shape, offset, zoom) - Point(1, 1)
-                self.addEllipse(
-                    center.x + p.x, center.y + p.y,
-                    2, 2, pen, QBrush(stroke_color))
+                p = project(shape, offset, zoom)
+                pen.setWidth(2)
+                self.addLine(
+                    center.x + p.x - 2, center.y + p.y - 2,
+                    center.x + p.x + 2, center.y + p.y + 2, pen)
+                self.addLine(
+                    center.x + p.x - 2, center.y + p.y + 2,
+                    center.x + p.x + 2, center.y + p.y - 2, pen)
 
             if isinstance(shape, Circle):
                 if type == TYPE_CIRCLE:
