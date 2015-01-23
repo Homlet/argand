@@ -45,7 +45,6 @@ class DialogPlots(QDockWidget):
         font.setPointSize(11)
         self.equation.setFont(font)
         self.equation.setFrame(False)
-        self.equation.setPlaceholderText("Enter equation...")
         self.equation.textChanged.connect(self.equation_changed)
 
         # Create objects for validating the input.
@@ -135,7 +134,7 @@ class DialogPlots(QDockWidget):
 
     def reset_color_label(self):
         """Set the color label to transparent."""
-        self.change_color_label(QColor(0, 0, 0, 0))
+        self.color_label.setAutoFillBackground(False)
 
     def add_plot(self):
         """Add a new plot to the plot list and select it."""
