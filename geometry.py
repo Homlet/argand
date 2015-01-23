@@ -158,7 +158,6 @@ class DualRay:
     def __init__(self, endpoints):
         angle = atan2(endpoints[1].y - endpoints[0].y,
                       endpoints[1].x - endpoints[0].x)
-        print(endpoints, angle)
         self.rays = (Ray(angle, endpoints[1]), Ray(angle + pi, endpoints[0]))
 
 
