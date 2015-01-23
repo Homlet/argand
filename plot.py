@@ -14,16 +14,18 @@ from geometry import *
 from abstract_syntax_tree import *
 
 
-TYPE_CIRCLE = 0
-TYPE_DISK = 1
-TYPE_NEGATIVE_DISK = 2
+TYPE_POINT = 0
 
-TYPE_LINE = 3
-TYPE_HALF_PLANE = 4
+TYPE_CIRCLE = 1
+TYPE_DISK = 2
+TYPE_NEGATIVE_DISK = 3
 
-TYPE_RAY = 5
-TYPE_DUAL_RAY = 6
-TYPE_SECTOR = 7
+TYPE_LINE = 4
+TYPE_HALF_PLANE = 5
+
+TYPE_RAY = 6
+TYPE_DUAL_RAY = 7
+TYPE_SECTOR = 8
 
 REL_LESS = "LESS"
 REL_LEQL = "LEQL"
@@ -232,15 +234,19 @@ class Plot(QStandardItem):
                     self.setData(relation, ROLE_RELATION)
                     self.setData(Ray(angle, endpoint), ROLE_SHAPE)
                     return True
+            if relation != REL_EQL:
+                # More / less than doesn't work with complex numbers.
+                return False
+            # We probably have a point.
+            # If we don't, something will throw an error.
             left_values = values(left)
             right_values = values(right)
             coefficient = left_values[0] - right_values[0]
             value = (right_values[1] - left_values[1]) / coefficient
-            self.setData(TYPE_CIRCLE, ROLE_TYPE)
-            self.setData(relation, ROLE_RELATION)
-            self.setData(Circle(Point(c=value), 0.1), ROLE_SHAPE)
+            self.setData(TYPE_POINT, ROLE_TYPE)
+            self.setData(REL_EQL, ROLE_RELATION)
+            self.setData(Point(c=value), ROLE_SHAPE)
             return True
-            return False
 
         # If the code throws an error, the input is probably wrong.
         # TODO: tool-tips.

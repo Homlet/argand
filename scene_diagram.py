@@ -166,6 +166,12 @@ class SceneDiagram(QGraphicsScene):
                 pen.setStyle(Qt.DashLine)
 
             brush = QBrush(fill_color)
+            
+            if isinstance(shape, Point) and type == TYPE_POINT:
+                p = project(shape, offset, zoom) - Point(1, 1)
+                self.addEllipse(
+                    center.x + p.x, center.y + p.y,
+                    2, 2, pen, QBrush(stroke_color))
 
             if isinstance(shape, Circle):
                 if type == TYPE_CIRCLE:
