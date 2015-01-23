@@ -239,18 +239,18 @@ class SceneDiagram(QGraphicsScene):
                     right = bool(shape.side & RIGHT) * 2 - 1
                     if abs(shape.gradient) <= 1:
                         polygon.append(QPointF(
-                            center.x + q1.x,
+                            center.x + q1.x + 1,
                             center.y + (height/2 + 1) * above))
                         polygon.append(QPointF(
-                            center.x + q0.x,
+                            center.x + q0.x - 1,
                             center.y + (height/2 + 1) * above))
                     else:
                         polygon.append(QPointF(
                             center.x + (width/2 + 1) * right,
-                            center.y + q1.y))
+                            center.y + q1.y + 1))
                         polygon.append(QPointF(
                             center.x + (width/2 + 1) * right,
-                            center.y + q0.y))
+                            center.y + q0.y - 1))
                     self.addPolygon(polygon, QPen(Qt.NoPen), brush)
 
                     # Draw the edge.
