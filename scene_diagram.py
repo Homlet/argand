@@ -228,7 +228,7 @@ class SceneDiagram(QGraphicsScene):
                 if type == TYPE_LINE:
                     self.addLine(
                         center.x + q0.x, center.y + q0.y,
-                        center.x + q1.x, center.y + q1.y)
+                        center.x + q1.x, center.y + q1.y, pen)
 
                 if type == TYPE_HALF_PLANE:
                     # Construct a polygon.
@@ -251,8 +251,12 @@ class SceneDiagram(QGraphicsScene):
                         polygon.append(QPointF(
                             center.x + (width/2 + 1) * right,
                             center.y + q0.y))
+                    self.addPolygon(polygon, QPen(Qt.NoPen), brush)
 
-                    self.addPolygon(polygon, pen, brush)
+                    # Draw the edge.
+                    self.addLine(
+                        center.x + q0.x, center.y + q0.y,
+                        center.x + q1.x, center.y + q1.y, pen)
 
 
             if isinstance(shape, Ray) or isinstance(shape, DualRay):            
