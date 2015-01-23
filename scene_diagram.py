@@ -180,8 +180,18 @@ class SceneDiagram(QGraphicsScene):
 
                 # Label the point if set in preferences.
                 if self.program.preferences.label_points:
+                    if shape.x == 0:
+                        if shape.y == 0:
+                            text = "0"
+                        else:
+                            text = "{:n}j".format(shape.y)
+                    else:
+                        if shape.y == 0:
+                            text = "{:n}".format(shape.x)
+                        else:
+                            text = "{:n}+{:n}j".format(shape.x, shape.y)
                     self.addItem(FlippedText(
-                        "{:n}+{:n}j".format(shape.x, shape.y),
+                        text,
                         center.x + p.x + 3,
                         center.y + p.y - 3))
 
