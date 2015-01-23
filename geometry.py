@@ -5,7 +5,7 @@ geometry.py - Implements vector maths types.
 Written by Sam Hubbard - samlhub@gmail.com
 """
 
-from math import pi, tan, atan2
+from math import pi, tan, atan2, cos, sin
 
 
 ABOVE = 0x01
@@ -75,6 +75,9 @@ class Circle:
 
     def diameter(self):
         return 2 * self.radius
+
+    def point(self, theta):
+        return self.center + Point(cos(theta), sin(theta)) * self.radius
 
 
 class Line:

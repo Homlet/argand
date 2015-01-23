@@ -183,8 +183,6 @@ class Plot(QStandardItem):
                     else:
                         # We have a negative disk.
                         type = TYPE_NEGATIVE_DISK
-                        # Negative disks not supported yet.
-                        return False
                     center = Point(
                         -left_values[1].real / left_values[0].real,
                         -left_values[1].imag / left_values[0].real)

@@ -20,6 +20,7 @@ from utils import clamp, floor_to
 CLING_THRES = 10
 LABEL_PAD = 20
 TICK_SIZE = 2
+DISK_DETAIL = 200
 
 
 class FlippedText(QGraphicsTextItem):
@@ -191,7 +192,24 @@ class SceneDiagram(QGraphicsScene):
                         pen, brush)
 
                 if type == TYPE_NEGATIVE_DISK:
-                    pass
+                    # Tricky part - construct a polygon to fill the screen.
+                    polygon = QPolygonF()
+                    polygon.append(QPointF(-1, -1))
+                    polygon.append(QPointF(width + 1, -1))
+                    polygon.append(QPointF(width + 1, height + 1))
+                    polygon.append(QPointF(-1, height + 1))
+                    for i in range(DISK_DETAIL + 1):
+                        theta = (i / DISK_DETAIL) * (2 * pi)
+                        p_i = center + project(
+                            shape.point(theta), offset, zoom)
+                        polygon.append(QPointF(p_i.x, p_i.y))
+                    polygon.append(QPointF(-1, height + 1))
+                    self.addPolygon(polygon, QPen(Qt.NoPen), brush)
+
+                    # Easy part - draw the edge of the disk.
+                    self.addEllipse(
+                        center.x + p.x, center.y + p.y,
+                        shape.diameter() * zoom, shape.diameter() * zoom, pen)
 
             if isinstance(shape, Line):
                 if abs(shape.gradient) <= 1:
