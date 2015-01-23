@@ -178,16 +178,15 @@ class SceneDiagram(QGraphicsScene):
                     center.x + p.x + 2, center.y + p.y - 2, pen)
 
             if isinstance(shape, Circle):
+                p = project(shape.origin(), offset, zoom)
                 if type == TYPE_CIRCLE:
                     self.addEllipse(
-                        center.x + (shape.origin().x - offset.x) * zoom,
-                        center.y + (shape.origin().y - offset.y) * zoom,
+                        center.x + p.x, center.y + p.y,
                         shape.diameter() * zoom, shape.diameter() * zoom, pen)
 
                 if type == TYPE_DISK:
                     self.addEllipse(
-                        center.x + (shape.origin().x - offset.x) * zoom,
-                        center.y + (shape.origin().y - offset.y) * zoom,
+                        center.x + p.x, center.y + p.y,
                         shape.diameter() * zoom, shape.diameter() * zoom,
                         pen, brush)
 
