@@ -4,7 +4,7 @@
 Written by Sam Hubbard - samlhub@gmail.com
 """
 
-import sys
+import sys, cpickle
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -24,9 +24,17 @@ class Program:
             icon.addPixmap(QPixmap(reader.read()))
         self.app.setWindowIcon(icon)
         
-        self.diagram = Diagram()
+        self.new_diagram()
         self.preferences = Preferences()
         self.window = Window(self)
+
+    def new_diagram(self):
+        self.diagram = Diagram()
+
+    def open_diagram(self):
+        dialog = QFileDialog(self)
+        dialog.setAcceptMode(QF
+        self.diagram = cpickle.load(
     
     def exec_(self):
         return self.app.exec_()

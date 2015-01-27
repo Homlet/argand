@@ -20,10 +20,11 @@ class Diagram(QObject):
 
     def __init__(self):
         super(Diagram, self).__init__()
-        
+               
         self.plots = PlotListModel()
         self.zoom = 1.0
         self.translation = Point(0.0, 0.0)
+        self.filename = None
 
     def set_zoom(self, value):
         self.zoom = value
@@ -35,3 +36,16 @@ class Diagram(QObject):
 
     def translate(self, delta):
         self.set_translation(self.translation + delta)
+
+    def save_diagram(self):
+        if filename:
+            pass
+        else:
+            self.save_diagram_as()
+
+    def save_diagram_as(self):
+        dialog = QFileDialog(self)
+        dialog.setAcceptMode(QFileDialog.AcceptSave)
+        dialog.setViewMode(QFileDialog.Detail)
+        if dialog.exec_(self):
+            filename = dialog.selectedFiles()[0]
