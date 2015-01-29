@@ -189,7 +189,7 @@ class SceneDiagram(QGraphicsScene):
                         if shape.y == 0:
                             text = "{:n}".format(shape.x)
                         else:
-                            text = "{:n}+{:n}j".format(shape.x, shape.y)
+                            text = "{:n}{:+n}j".format(shape.x, shape.y)
                     self.addItem(FlippedText(
                         text,
                         center.x + p.x + 3,
