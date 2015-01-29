@@ -57,6 +57,7 @@ class Program(QObject):
         dialog = QFileDialog(self.window)
         dialog.setAcceptMode(QFileDialog.AcceptOpen)
         dialog.setViewMode(QFileDialog.Detail)
+        dialog.setNameFilter("Argand Plotter Diagrams (*.arg)")
         if dialog.exec_():
             self.diagram = Diagram(self, dialog.selectedFiles()[0])
 
