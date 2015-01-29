@@ -66,6 +66,7 @@ class Diagram(QObject):
         dialog = QFileDialog(self.program.window)
         dialog.setAcceptMode(QFileDialog.AcceptSave)
         dialog.setViewMode(QFileDialog.Detail)
+        dialog.selectFile(self.path)
         if dialog.exec_():
             self.path = dialog.selectedFiles()[0]
             self.save()
