@@ -86,7 +86,23 @@ class Window(QMainWindow):
         # Create an about dialog for the program.
         self.about = QMessageBox()
 
-    def create_actions(self):        
+    def create_actions(self):
+        self.a_new = QAction("&New", self)
+        self.a_new.setShortcut("Ctrl+N")
+        self.a_new.triggered.connect(self.program.new_diagram)
+        
+        self.a_open = QAction("&Open", self)
+        self.a_open.setShortcut("Ctrl+O")
+        self.a_open.triggered.connect(self.program.open_diagram)
+
+        self.a_save = QAction("&Save", self)
+        self.a_save.setShortcut("Ctrl+S")
+        self.a_save.triggered.connect(self.program.save_diagram)
+
+        self.a_save_as = QAction("Save &As...", self)
+        self.a_save_as.setShortcut("Ctrl+Shift+S")
+        self.a_save_as.triggered.connect(self.program.save_diagram_as)
+
         self.a_exit = QAction("&Exit", self)
         self.a_exit.setShortcut("Ctrl+W")
         self.a_exit.triggered.connect(qApp.quit)
@@ -114,10 +130,10 @@ class Window(QMainWindow):
         menubar = self.menuBar()
         
         menu_file = menubar.addMenu("&File")
-        #menu_file.addAction(self.a_new)
-        #menu_file.addAction(self.a_open)
-        #menu_file.addAction(self.a_save)
-        #menu_file.addAction(self.a_save_as)
+        menu_file.addAction(self.a_new)
+        menu_file.addAction(self.a_open)
+        menu_file.addAction(self.a_save)
+        menu_file.addAction(self.a_save_as)
         menu_file.addSeparator()
         menu_file.addAction(self.a_exit)
 

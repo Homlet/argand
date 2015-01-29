@@ -75,6 +75,12 @@ class PlotListModel(QStandardItemModel):
     def append(self, plot):
         self.appendRow([plot, QStandardItem()])
 
+    def __iter__(self):
+        def iterator(self):
+            for i in range(self.rowCount()):
+                yield self.item(i, 0)
+        return iterator(self)
+
 
 class PlotListDelegate(QStyledItemDelegate):
     deleted_item = pyqtSignal()

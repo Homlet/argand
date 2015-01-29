@@ -34,6 +34,7 @@ class DialogPlots(QDockWidget):
         # Setup the list of plots.
         self.list = PlotListTable(self.program.diagram.plots)
         self.list.selectionModel().selectionChanged.connect(self.plot_changed)
+        self.program.diagram_changed.connect(self.set_list_model)
 
         # Create a button for adding new plots.
         self.add_plot_button = QPushButton("+")
@@ -114,6 +115,9 @@ class DialogPlots(QDockWidget):
         self.setWidget(self.widget)
 
         self.current_plot = None
+
+    def set_list_model(self):
+        self.list.setModel(self.program.diagram.plots)
 
     def change_color(self):
         """Change the color of the currently selected equation."""
