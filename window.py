@@ -155,15 +155,10 @@ class Window(QMainWindow):
 
     def show_about(self):
         QMessageBox.about(self, "About Argand Plotter",
-            "Argand Plotter is blah.\n\n"
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, "
-            "sed do eiusmod tempor incididunt ut labore et dolore "
-            "magna aliqua. Ut enim ad minim veniam, quis nostrud "
-            "exercitation ullamco laboris nisi ut aliquip ex ea "
-            "commodo consequat. Duis aute irure dolor in reprehenderit "
-            "voluptate velit esse cillum dolore eu fugiat nulla pariatur. "
-            "Excepteur sint occaecat cupidatat non proident, sunt in culpa "
-            "qui officia deserunt mollit anim id est laborum.")
+            "Argand Plotter is a program for drawing Argand Diagrams.\n\n"
+            "The program was written by Sam Hubbard, as a project for his "
+            "A2 computing coursework.\n\n"
+            "Copyright (C) 2015 Sam Hubbard")
 
     def change_translation(self):
         self.program.diagram.translation = Point(
