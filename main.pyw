@@ -15,11 +15,15 @@ from window import Window
 
 
 class Program(QObject):
+    """Simple class to hold all components of the program.
+       This must extend QObject so that PyQt signals can be used.
+    """
     diagram_changed = pyqtSignal()
     
     def __init__(self):
         super(Program, self).__init__()
-        
+
+        # Create the application.
         self.app = QApplication(sys.argv)
         icon = QIcon()
         for i in range(16, 33, 8):
@@ -27,12 +31,16 @@ class Program(QObject):
             reader = QImageReader("img/half_disk{}.png".format(i))
             icon.addPixmap(QPixmap(reader.read()))
         self.app.setWindowIcon(icon)
-        
+
+        # Initialise modules.
         self.new_diagram()
         self.preferences = Preferences()
         self.window = Window(self)
 
     def new_diagram(self):
+        """Create a new blank diagram object. If the window exists at
+           this point, redraw the diagram.
+        """
         self.diagram = Diagram(self)
 
         if hasattr(self, "window") and self.window:
@@ -42,24 +50,39 @@ class Program(QObject):
         self.diagram_changed.emit()
 
     def open_diagram(self):
+        """Prompt the user for a .arg file to open.
+           On confirmation, create a new diagram and load
+           the file into it.
+        """
         dialog = QFileDialog(self.window)
         dialog.setAcceptMode(QFileDialog.AcceptOpen)
         dialog.setViewMode(QFileDialog.Detail)
         if dialog.exec_():
             self.diagram = Diagram(self, dialog.selectedFiles()[0])
 
-        self.window.diagram.draw()
-        self.diagram_changed.emit()
+            self.window.diagram.draw()
+            self.diagram_changed.emit()
 
     def save_diagram(self):
-        if self.diagram:
+        """Wrapper of diagram save function so as to prevent
+           menu actions having to be rebound every time the diagram
+           is changed.
+        """
+        if hasattr(self, "diagram") and self.diagram:
             self.diagram.save()
 
     def save_diagram_as(self):
-        if self.diagram:
+        """Wrapper of diagram save_as function so as to prevent
+           menu actions having to be rebound every time the diagram
+           is changed.
+        """
+        if hasattr(self, "diagram") and self.diagram:
             self.diagram.save_as()
     
     def exec_(self):
+        """Begin execution of Qt code (bar initialisation code).
+           This essentially bootstraps the entire program.
+        """
         return self.app.exec_()
 
 
