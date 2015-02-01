@@ -177,8 +177,9 @@ class Plot(QStandardItem):
                     if right_values[0] != 0:
                         # The right half must be a constant.
                         return False
-                    if right_values[1].imag != 0:
-                        # The modulus function only outputs real values.
+                    if right_values[1].imag != 0 or right_values[1].real < 0:
+                        # The modulus function only outputs
+                        # positive real values.
                         self.setData(TYPE_NULL, ROLE_TYPE)
                         return True
                     if relation == REL_EQL:
