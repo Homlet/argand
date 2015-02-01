@@ -14,6 +14,9 @@ from geometry import *
 from abstract_syntax_tree import *
 
 
+# Special type for inputs that are valid but contain no points.
+TYPE_NULL = -1
+
 TYPE_POINT = 0
 
 TYPE_CIRCLE = 1
@@ -171,9 +174,13 @@ class Plot(QStandardItem):
                     return True
                 else:
                     right_values = values(right)
-                    if right_values[0] != 0 or right_values[1].imag != 0:
-                        # The right half must be a real constant.
+                    if right_values[0] != 0:
+                        # The right half must be a constant.
                         return False
+                    if right_values[1].imag != 0:
+                        # The modulus function only outputs real values.
+                        self.setData(TYPE_NULL, ROLE_TYPE)
+                        return True
                     if relation == REL_EQL:
                         # We have a circle.
                         type = TYPE_CIRCLE
