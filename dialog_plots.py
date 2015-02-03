@@ -124,6 +124,7 @@ class DialogPlots(QDockWidget):
     def set_list_model(self):
         self.list.setModel(self.program.diagram.plots)
         self.list.selectionModel().selectionChanged.connect(self.plot_changed)
+        self.list.resize_headers()
         self.current_plot = None
         self.plot_changed(None, None)
 

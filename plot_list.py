@@ -38,7 +38,11 @@ class PlotListTable(QTableView):
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         
     def append(self, plot):
+        """Convenience function for adding a plot to the model."""
         self.model().append(plot)
+
+    def resize_headers(self):
+        """The more this is done, the less likely the list will look weird."""
         self.horizontalHeader().setResizeMode(
             COL_EQUATION, QHeaderView.Stretch)
         self.horizontalHeader().setResizeMode(
@@ -46,6 +50,7 @@ class PlotListTable(QTableView):
         self.resizeColumnsToContents()
 
     def mouseReleaseEvent(self, event):
+        """Deselects the current plot when clicking in empty space."""
         super(PlotListTable, self).mouseReleaseEvent(event)
         if not self.indexAt(event.pos()).isValid():
             self.clearSelection()
