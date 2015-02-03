@@ -36,6 +36,7 @@ class Program(QObject):
         self.new_diagram()
         self.preferences = Preferences()
         self.window = Window(self)
+        self.diagram_changed.emit()
 
     def new_diagram(self):
         """Create a new blank diagram object. If the window exists at

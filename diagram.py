@@ -7,6 +7,7 @@ Written by Sam Hubbard - samlhub@gmail.com
 """
 
 import ntpath, pickle
+from math import log10
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -35,13 +36,16 @@ class Diagram(QObject):
             self.translation = Point(0.0, 0.0)
             self.filename = "Untitled"
 
-    def set_zoom(self, value):
-        self.zoom = value
-        self.zoom_changed.emit(value)
+    def set_zoom(self, value, notify=True):
+        if -50 <= 25 * log10(value) <= 100:
+            self.zoom = value
+            if notify:
+                self.zoom_changed.emit(value)
 
-    def set_translation(self, value):
+    def set_translation(self, value, notify=True):
         self.translation = value
-        self.translation_changed.emit(value)
+        if notify:
+            self.translation_changed.emit(value)
 
     def translate(self, delta):
         self.set_translation(self.translation + delta)
