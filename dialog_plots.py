@@ -124,6 +124,8 @@ class DialogPlots(QDockWidget):
     def set_list_model(self):
         self.list.setModel(self.program.diagram.plots)
         self.list.selectionModel().selectionChanged.connect(self.plot_changed)
+        self.current_plot = None
+        self.plot_changed(None, None)
 
     def change_color(self):
         """Change the color of the currently selected equation."""
@@ -159,10 +161,13 @@ class DialogPlots(QDockWidget):
     def plot_changed(self, selected, deselected):
         """Update the current plot attributes.
            Enable the input area if the selection is valid."""
-        indexes = selected.indexes()
-        if len(indexes) > 0:
+        try:
+            indices = selected.indexes()
+        except:
+            indices = []
+        if len(indices) > 0:
             # We've selected a new plot.
-            self.current_plot = indexes[0]
+            self.current_plot = indices[0]
             self.equation.setText(self.current_plot.data(ROLE_EQUATION))
             self.change_color_label(self.current_plot.data(ROLE_COLOR))
             self.input_frame.setEnabled(True)
