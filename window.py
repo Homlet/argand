@@ -194,7 +194,8 @@ class Window(QMainWindow):
 
     def zoom_to_slider(self, value):
         """Set the value of the zoom slider."""
-        self.zoom_slider.setValue(25 * log10(value))
+        if -50 <= 25 * log10(value) <= 100:
+            self.zoom_slider.setValue(25 * log10(value))
 
     def reset_zoom(self):
         """Reset zoom level to 1."""
