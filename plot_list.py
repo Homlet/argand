@@ -40,6 +40,8 @@ class PlotListTable(QTableView):
     def append(self, plot):
         """Convenience function for adding a plot to the model."""
         self.model().append(plot)
+        self.resize_headers()
+
 
     def resize_headers(self):
         """The more this is done, the less likely the list will look weird."""

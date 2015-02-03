@@ -1,4 +1,5 @@
 */Thumbs.db
 __pycache__/
+build/
 *.mpp
 *.wbk
