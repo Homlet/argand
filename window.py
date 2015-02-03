@@ -43,13 +43,13 @@ class Window(QMainWindow):
         self.translation_input_x.setFixedWidth(53)
         self.translation_input_x.setAlignment(Qt.AlignRight)
         self.translation_input_x.setValidator(QDoubleValidator(decimals=4))
-        self.translation_input_x.textChanged.connect(self.change_translation)
+        self.translation_input_x.textChanged.connect(self.input_to_translation)
 
         self.translation_input_y = QLineEdit("0")
         self.translation_input_y.setFixedWidth(53)
         self.translation_input_y.setAlignment(Qt.AlignRight)
         self.translation_input_y.setValidator(QDoubleValidator(decimals=4))
-        self.translation_input_y.textChanged.connect(self.change_translation)
+        self.translation_input_y.textChanged.connect(self.input_to_translation)
 
         self.zoom_label = QLabel()
         self.zoom_label.setPixmap(QPixmap("img/zoom16.png"))
@@ -57,7 +57,7 @@ class Window(QMainWindow):
         self.zoom_slider = QSlider(Qt.Horizontal)
         self.zoom_slider.setFixedWidth(150)
         self.zoom_slider.setRange(-50, 100)
-        self.zoom_slider.valueChanged.connect(self.change_zoom)
+        self.zoom_slider.valueChanged.connect(self.slider_to_zoom)
 
         # Create a grid layout in the central widget.
         self.grid = QGridLayout()
@@ -106,10 +106,8 @@ class Window(QMainWindow):
 
         self.a_reset_view = QAction("&Reset View", self)
         self.a_reset_view.setShortcut("Ctrl+R")
-        self.a_reset_view.triggered.connect(
-            lambda: self.set_translation(Point(0, 0), False))
-        self.a_reset_view.triggered.connect(
-            lambda: self.set_zoom_slider(1, False))
+        self.a_reset_view.triggered.connect(self.reset_translation)
+        self.a_reset_view.triggered.connect(self.reset_zoom)
 
         self.a_toggle_plots = self.plots.toggleViewAction()
         self.a_toggle_plots.setShortcut("Ctrl+P")
@@ -157,8 +155,8 @@ class Window(QMainWindow):
     def register_signals(self):
         """Register all external PyQt signal connections."""
         self.program.diagram.translation_changed.connect(
-            self.set_translation_input)
-        self.program.diagram.zoom_changed.connect(self.set_zoom_slider)
+            self.translation_to_input)
+        self.program.diagram.zoom_changed.connect(self.zoom_to_slider)
 
     def show_preferences(self):
         DialogPreferences(self, self.program.preferences).exec_()
@@ -171,25 +169,34 @@ class Window(QMainWindow):
             "A2 computing coursework.\n\n"
             "Copyright (C) 2015 Sam Hubbard")
 
-    def change_translation(self):
-        self.program.diagram.translation = Point(
+    def input_to_translation(self):
+        """Set the translation in the diagram, from the inputs."""
+        self.program.diagram.set_translation(Point(
             float(self.translation_input_x.text()),
-            float(self.translation_input_y.text()))
+            float(self.translation_input_y.text())), False)
         self.diagram.draw()
 
-    def set_translation_input(self, value, block=True):
-        self.translation_input_x.blockSignals(block)
-        self.translation_input_y.blockSignals(block)
+    def translation_to_input(self, value):
+        """Set the values of the translation inputs."""
         self.translation_input_x.setText(str(round(value.x, 4)))
         self.translation_input_y.setText(str(round(value.y, 4)))
-        self.translation_input_x.blockSignals(False)
-        self.translation_input_y.blockSignals(False)
+
+    def reset_translation(self):
+        """Reset the translation to the origin."""
+        self.program.diagram.set_translation(Point(0, 0))
+        self.diagram.draw()
     
-    def change_zoom(self):
-        self.program.diagram.zoom = 10 ** (self.zoom_slider.value() / 25)
+    def slider_to_zoom(self):
+        """Set the zoom in the diagram, from the slider."""
+        self.program.diagram.set_zoom(
+            10 ** (self.zoom_slider.value() / 25), False)
         self.diagram.draw()
 
-    def set_zoom_slider(self, value, block=True):
-        self.zoom_slider.blockSignals(block)
+    def zoom_to_slider(self, value):
+        """Set the value of the zoom slider."""
         self.zoom_slider.setValue(25 * log10(value))
-        self.zoom_slider.blockSignals(False)
+
+    def reset_zoom(self):
+        """Reset zoom level to 1."""
+        self.program.diagram.set_zoom(1)
+        self.diagram.draw()
