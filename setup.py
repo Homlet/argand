@@ -9,11 +9,16 @@ import sys
 base = 'Win32GUI' if sys.platform=='win32' else None
 
 executables = [
-    Executable('main.pyw', base=base, targetName = 'Argand.exe')
+    Executable(
+        'main.pyw',
+        base = base,
+        targetName = 'Argand.exe',
+        icon = 'img/half_disk.ico')
 ]
 
-setup(name='Argand Plotter',
-      version = 'v1.0',
-      description = 'A graphing package for Argand diagrams.',
-      options = dict(build_exe = buildOptions),
-      executables = executables)
+setup(
+    name='Argand Plotter',
+    version = 'v1.0',
+    description = 'A graphing package for Argand diagrams.',
+    options = dict(build_exe = buildOptions),
+    executables = executables)
