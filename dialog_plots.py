@@ -32,9 +32,7 @@ class DialogPlots(QDockWidget):
         self.widget.setMinimumSize(200, 300)
 
         # Setup the list of plots.
-        self.list = PlotListTable(self.program.diagram.plots)
-        self.list.selectionModel().selectionChanged.connect(self.plot_changed)
-        self.program.diagram_changed.connect(self.set_list_model)
+        self.list = PlotListTable()
 
         # Create a button for adding new plots.
         self.add_plot_button = QPushButton("+")
@@ -114,10 +112,18 @@ class DialogPlots(QDockWidget):
             Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
         self.setWidget(self.widget)
 
+        self.register_signals()
+        self.program.diagram_changed.connect(self.register_signals)
+
         self.current_plot = None
+
+    def register_signals(self):
+        """Register all external PyQt signal connections."""
+        self.program.diagram_changed.connect(self.set_list_model)
 
     def set_list_model(self):
         self.list.setModel(self.program.diagram.plots)
+        self.list.selectionModel().selectionChanged.connect(self.plot_changed)
 
     def change_color(self):
         """Change the color of the currently selected equation."""
