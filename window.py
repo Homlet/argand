@@ -37,7 +37,8 @@ class Window(QMainWindow):
 
         # Create a control region under the diagram.
         self.translation_label = QLabel()
-        self.translation_label.setPixmap(QPixmap("img/position16.png"))
+        self.translation_label.setPixmap(QPixmap(
+            self.program.get_path("img/position16.png")))
 
         self.translation_input_x = QLineEdit("0")
         self.translation_input_x.setFixedWidth(53)
@@ -52,7 +53,8 @@ class Window(QMainWindow):
         self.translation_input_y.textChanged.connect(self.input_to_translation)
 
         self.zoom_label = QLabel()
-        self.zoom_label.setPixmap(QPixmap("img/zoom16.png"))
+        self.zoom_label.setPixmap(QPixmap(
+            self.program.get_path("img/zoom16.png")))
 
         self.zoom_slider = QSlider(Qt.Horizontal)
         self.zoom_slider.setFixedWidth(150)

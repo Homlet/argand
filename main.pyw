@@ -4,7 +4,7 @@
 Written by Sam Hubbard - samlhub@gmail.com
 """
 
-import sys
+import sys, os
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -28,7 +28,8 @@ class Program(QObject):
         icon = QIcon()
         for i in range(16, 33, 8):
             # Load the application icon.
-            reader = QImageReader("img/half_disk{}.png".format(i))
+            path = self.get_path("img/half_disk{}.png".format(i))
+            reader = QImageReader(path)
             icon.addPixmap(QPixmap(reader.read()))
         self.app.setWindowIcon(icon)
 
@@ -80,6 +81,19 @@ class Program(QObject):
         """
         if hasattr(self, "diagram") and self.diagram:
             self.diagram.save_as()
+
+    def get_path(self, relative):
+        """Returns the correct path to a relative file, depending
+           on whether the program is running in an interpreter
+           or as an executable.
+        """
+        if getattr(sys, "frozen", False):
+            # The application is frozen.
+            directory = os.path.dirname(sys.executable)
+            return os.path.join(directory, relative)
+        else:
+            # The application is running in the interpreter.
+            return relative
     
     def exec_(self):
         """Begin execution of Qt code (bar initialisation code).

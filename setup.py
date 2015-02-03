@@ -3,7 +3,7 @@ from cx_Freeze import setup, Executable
 
 # Dependencies are automatically detected, but it might need
 # fine tuning.
-buildOptions = dict()
+buildOptions = dict(include_files = "img,examples")
 
 import sys
 base = 'Win32GUI' if sys.platform=='win32' else None

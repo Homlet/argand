@@ -48,7 +48,8 @@ class DialogPlots(QDockWidget):
 
         # Create objects for validating the input.
         self.validation_indicator = QLabel()
-        self.validation_indicator.setMovie(QMovie("img/loader16.gif"))
+        self.validation_indicator.setMovie(QMovie(
+            self.program.get_path("img/loader16.gif")))
         self.validation_indicator.movie().start()
         self.validation_indicator.setVisible(False)
 
@@ -75,7 +76,8 @@ class DialogPlots(QDockWidget):
         self.color_label.setFixedHeight(20)
 
         self.color_button = QPushButton()
-        color_button_pixmap = QPixmap("img/color16.png")
+        color_button_pixmap = QPixmap(
+            self.program.get_path("img/color16.png"))
         color_button_icon = QIcon(color_button_pixmap)
         self.color_button.setIcon(color_button_icon)
         self.color_button.setIconSize(color_button_pixmap.rect().size())
