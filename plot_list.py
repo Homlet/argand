@@ -135,7 +135,7 @@ class PlotListDelegate(QStyledItemDelegate):
                 button.state |= QStyle.State_Sunken
             button.state |= QStyle.State_Enabled
             button.rect = bounds
-            button.text = u"\u00D7"
+            button.text = "\u00D7"
             if option.state & QStyle.State_Selected:
                 QApplication.style().drawControl(
                     QStyle.CE_PushButton, button, painter)
