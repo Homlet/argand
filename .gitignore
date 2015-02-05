@@ -4,6 +4,7 @@ src/__pycache__/
 
 build/*
 !build/installer.iss
+!build/setup.py
 
 docs/html/
 docs/rtf/
