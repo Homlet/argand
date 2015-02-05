@@ -1,7 +1,10 @@
 */Thumbs.db
 __pycache__/
 build/
+
 docs/html/
 docs/latex/
+docs/rtf/
+
 *.mpp
 *.wbk
