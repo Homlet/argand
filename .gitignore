@@ -1,6 +1,9 @@
 */Thumbs.db
-__pycache__/
-build/
+*/Desktop.ini
+src/__pycache__/
+
+build/*
+!build/installer.iss
 
 docs/html/
 docs/rtf/
