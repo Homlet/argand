@@ -1,2 +1,2 @@
 cd src
-python ../setup.py build
+python ../build/setup.py build
