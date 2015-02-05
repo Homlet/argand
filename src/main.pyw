@@ -20,7 +20,7 @@ class Program(QObject):
     """
     diagram_changed = pyqtSignal()
     
-    def __init__(self):
+    def __init__(self, path=None):
         super(Program, self).__init__()
 
         # Create the application.
@@ -28,13 +28,17 @@ class Program(QObject):
         icon = QIcon()
         for i in [16, 24, 32, 64, 128]:
             # Load the application icon.
-            path = self.get_path("img/half_disk{}.png".format(i))
-            reader = QImageReader(path)
+            img = self.get_path("img/half_disk{}.png".format(i))
+            reader = QImageReader(img)
             icon.addPixmap(QPixmap(reader.read()))
         self.app.setWindowIcon(icon)
 
         # Initialise modules.
-        self.new_diagram()
+        if path:
+            print(path)
+            self.open_diagram(path)
+        else:
+            self.new_diagram()
         self.preferences = Preferences()
         self.window = Window(self)
         self.diagram_changed.emit()
@@ -51,19 +55,30 @@ class Program(QObject):
             self.window.diagram.draw()
         self.diagram_changed.emit()
 
-    def open_diagram(self):
-        """Prompt the user for a .arg file to open.
+    def open_diagram(self, path=None):
+        """Open the file at path. If no path is given, prompt
+           the user for a .arg file to open.
+
            On confirmation, create a new diagram and load
            the file into it.
         """
-        dialog = QFileDialog(self.window)
-        dialog.setAcceptMode(QFileDialog.AcceptOpen)
-        dialog.setViewMode(QFileDialog.Detail)
-        dialog.setNameFilter("Argand Plotter Diagrams (*.arg)")
-        if dialog.exec_():
-            self.diagram = Diagram(self, dialog.selectedFiles()[0])
+        # If path not given, prompt the user for one.
+        if not path:
+            dialog = QFileDialog(self.window)
+            dialog.setAcceptMode(QFileDialog.AcceptOpen)
+            dialog.setViewMode(QFileDialog.Detail)
+            dialog.setNameFilter("Argand Plotter Diagrams (*.arg)")
+            if dialog.exec_():
+                path = dialog.selectedFiles()[0]
 
-            self.window.diagram.draw()
+        # Check again, as path may have been set.
+        if path:
+            self.diagram = Diagram(self, path)
+
+            if hasattr(self, "window") and self.window:
+                # The window may not have been created
+                # the first time open is run.
+                self.window.diagram.draw()
             self.diagram_changed.emit()
 
     def save_diagram(self):
@@ -103,5 +118,8 @@ class Program(QObject):
 
 
 if __name__ == "__main__":
-    program = Program()
+    if len(sys.argv) > 1:
+        program = Program(sys.argv[1])
+    else:
+        program = Program()
     sys.exit(program.exec_())
