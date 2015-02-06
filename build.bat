@@ -1,2 +1,6 @@
-cd src
-python ../build/setup.py build
+@echo off
+
+call build_exe
+call build_installer
+
+pause
