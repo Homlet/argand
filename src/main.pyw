@@ -1,7 +1,11 @@
 #!python3
-"""Argand Diagram Plotter
+"""Argand Plotter
+
+Argand Plotter is a program for drawing Argand Diagrams.
+The program was written as a project for A2 computing coursework.
 
 Written by Sam Hubbard - samlhub@gmail.com
+Copyright (C) 2015 Sam Hubbard
 """
 
 import sys, os
@@ -21,6 +25,18 @@ class Program(QObject):
     diagram_changed = pyqtSignal()
     
     def __init__(self, path=None):
+        """Create and initialise all components of the program.
+           If path is given, load the referenced argand file,
+           otherwise create a new blank file.
+
+           diagram     - A Diagram object which holds the current display
+                         transformation as well as the list of plots to draw.
+
+           window      - A QMainWindow which serves as the main handle to
+                         the entire PyQt GUI.
+
+           preferences - Stores a few diagram-independent settings.
+        """
         super(Program, self).__init__()
 
         # Create the application.
