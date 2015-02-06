@@ -1,4 +1,3 @@
-#!python3
 """Argand Plotter
 
 Argand Plotter is a program for drawing Argand Diagrams.
@@ -20,22 +19,22 @@ from window import Window
 
 class Program(QObject):
     """Simple class to hold all components of the program.
-       This must extend QObject so that PyQt signals can be used.
+    
+    This must extend QObject so that PyQt signals can be used.
+
+    Attributes:
+        diagram: A Diagram object which holds the current display
+                 transformation as well as the list of plots to draw.
+        preferences: Stores a few diagram-independent settings.
+        window: Serves as the main handle to the entire PyQt GUI.
     """
     diagram_changed = pyqtSignal()
     
     def __init__(self, path=None):
         """Create and initialise all components of the program.
-           If path is given, load the referenced argand file,
-           otherwise create a new blank file.
-
-           diagram     - A Diagram object which holds the current display
-                         transformation as well as the list of plots to draw.
-
-           window      - A QMainWindow which serves as the main handle to
-                         the entire PyQt GUI.
-
-           preferences - Stores a few diagram-independent settings.
+        
+        If path is given, load the referenced argand file,
+        otherwise create a new blank file.
         """
         super(Program, self).__init__()
 
@@ -55,13 +54,15 @@ class Program(QObject):
             self.open_diagram(path)
         else:
             self.new_diagram()
+
         self.preferences = Preferences()
         self.window = Window(self)
         self.diagram_changed.emit()
 
     def new_diagram(self):
-        """Create a new blank diagram object. If the window exists at
-           this point, redraw the diagram.
+        """Create a new blank diagram object.
+        
+        If the window exists at this point, redraw the diagram.
         """
         self.diagram = Diagram(self)
 
@@ -72,11 +73,11 @@ class Program(QObject):
         self.diagram_changed.emit()
 
     def open_diagram(self, path=None):
-        """Open the file at path. If no path is given, prompt
-           the user for a .arg file to open.
-
-           On confirmation, create a new diagram and load
-           the file into it.
+        """Open a .arg file.
+        
+        If no path is given, prompt the user for a .arg file
+        to open. On confirmation, create a new diagram and load
+        the file into it.
         """
         # If path not given, prompt the user for one.
         if not path:
@@ -98,25 +99,28 @@ class Program(QObject):
             self.diagram_changed.emit()
 
     def save_diagram(self):
-        """Wrapper of diagram save function so as to prevent
-           menu actions having to be rebound every time the diagram
-           is changed.
+        """Wrapper of diagram save function.
+        
+        Used to to prevent menu actions having to be rebound
+        every time the diagram is changed.
         """
         if hasattr(self, "diagram") and self.diagram:
             self.diagram.save()
 
     def save_diagram_as(self):
-        """Wrapper of diagram save_as function so as to prevent
-           menu actions having to be rebound every time the diagram
-           is changed.
+        """Wrapper of diagram save_as function.
+        
+        Used to to prevent menu actions having to be rebound
+        every time the diagram is changed.
         """
         if hasattr(self, "diagram") and self.diagram:
             self.diagram.save_as()
 
     def get_path(self, relative):
-        """Returns the correct path to a relative file, depending
-           on whether the program is running in an interpreter
-           or as an executable.
+        """Returns the correct path to a relative file.
+        
+        This depends on whether the program is running in an
+        interpreter or as an executable.
         """
         if getattr(sys, "frozen", False):
             # The application is frozen.
@@ -128,7 +132,8 @@ class Program(QObject):
     
     def exec_(self):
         """Begin execution of Qt code (bar initialisation code).
-           This essentially bootstraps the entire program.
+
+        This essentially bootstraps the entire program.
         """
         return self.app.exec_()
 
