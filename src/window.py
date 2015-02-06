@@ -151,8 +151,17 @@ class Window(QMainWindow):
         self.setWindowTitle("Argand Diagram Plotter")
 
         self.program.diagram_changed.connect(self.register_signals)
+        self.program.diagram_changed.connect(self.set_title)
 
         self.show()
+
+    def set_title(self):
+        """Put the name of the current diagram file in the title bar."""
+        if hasattr(self.program, "diagram") and self.program.diagram:
+            self.setWindowTitle(
+                "Argand Plotter - " + self.program.diagram.filename)
+        else:
+            self.setWindowTitle("Argand Plotter")
 
     def register_signals(self):
         """Register all external PyQt signal connections."""
