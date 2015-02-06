@@ -6,7 +6,8 @@ diagram.py - Stores all information pertaining to
 Written by Sam Hubbard - samlhub@gmail.com
 """
 
-import ntpath, pickle
+import ntpath
+import pickle
 from math import log10
 
 from PyQt4.QtCore import *

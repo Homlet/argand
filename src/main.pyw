@@ -7,7 +7,8 @@ Written by Sam Hubbard - samlhub@gmail.com
 Copyright (C) 2015 Sam Hubbard
 """
 
-import sys, os
+import os
+import sys
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -23,8 +24,8 @@ class Program(QObject):
     This must extend QObject so that PyQt signals can be used.
 
     Attributes:
-        diagram: A Diagram object which holds the current display
-                 transformation as well as the list of plots to draw.
+        diagram: Holds the display transformation and the list of plots.
+        diagram_changed: A signal emitted whenever a new diagram is loaded.
         preferences: Stores a few diagram-independent settings.
         window: Serves as the main handle to the entire PyQt GUI.
     """
@@ -32,9 +33,12 @@ class Program(QObject):
     
     def __init__(self, path=None):
         """Create and initialise all components of the program.
-        
-        If path is given, load the referenced argand file,
+
+        If path is given, load the referenced .arg file,
         otherwise create a new blank file.
+        
+        Args:
+            path: An optional path to a .arg file to open
         """
         super(Program, self).__init__()
 
@@ -42,7 +46,8 @@ class Program(QObject):
         self.app = QApplication(sys.argv)
         icon = QIcon()
         for i in [16, 24, 32, 64, 128]:
-            # Load the application icon.
+            # Load the icon in parts because PyQt has issues
+            # loading .ico format icons.
             img = self.get_path("img/half_disk{}.png".format(i))
             reader = QImageReader(img)
             icon.addPixmap(QPixmap(reader.read()))
@@ -61,7 +66,7 @@ class Program(QObject):
 
     def new_diagram(self):
         """Create a new blank diagram object.
-        
+
         If the window exists at this point, redraw the diagram.
         """
         self.diagram = Diagram(self)
@@ -78,6 +83,9 @@ class Program(QObject):
         If no path is given, prompt the user for a .arg file
         to open. On confirmation, create a new diagram and load
         the file into it.
+
+        Args:
+            path: An optional path to a .arg file to open.
         """
         # If path not given, prompt the user for one.
         if not path:
@@ -116,19 +124,22 @@ class Program(QObject):
         if hasattr(self, "diagram") and self.diagram:
             self.diagram.save_as()
 
-    def get_path(self, relative):
+    def get_path(self, path):
         """Returns the correct path to a relative file.
         
         This depends on whether the program is running in an
         interpreter or as an executable.
+        
+        Args:
+            path: The relative path to resolve.
         """
         if getattr(sys, "frozen", False):
-            # The application is frozen.
+            # The application is frozen (i.e. is an executable).
             directory = os.path.dirname(sys.executable)
-            return os.path.join(directory, relative)
+            return os.path.join(directory, path)
         else:
             # The application is running in the interpreter.
-            return relative
+            return path
     
     def exec_(self):
         """Begin execution of Qt code (bar initialisation code).

@@ -1,16 +1,15 @@
-"""Argand Diagram Plotter
+"""Abstract Syntax Tree
 
-abstract_syntax_tree.py - Produces an abstract syntax tree
-                          from a mathematical expression
-                          stored in a string.
+Contains classes for parsing and inspecting abstract syntax trees
+involving letter variables, functions and complex numbers.
 
 Written by Sam Hubbard -  samlhub@gmail.com
 """
 
-from collections import namedtuple
 import cmath
-import re
 import inspect
+import re
+from collections import namedtuple
 
 
 TOKENS = {
@@ -81,7 +80,25 @@ NODE_TYPE_OP = 2
 
 
 class Node:
+    """A node used to build an AST.
+    
+    Can store a numerical value, or a function to apply to its child(ren).
+    
+    Attributes:
+        type: Whether the node is numerical, a function or a variable.
+        value: The value stored in the node.
+        children: A list of child node objects.
+        parent: A reference to the node's parent, if one exists.
+    """
+
     def __init__(self, type, value, *children):
+        """Create node with value and children.
+
+        Args:
+            type: See Node.type.
+            value: See Node.value.
+            children: See Node.children.
+        """
         self.type = type
         self.value = value
         self.children = children
@@ -90,12 +107,22 @@ class Node:
             child.parent = self
 
     def resolve(self):
+        """Recursively resolve the tree up to this node.
+        
+        Returns:
+            If the node stores a numerical value, returns the node's value.
+            Otherwise return the node's function applied to it's children.
+        """
         if self.type == NODE_TYPE_OP:
             return self.value(*[child.resolve() for child in self.children])
         else:
             return self.value
 
     def __repr__(self):
+        """Represent the node as a string.
+        
+        Used for debugging purposes.
+        """
         s = "[" + str(self.value) + "]("
         for c in self.children:
             s += str(c)
@@ -104,7 +131,24 @@ class Node:
 
 
 class SyntaxParser:
+    """Parses an input string to an AST.
+
+    Attributes:
+        equation: The input string to parse.
+        ruleset: A set of grammatical rules to match against the string.
+        root: The rule in the ruleset to start searching for.
+        tree: When parsed, stores the root node of the AST.
+        parsed: Whether the input has been successfully parsed.
+    """
+
     def __init__(self, equation, root="eqn", ruleset=GRAMMAR):
+        """Create new parser with input string and options.
+
+        Args:
+            equation: See SyntaxParser.equation.
+            root: See SyntaxParser.root.
+            ruleset: See SyntaxParser.ruleset.
+        """
         super(SyntaxParser, self).__init__()
         self.equation = equation
         self.ruleset = ruleset
@@ -113,11 +157,26 @@ class SyntaxParser:
         self.parsed = False
 
     def get_tree(self):
+        """Get the root node of the AST.
+        
+        If the equation has not been parsed yet, attempt to do so first.
+        
+        Returns:
+            The root node of the AST.
+        """
         if not self.parsed:
             self.tree = self.parse()
         return self.tree
 
     def parse(self):
+        """Attempt to parse the input string.
+
+        Returns:
+            The root node of the AST.
+
+        Raises:
+            Exception: The input string is not valid.
+        """
         try:
             # Alter the tokens to play nicely with regex.
             regex_tokens = list(TOKENS)
@@ -152,6 +211,15 @@ class SyntaxParser:
             self.parsed = True
 
     def match(self, rule, tokens):
+        """Attempt to match a set of tokens to a rule.
+
+        Args:
+            rule: A key in the ruleset to match against.
+            tokens: The list of remaining tokens.
+
+        Returns:
+            A Match tuple and the remaining unmatched tokens.
+        """
         if tokens and rule == tokens[0].name:
             return Match(*tokens[0]), tokens[1:]
         for case in self.ruleset.get(rule, ()):
@@ -166,6 +234,20 @@ class SyntaxParser:
         return None, []
 
     def fix_associativity(self, match, rules=["sub", "div"]):
+        """Reverse associativity on certain binary operators.
+        
+        The parsing process favours right associativity, which means
+        inputs with left-associative operators won't be built into
+        correct ASTs. This function fixes the issue by flattening
+        subtrees with these operators and re-building left-associative.
+        
+        Args:
+            match: An incorrectly built Match tuple to fix.
+            rules: A list of rules representing operators to flip.
+
+        Returns:
+            A rebuilt Match tuple.
+        """
         def flatten(match):
             matched = recurse(match, flatten)
             if match.rule in rules \
@@ -184,6 +266,14 @@ class SyntaxParser:
         return build_left(flatten(match))
 
     def build(self, match):
+        """Recursively builds an AST from a Match tuple.
+        
+        Args:
+            match: A Match tuple representing the AST to be built.
+
+        Returns:
+            The root node of the built AST.
+        """
         # Create an alias for the child matches, and
         # force it to be a list.
         matched = match.matched
@@ -268,6 +358,16 @@ class SyntaxParser:
 
 
 def recurse(match, func):
+    """Apply a function to all matched children in a Match tuple.
+    
+    Args:
+        match: The Match tuple.
+        func: The function to apply.
+
+    Returns:
+        If the Match tuple is an operator, return a list of the function
+        applied on each of its children. Otherwise, return its children.
+    """
     if match.rule in GRAMMAR:
         return list(map(func, match.matched))
     else:
