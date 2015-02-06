@@ -63,6 +63,7 @@ class Program(QObject):
         self.preferences = Preferences()
         self.window = Window(self)
         self.diagram_changed.emit()
+        self.diagram.notify_transformation()
 
     def new_diagram(self):
         """Create a new blank diagram object.
@@ -76,6 +77,7 @@ class Program(QObject):
             # the first time this is run.
             self.window.diagram.draw()
         self.diagram_changed.emit()
+        self.diagram.notify_transformation()
 
     def open_diagram(self, path=None):
         """Open a .arg file.
@@ -105,6 +107,7 @@ class Program(QObject):
                 # the first time open is run.
                 self.window.diagram.draw()
             self.diagram_changed.emit()
+            self.diagram.notify_transformation()
 
     def save_diagram(self):
         """Wrapper of diagram save function.
@@ -114,7 +117,6 @@ class Program(QObject):
         """
         if hasattr(self, "diagram") and self.diagram:
             self.diagram.save()
-            self.diagram_changed.emit()
 
     def save_diagram_as(self):
         """Wrapper of diagram save_as function.

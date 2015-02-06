@@ -66,6 +66,11 @@ class Diagram(QObject):
             self.translation = Point(0.0, 0.0)
             self.filename = "Untitled"
 
+    def notify_transformation(self):
+        """Emits transformation changed signals."""
+        self.zoom_changed.emit(self.zoom)
+        self.translation_changed.emit(self.translation)
+
     def set_zoom(self, value, notify=True):
         """Set the zoom value, if it lies within the valid range.
         
