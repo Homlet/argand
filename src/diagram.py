@@ -133,6 +133,7 @@ class Diagram(QObject):
         dialog.selectFile(self.path)
         if dialog.exec_():
             self.path = dialog.selectedFiles()[0]
+            self.filename = ntpath.basename(self.path)
             self.save()
 
     def load(self, path):

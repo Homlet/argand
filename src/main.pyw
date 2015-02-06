@@ -114,6 +114,7 @@ class Program(QObject):
         """
         if hasattr(self, "diagram") and self.diagram:
             self.diagram.save()
+            self.diagram_changed.emit()
 
     def save_diagram_as(self):
         """Wrapper of diagram save_as function.
@@ -123,6 +124,7 @@ class Program(QObject):
         """
         if hasattr(self, "diagram") and self.diagram:
             self.diagram.save_as()
+            self.diagram_changed.emit()
 
     def get_path(self, path):
         """Returns the correct path to a relative file.
