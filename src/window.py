@@ -189,8 +189,12 @@ class Window(QMainWindow):
 
     def translation_to_input(self, value):
         """Set the values of the translation inputs."""
+        self.translation_input_x.blockSignals(True)
+        self.translation_input_y.blockSignals(True)
         self.translation_input_x.setText(str(round(value.x, 4)))
         self.translation_input_y.setText(str(round(value.y, 4)))
+        self.translation_input_x.blockSignals(False)
+        self.translation_input_y.blockSignals(False)
 
     def reset_translation(self):
         """Reset the translation to the origin."""
@@ -206,7 +210,9 @@ class Window(QMainWindow):
     def zoom_to_slider(self, value):
         """Set the value of the zoom slider."""
         if -50 <= 25 * log10(value) <= 100:
+            self.zoom_slider.blockSignals(True)
             self.zoom_slider.setValue(25 * log10(value))
+            self.zoom_slider.blockSignals(False)
 
     def reset_zoom(self):
         """Reset zoom level to 1."""
