@@ -200,7 +200,7 @@ class Window(QMainWindow):
         """Reset the translation to the origin."""
         self.program.diagram.set_translation(Point(0, 0))
         self.diagram.draw()
-    
+
     def slider_to_zoom(self):
         """Set the zoom in the diagram, from the slider."""
         self.program.diagram.set_zoom(

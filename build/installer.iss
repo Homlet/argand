@@ -13,7 +13,7 @@ UninstallDisplayIcon={app}\Argand.exe,0
 UninstallDisplayName=Argand Plotter
 
 [Files]
-Source: "Win32GUI\*"; DestDir: "{app}"             
+Source: "Win32GUI\*"; DestDir: "{app}"
 Source: "Win32GUI\examples\*"; DestDir: "{app}\examples"
 Source: "Win32GUI\imageformats\*"; DestDir: "{app}\imageformats"
 Source: "Win32GUI\img\*"; DestDir: "{app}\img"
