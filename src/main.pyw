@@ -97,7 +97,6 @@ class Program(QObject):
             dialog.setNameFilter(
                 "Argand Plotter Diagrams (*.arg);;" \
                 "All Files (*.*)")
-            dialog.setOption(QFileDialog.DontUseNativeDialog, False)
             if dialog.exec_():
                 path = dialog.selectedFiles()[0]
 
