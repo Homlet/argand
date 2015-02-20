@@ -68,6 +68,7 @@ GRAMMAR = {
     "pos": ["ADD atm"],
     "fun": [fun + " atm" for fun in FUNCTIONS]
 }
+LEFT_ASSOCIATIVE = ["sub", "div"]
 
 
 Token = namedtuple("Token", ["name", "value"])
@@ -233,7 +234,7 @@ class SyntaxParser:
                 return Match(rule, chain), remaining
         return None, []
 
-    def fix_associativity(self, match, rules=["sub", "div"]):
+    def fix_associativity(self, match, rules=LEFT_ASSOCIATIVE):
         """Reverse associativity on certain binary operators.
         
         The parsing process favours right associativity, which means
