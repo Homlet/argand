@@ -1,6 +1,4 @@
-"""Argand Diagram Plotter
-
-geometry.py - Implements vector maths types.
+"""Implementation of various maths classes.
 
 Written by Sam Hubbard - samlhub@gmail.com
 """
@@ -13,9 +11,26 @@ RIGHT = 0x10
 
 
 class Point:
+    """Stores a 2 dimensional vector (point).
+    
+    Attributes:
+        x: The x coordinate of the point.
+        y: The y coordinate of the point.
+    """
     KEY_ERROR_MSG = "Invalid key for two-dimensional point."
 
     def __init__(self, x=0.0, y=0.0, c=None):
+        """Create a new point.
+
+        Create a point using x and y coordinates. If a complex
+        number is supplied as c, x and y are ignored and the complex
+        number is used to create the point.
+        
+        Args:
+            x: The x coordinate of the point.
+            y: The y coordinate of the point.
+            c: Optional complex number representing the point.
+        """
         if c != None:
             self.x = c.real
             self.y = c.imag
@@ -66,23 +81,69 @@ class Point:
 
 
 class Circle:
+    """Stores a circle by center and radius.
+    
+    Attributes:
+        center: A point describing the center of the circle.
+        radius: The radius of the circle.
+    """
     def __init__(self, center, radius):
+        """Create a new circle.
+
+        Args:
+            center: A point describing the center of the circle.
+            radius: The radius of the circle.
+        """
         self.center = center
         self.radius = radius
 
     def origin(self):
+        """Calculate the bottom left corner of the circle.
+
+        Returns:
+            A point representing the bottom left corner of the axis-aligned
+            square that bounds the circle.
+        """
         return Point(self.center.x - self.radius, self.center.y - self.radius)
 
     def diameter(self):
+        """Calculate the diameter from the radius.
+
+        Returns:
+            The diameter (twice the radius).
+        """
         return 2 * self.radius
 
     def point(self, theta):
+        """Calculate a point on the circle.
+
+        Args:
+            theta: The angle to rotate from the positive x-axis.
+
+        Returns:
+            A point on the circle found by rotating theta radians
+            anti-clockwise from the positive x-axis.
+        """
         return self.center + Point(cos(theta), sin(theta)) * self.radius
 
 
 class Line:
-    """A simple line in the form y = mx + c."""
+    """Stores line by gradient and intercept.
+
+    The intercept stored is with the y-axis for all real gradients.
+    For complex gradients, the intercept is with the x-axis.
+
+    Attributes:
+        gradient: The gradient of the line (rise / run).
+        intercept: The intercept of the line with the y (or x) axis.
+    """
     def __init__(self, gradient, intercept):
+        """Create a new line.
+        
+        Args:
+            gradient: The gradient of the line (rise / run).
+            intercept: The intercept of the line with the y (or x) axis.
+        """
         self.gradient = gradient
         # Note: Iff the line is vertical, the intercept is
         #       assumed to be with the x-axis.
