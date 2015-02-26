@@ -118,6 +118,8 @@ class Window(QMainWindow):
         self.a_show_prefs.setShortcut("Ctrl+,")
         self.a_show_prefs.triggered.connect(self.show_preferences)
 
+        self.a_show_guide = QAction("Open User &Guide", self)
+        self.a_show_guide.setShortcut("F1")
         self.a_show_about = QAction("&About Argand Plotter", self)
         self.a_show_about.triggered.connect(self.show_about)
         self.a_show_about_qt = QAction("About &Qt", self)
@@ -141,7 +143,7 @@ class Window(QMainWindow):
         menu_view.addAction(self.a_show_prefs)
 
         menu_help = menubar.addMenu("&Help")
-        #menu_help.addAction(self.a_show_docs)
+        menu_help.addAction(self.a_show_guide)
         menu_help.addSeparator()
         menu_help.addAction(self.a_show_about)
         menu_help.addAction(self.a_show_about_qt)
