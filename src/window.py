@@ -7,6 +7,8 @@ Written by Sam Hubbard - samlhub@gmail.com
 
 from math import log10
 import sys
+import subprocess
+import os
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -120,6 +122,7 @@ class Window(QMainWindow):
 
         self.a_show_guide = QAction("Open User &Guide", self)
         self.a_show_guide.setShortcut("F1")
+        self.a_show_guide.triggered.connect(self.open_guide)
         self.a_show_about = QAction("&About Argand Plotter", self)
         self.a_show_about.triggered.connect(self.show_about)
         self.a_show_about_qt = QAction("About &Qt", self)
@@ -174,6 +177,14 @@ class Window(QMainWindow):
     def show_preferences(self):
         DialogPreferences(self, self.program.preferences).exec_()
         self.diagram.draw()
+
+    def open_guide(self):
+        if sys.platform.startswith('darwin'):
+            subprocess.call(('open', filepath))
+        elif os.name == 'nt':
+            os.startfile("Argand_Plotter_Manual_en-uk.pdf")
+        elif os.name == 'posix':
+            subprocess.call(('xdg-open', filepath))
 
     def show_about(self):
         QMessageBox.about(self, "About Argand Plotter",
