@@ -160,7 +160,11 @@ class Line:
 
     def intersect(self, other):
         """Find the point where this and another line intersect.
-           Return None if lines are parallel."""
+        
+        Return:
+            The point at which the lines cross, or None if the
+            lines are parallel.
+        """
         # Store the gradients and intercepts in temp variables.
         m0 = self.gradient
         m1 = other.gradient
@@ -184,6 +188,11 @@ class Line:
 
 
 class HalfPlane(Line):
+    """Stores a half plane as a line and a side.
+
+    Attributes:
+        side: The side of the line contained in the plane.
+    """
     def __init__(self, gradient, intercept, side):
         super(HalfPlane, self).__init__(gradient, intercept)
         self.side = side
@@ -194,13 +203,25 @@ class HalfPlane(Line):
 
 
 class Ray:
+    """Store a ray projected from a point at an angle.
+    
+    A ray is an infinitely long line with a single endpoint.
+    
+    Attributes:
+        angle: The angle at which to project the ray.
+        endpoint: The point to project the ray from.
+    """
     def __init__(self, angle, endpoint):
         self.angle = angle % (2 * pi)
         self.endpoint = endpoint
 
     def intersect(self, line):
         """Intersect this ray with a line.
-           Return None if no intersection found."""
+        
+        Return:
+            The point at which the ray crosses the line, or None if no
+            intersection found.
+        """
         # Create a temporary line representing this ray.
         m = tan(self.angle)
         c = self.endpoint.y - self.endpoint.x * m
@@ -219,6 +240,14 @@ class Ray:
             return None
 
 class DualRay:
+    """Stores two opposite rays.
+    
+    Given two endpoints, find the rays from these points facing away
+    from each other.
+    
+    Attributes:
+        rays: List containing the rays.
+    """
     def __init__(self, endpoints):
         angle = atan2(endpoints[1].y - endpoints[0].y,
                       endpoints[1].x - endpoints[0].x)
