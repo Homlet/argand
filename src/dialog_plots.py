@@ -20,13 +20,25 @@ VALIDATION_DELAY = 0
 
 
 class DialogPlots(QDockWidget):
+    """A dockable dialog that displays the list of plots in the diagram.
+    
+    Attributes:
+        program: A reference to the program object.
+    """
     def __init__(self, parent, program):
+        """Create the dialog.
+        
+        Args:
+            parent: Reference to the parent window (main window).
+            program: See DialogPlots.program.
+        """
         super(DialogPlots, self).__init__("Plots", parent)
         self.program = program
         self.setup_content()
         self.initialize()
 
     def setup_content(self):
+        """Add the widgets and layouts to the dialog."""
         # Setup the container widget.
         self.widget = QWidget()
         self.widget.setMinimumSize(200, 300)
@@ -110,6 +122,7 @@ class DialogPlots(QDockWidget):
         grid.addWidget(self.input_frame, 2, 0)
 
     def initialize(self):
+        """Set up dialog parameters and make dialog visible."""
         self.setAllowedAreas(
             Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
         self.setWidget(self.widget)
@@ -124,6 +137,7 @@ class DialogPlots(QDockWidget):
         self.program.diagram_changed.connect(self.set_list_model)
 
     def set_list_model(self):
+        """Set the model the list will display plots from."""
         self.list.setModel(self.program.diagram.plots)
         self.list.selectionModel().selectionChanged.connect(self.plot_changed)
         self.list.resize_headers()
@@ -142,7 +156,10 @@ class DialogPlots(QDockWidget):
                 self.program.window.diagram.draw()
 
     def change_color_label(self, color):
-        """Change the color of the label in the input area."""
+        """Change the color of the label in the input area.
+        
+        Args:
+            color: The new color of the label."""
         color = QColor(color.rgb())
         self.color_label.setPalette(QPalette(color))
         self.color_label.setAutoFillBackground(True)
@@ -163,7 +180,13 @@ class DialogPlots(QDockWidget):
 
     def plot_changed(self, selected, deselected):
         """Update the current plot attributes.
-           Enable the input area if the selection is valid."""
+        
+        This will enable the input area if the selection is valid.
+        
+        Args:
+            selected: List of newly selected entries.
+            deselected: List of newly deselected entries.
+        """
         try:
             indices = selected.indexes()
         except:
@@ -184,13 +207,21 @@ class DialogPlots(QDockWidget):
 
     def equation_changed(self, text):
         """Called when the equation input is changed by the user.
-           Starts the validation timer."""
+        
+        Starts the validation timer.
+        
+        Args:
+            text: The updated content to the equation input.
+        """
         self.validation_indicator.setVisible(True)
         self.validation_timer.start(VALIDATION_DELAY)
 
     def validate(self):
-        """Validates the input and changes the plot and the
-           background of the input area accordingly."""
+        """Validates the equation input.
+        
+        Also changes the plot and the background of the
+        input area accordingly.
+        """
         self.validation_indicator.setVisible(False)
         self.validation_timer.stop()
 
