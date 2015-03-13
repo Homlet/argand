@@ -30,6 +30,13 @@ class FlippedText(QGraphicsTextItem):
     coordinate system with QGraphicsScene, unfortunately.
     """
     def __init__(self, text, x, y):
+        """Create the text item.
+        
+        Args:
+            text: The text to be displayed.
+            x: The x coordinate to display the text at.
+            y: The y coordinate to display the text at.
+        """
         super(FlippedText, self).__init__()
         self.setPos(x, y)
         self.setPlainText(text)
@@ -43,8 +50,17 @@ class FlippedText(QGraphicsTextItem):
 
 
 class SceneDiagram(QGraphicsScene):
-    """Implementation of QGraphicsScene for drawing diagrams."""
+    """Implementation of QGraphicsScene for drawing diagrams.
+    
+    Attributes:
+        program: Reference to the program object.
+    """
     def __init__(self, program):
+        """Create the scene.
+        
+        Args:
+            program: See SceneDiagram.program.
+        """
         super(SceneDiagram, self).__init__()
         self.program = program
         self.setItemIndexMethod(QGraphicsScene.NoIndex)
@@ -143,6 +159,7 @@ class SceneDiagram(QGraphicsScene):
                     height / 2 + cling_y))
 
     def draw_plots(self):
+        """Draw all the plots to the scene."""
         width = self.sceneRect().width()
         height = self.sceneRect().height()
         center = Point(width / 2, height / 2)
@@ -320,5 +337,9 @@ class SceneDiagram(QGraphicsScene):
                     pass
 
     def set_viewport(self, viewport):
-        """Called when the size of the parent widget changes."""
+        """Called when the size of the parent widget changes.
+        
+        Args:
+            viewport: The new viewport widget.
+        """
         self.setSceneRect(QRectF(viewport.geometry()))
