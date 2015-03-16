@@ -1,8 +1,9 @@
-"""Argand Diagram Plotter
+"""Plot
 
-plot.py - Class for storing a single drawable plot.
+Class for storing a single drawable plot.
 
 Written by Sam Hubbard - samlhub@gmail.com
+Copyright (C) 2015 Sam Hubbard
 """
 
 from math import pi, atan2

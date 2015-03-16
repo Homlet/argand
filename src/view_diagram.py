@@ -1,10 +1,10 @@
-"""Argand Diagram Plotter
+"""Diagram View
 
-view_diagram.py - Implements QGraphicsView for
-                  drawing plots axes and labels
-                  in the drawing area.
+Implementation of QGraphicsView for drawing plots
+axes and labels in the drawing area.
 
 Written by Sam Hubbard - samlhub@gmail.com
+Copyright (C) 2015 Sam Hubbard
 """
 
 from PyQt4.QtGui import *

@@ -1,9 +1,10 @@
-"""Argand Diagram Plotter
+"""Plot List
 
-plot_list_delegate.py - Implements view and model class
-                        for the list in the plots dialog.
+Implements view and model class for the list in
+the plots dialog.
 
 Written by Sam Hubbard - samlhub@gmail.com
+Copyright (C) 2015 Sam Hubbard
 """
 
 from PyQt4.QtGui import *

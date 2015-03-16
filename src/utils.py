@@ -1,4 +1,6 @@
-"""Various utility functions.
+"""Utilities
+
+Various utility functions.
 
 Written by Sam Hubbard - samlhub@gmail.com
 """

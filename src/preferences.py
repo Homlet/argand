@@ -1,4 +1,6 @@
-"""Object for storing program preferences.
+"""Preferences
+
+Object for storing program preferences.
 
 Written by Sam Hubbard - samlhub@gmail.com
 Copyright (C) 2015 Sam Hubbard

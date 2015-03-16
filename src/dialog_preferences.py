@@ -1,9 +1,10 @@
-"""Argand Diagram Plotter
+"""Preferences Dialog
 
-dialog_preferences.py - Creates a pop-up dialog for setting
-                        diagram preferences.
+Implementation of a pop-up dialog for setting
+program preferences.
 
 Written by Sam Hubbard - samlhub@gmail.com
+Copyright (C) 2015 Sam Hubbard
 """
 
 from PyQt4.QtGui import *

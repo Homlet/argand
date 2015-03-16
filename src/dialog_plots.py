@@ -1,9 +1,9 @@
-"""Argand Diagram Plotter
+"""Plots Dialog
 
-dialog_plots.py - Creates a dockable dialog for creating and
-                  managing plots.
+Dockable dialog for creating and managing plots.
 
 Written by Sam Hubbard - samlhub@gmail.com
+Copyright (C) 2015 Sam Hubbard
 """
 
 from time import time

@@ -1,10 +1,10 @@
-"""Argand Diagram Plotter
+"""Scene Diagram
 
-scene_diagram.py - Implements QGraphicsScene for
-                   drawing plots axes and labels
-                   in the drawing area.
+Implements QGraphicsScene for drawing plots
+axes and labels in the drawing area.
 
 Written by Sam Hubbard - samlhub@gmail.com
+Copyright (C) 2015 Sam Hubbard
 """
 
 from math import *

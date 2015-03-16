@@ -4,6 +4,7 @@ Contains classes for parsing and inspecting abstract syntax trees
 involving letter variables, functions and complex numbers.
 
 Written by Sam Hubbard -  samlhub@gmail.com
+Copyright (C) 2015 Sam Hubbard
 """
 
 import cmath

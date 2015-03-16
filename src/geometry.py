@@ -1,6 +1,9 @@
-"""Implementation of various maths classes.
+"""Geometry
+
+Implementation of various maths classes.
 
 Written by Sam Hubbard - samlhub@gmail.com
+Copyright (C) 2015 Sam Hubbard
 """
 
 from math import pi, tan, atan2, cos, sin
