@@ -22,7 +22,17 @@ from geometry import Point
 
 
 class Window(QMainWindow):
+    """Stores the main window.
+    
+    Attributes:
+        program: Reference to the program object.
+    """
     def __init__(self, program):
+        """Create the object.
+        
+        Args:
+            program: See Diagram.program.
+        """
         super(Window, self).__init__()
         self.program = program
         self.setup_content()
@@ -31,6 +41,7 @@ class Window(QMainWindow):
         self.initialize()
 
     def setup_content(self):
+        """Create and add widgets to the viewport."""
         # Setup a central container widget.
         self.center = QWidget()
         self.setCentralWidget(self.center)
@@ -89,6 +100,7 @@ class Window(QMainWindow):
         self.about = QMessageBox()
 
     def create_actions(self):
+        """Register actions and keyboard shortcuts."""
         self.a_new = QAction("&New", self)
         self.a_new.setShortcut("Ctrl+N")
         self.a_new.triggered.connect(self.program.new_diagram)
@@ -130,6 +142,7 @@ class Window(QMainWindow):
         self.a_show_about_qt.triggered.connect(qApp.aboutQt)
 
     def setup_menubar(self):
+        """Add actions to the menubar menus."""
         menubar = self.menuBar()
 
         menu_file = menubar.addMenu("&File")
@@ -153,6 +166,7 @@ class Window(QMainWindow):
         menu_help.addAction(self.a_show_about_qt)
 
     def initialize(self):
+        """Start the main thread."""
         self.setGeometry(200, 150, 800, 600)
         self.setWindowTitle("Argand Diagram Plotter")
 
@@ -176,10 +190,12 @@ class Window(QMainWindow):
         self.program.diagram.zoom_changed.connect(self.zoom_to_slider)
 
     def show_preferences(self):
+        """Show the modal preferences dialog."""
         DialogPreferences(self, self.program.preferences).exec_()
         self.diagram.draw()
 
     def open_guide(self):
+        """Attempt to open the user manual .pdf file."""
         if sys.platform.startswith('darwin'):
             subprocess.call(('open', filepath))
         elif os.name == 'nt':
@@ -188,6 +204,7 @@ class Window(QMainWindow):
             subprocess.call(('xdg-open', filepath))
 
     def show_about(self):
+        """Show the Argand Plotter about dialog."""
         QMessageBox.about(self, "About Argand Plotter",
             "Argand Plotter is a program for drawing Argand Diagrams.\n\n"
             "The program was written by Sam Hubbard, as a project for his "

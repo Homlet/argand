@@ -27,7 +27,7 @@ class ViewDiagram(QGraphicsView):
         """Create the view.
         
         Args:
-            program: See SceneDiagram.program.
+            program: See ViewDiagram.program.
         """
         super(ViewDiagram, self).__init__()
         self.program = program
