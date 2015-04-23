@@ -15,7 +15,20 @@ from scene_diagram import SceneDiagram
 
 
 class ViewDiagram(QGraphicsView):
+    """Implementation of QGraphicsView for handling a diagram QGraphicsScene.
+    
+    Attributes:
+        program: Reference to the program object.
+        scene: Reference to the QGraphicsScene.
+        dragging: True if the user is currently dragging over the view.
+        last_pos: The last position where the mouse was down.
+    """
     def __init__(self, program):
+        """Create the view.
+        
+        Args:
+            program: See SceneDiagram.program.
+        """
         super(ViewDiagram, self).__init__()
         self.program = program
         self.scene = SceneDiagram(program)
@@ -33,17 +46,22 @@ class ViewDiagram(QGraphicsView):
         self.last_pos = Point(0, 0)
     
     def draw(self):
+        """Clear the scene and signal the it to re-draw itself."""
         self.scene.clear()
         self.scene.draw_axes()
         self.scene.draw_plots()
+        # Force the scene to repaint now, rather than at the end
+        # of the event queue.
         self.viewport().repaint()
 
     def mousePressEvent(self, event):
+        """Start dragging when the mouse button is pressed."""
         self.dragging = True
         self.last_pos = Point(event.x(), self.viewport().height() - event.y())
         super(ViewDiagram, self).mousePressEvent(event)
 
     def mouseMoveEvent(self, event):
+        """Handle dragging when the mouse is down and moving over the view."""
         if self.dragging:
             zoom = self.program.diagram.zoom
             mouse_pos = Point(event.x(), self.viewport().height() - event.y())
@@ -55,10 +73,12 @@ class ViewDiagram(QGraphicsView):
         super(ViewDiagram, self).mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event):
+        """Stop dragging when the mouse button is released."""
         self.dragging = False
         super(ViewDiagram, self).mouseReleaseEvent(event)
 
     def wheelEvent(self, event):
+        """Handle zooming when the user scrolls the mouse wheel."""
         delta = event.delta()
         zoom = self.program.diagram.zoom
         while delta >= 120:
@@ -72,5 +92,6 @@ class ViewDiagram(QGraphicsView):
         super(ViewDiagram, self).wheelEvent(event)
         
     def resizeEvent(self, event):
+        """Resize the viewport when the window is resized."""
         self.scene.set_viewport(self.viewport())
         self.draw()
