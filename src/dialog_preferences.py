@@ -12,7 +12,18 @@ from PyQt4.QtCore import *
 
 
 class DialogPreferences(QDialog):
+    """Implementation of a pop-up dialog for setting program preferences.
+    
+    Attributes:
+        preferences: Reference to the preferences object.
+    """
     def __init__(self, parent, preferences):
+        """Create the dialog.
+        
+        Args:
+            parent: The dialog will be modal to its parent.
+            preferences: See DialogPreferences.preferences.
+        """
         super(DialogPreferences, self).__init__(
             parent, Qt.WindowTitleHint | Qt.WindowSystemMenuHint
         )
@@ -20,7 +31,8 @@ class DialogPreferences(QDialog):
         self.setup_content()
         self.initialize()
 
-    def setup_content(self):        
+    def setup_content(self):
+        """Create and add widgets to the viewport."""
         # Create labels.
         self.stroke_label = QLabel("Stroke width:")
         #self.font_size_label = QLabel("Font size:")
@@ -68,9 +80,13 @@ class DialogPreferences(QDialog):
         grid.addWidget(self.buttons, 2, 0, 1, 4, Qt.AlignRight)
 
     def initialize(self):
+        """Setup the dialog."""
         self.setWindowTitle("Preferences")
 
     def accept(self, *args, **kwargs):
+        """Close the dialog, and load the settings into the
+        preferences object.
+        """
         self.preferences.stroke = self.stroke.value()
         #self.preferences.font_size = self.font_size.value()
         self.preferences.label_axes = self.label_axes.isChecked()
