@@ -18,9 +18,15 @@ COL_BUTTON = 1
 
 
 class PlotListTable(QTableView):
+    """Table view widget for displaying the loaded plots from a model.
+
+    Attributes:
+        deleted_item: Signal emitted when a plot is deleted.
+    """
     deleted_item = pyqtSignal()
     
     def __init__(self):
+        """Create the table."""
         super(PlotListTable, self).__init__()
 
         self.setItemDelegate(PlotListDelegate())
@@ -59,6 +65,7 @@ class PlotListTable(QTableView):
             self.clearSelection()
 
     def eventFilter(self, object, event):
+        """Handle events for the table."""
         if event.type() == QEvent.Leave:
             self.itemDelegate().mouseLeft(self.model())
         if event.type() == QEvent.KeyPress:
@@ -73,16 +80,21 @@ class PlotListTable(QTableView):
 
 
 class PlotListModel(QStandardItemModel):
+    """Qt model for storing the loaded plots."""
     def __init__(self):
+        """Create the model."""
         super(PlotListModel, self).__init__()
 
     def flags(self, index):
+        """Set flags."""
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled
 
     def append(self, plot):
+        """Convenience function for appending a row."""
         self.appendRow([plot, QStandardItem()])
 
     def __iter__(self):
+        """Create and return an iterator for the model."""
         def iterator(self):
             for i in range(self.rowCount()):
                 yield self.item(i, 0)
@@ -90,19 +102,28 @@ class PlotListModel(QStandardItemModel):
 
 
 class PlotListDelegate(QStyledItemDelegate):
+    """Qt delegate for rendering cells in the plots table.
+    
+    Attributes:
+        hover: The cell currently hovered over by the cursor.
+        deleted_item: Signal emitted when a plot is deleted.
+    """
     deleted_item = pyqtSignal()
 
     def __init__(self):
+        """Create the delegate."""
         super(PlotListDelegate, self).__init__()
         self.hover = QModelIndex()
 
     def sizeHint(self, option, index):
+        """Take a hint."""
         if index.column() == COL_EQUATION:
             return QSize(0, 24)
         if index.column() == COL_BUTTON:
             return QSize(34, 24)
 
     def paint(self, painter, option, index):
+        """Draw a cell in the table."""
         # Load data from index.
         equation = index.data(ROLE_EQUATION)
         color = index.data(ROLE_COLOR)
@@ -193,14 +214,18 @@ class PlotListDelegate(QStyledItemDelegate):
 
     def delete_item(self, model, index):
         """Deletes a single index from its parent model.
-           Also resets the self.hover pointer just in case."""
+
+        Also resets the self.hover pointer just in case.
+        """
         model.removeRow(index.row())
         self.hover = QModelIndex()
         self.deleted_item.emit()
 
     def mouseLeft(self, model):
         """Called when the mouse leaves the parent widget's viewport.
-           Resets the self.hover pointer."""
+
+        Resets the self.hover pointer.
+        """
         if self.hover.isValid():
             model.setData(self.hover, STATE_NORMAL, ROLE_BUTTON_STATE)
             self.hover = QModelIndex()
