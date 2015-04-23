@@ -57,13 +57,21 @@ STATE_DOWN = 2
 
 
 class Plot(QStandardItem):
+    """Qt model item for storing plots."""
     def __init__(self, equation="", color=QColor(0, 0, 0, 80)):
+        """Create the item.
+        
+        Args:
+            equation: A string input equation to parse.
+            color: The colour with which the equation should be rendered.
+        """
         super(Plot, self).__init__()
 
         self.set_equation(equation)
         self.setData(color, ROLE_COLOR)
 
     def set_equation(self, equation):
+        """Parses the equation and loads it into the item."""
         tree = SyntaxParser(equation).get_tree()
         if tree and self.classify(tree):
             self.setData(equation, ROLE_EQUATION)
@@ -72,7 +80,11 @@ class Plot(QStandardItem):
 
     def classify(self, tree):
         """Attempt to classify the AST as a particular type
-           Argand diagram. Returns true if successful."""
+           Argand diagram. Returns true if successful.
+
+        Args:
+            tree: An AST to attempt to classify.
+        """
         def values(node):
             """Calculates coefficients and offsets for each node.
                Returns a tuple: (coefficient, offset)."""
