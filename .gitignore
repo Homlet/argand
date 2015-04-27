@@ -10,8 +10,10 @@ docs/html/
 docs/rtf/
 docs/pdf/
 docs/doxygen/
+docs/docx/~$*
 
 *.mpp
 *.wbk
 *.chm
 *.pdf
+*.tmp
