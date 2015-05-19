@@ -1,0 +1,13 @@
+// A task runner that executes main.pyw.
+{
+	// The command is tsc.
+	"command": "python",
+
+	// Show the output window only if unrecognized errors occur. 
+	"showOutput": "silent",
+	
+	// args is the HelloWorld program to compile.
+	"args": ["src\\main.pyw"],
+	
+	"isBuildTask": "true"
+}
