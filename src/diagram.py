@@ -11,8 +11,8 @@ import ntpath
 import pickle
 from math import log10
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PySide.QtCore import *
+from PySide.QtGui import *
 
 from plot import Plot
 from plot_list import PlotListModel
@@ -37,8 +37,8 @@ class Diagram(QObject):
         translation: Current display pan offset.
         translation_changed: Signal emitted whenever translation changes.
     """
-    zoom_changed = pyqtSignal(float)
-    translation_changed = pyqtSignal(Point)
+    zoom_changed = Signal(float)
+    translation_changed = Signal(Point)
 
     def __init__(self, program, path=None):
         """Create a new Diagram object.
