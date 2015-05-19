@@ -10,8 +10,8 @@ Copyright (C) 2015 Sam Hubbard
 import os
 import sys
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PySide.QtCore import *
+from PySide.QtGui import *
 
 from preferences import Preferences
 from diagram import Diagram
@@ -29,7 +29,7 @@ class Program(QObject):
         preferences: Stores a few diagram-independent settings.
         window: Serves as the main handle to the entire PyQt GUI.
     """
-    diagram_changed = pyqtSignal()
+    diagram_changed = Signal()
     
     def __init__(self, path=None):
         """Create and initialise all components of the program.
