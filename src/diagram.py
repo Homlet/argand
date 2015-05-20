@@ -114,9 +114,9 @@ class Diagram(QObject):
         if self.path:
             plot_bytes = QByteArray()
             
-            buffer = QBuffer(plot_bytes)
-            buffer.open(QIODevice.WriteOnly)
-            stream = QDataStream(buffer)
+            write_buffer = QBuffer(plot_bytes)
+            write_buffer.open(QIODevice.WriteOnly)
+            stream = QDataStream(write_buffer)
             for plot in self.plots:
                 stream << plot
             data = [plot_bytes, self.zoom, self.translation]
@@ -156,9 +156,9 @@ class Diagram(QObject):
         
         self.plots = PlotListModel()
         
-        buffer = QBuffer(plot_bytes)
-        buffer.open(QIODevice.ReadOnly)
-        stream = QDataStream(buffer)
+        write_buffer = QBuffer(plot_bytes)
+        write_buffer.open(QIODevice.ReadOnly)
+        stream = QDataStream(write_buffer)
         while not stream.atEnd():
             plot = Plot()
             stream >> plot
