@@ -7,8 +7,8 @@ Written by Sam Hubbard - samlhub@gmail.com
 Copyright (C) 2015 Sam Hubbard
 """
 
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PySide.QtGui import *
+from PySide.QtCore import *
 
 
 class DialogPreferences(QDialog):

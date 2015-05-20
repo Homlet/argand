@@ -8,8 +8,8 @@ Copyright (C) 2015 Sam Hubbard
 
 from math import pi, atan2
 
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PySide.QtGui import *
+from PySide.QtCore import *
 
 from geometry import *
 from abstract_syntax_tree import *

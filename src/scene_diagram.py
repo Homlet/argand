@@ -9,8 +9,8 @@ Copyright (C) 2015 Sam Hubbard
 
 from math import *
 
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PySide.QtGui import *
+from PySide.QtCore import *
 
 from plot import *
 from geometry import *
