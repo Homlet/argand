@@ -189,7 +189,6 @@ class DialogPlots(QDockWidget):
             selected: List of newly selected entries.
             deselected: List of newly deselected entries.
         """
-        print("Plot changed.")
         try:
             indices = selected.indexes()
         except:
