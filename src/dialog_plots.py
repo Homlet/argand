@@ -34,8 +34,11 @@ class DialogPlots(QDockWidget):
         """
         super(DialogPlots, self).__init__("Plots", parent)
         self.program = program
+        self.current_plot = None
+
+        self.setAllowedAreas(
+            Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
         self.setup_content()
-        self.initialize()
 
     def setup_content(self):
         """Add the widgets and layouts to the dialog."""
@@ -120,27 +123,27 @@ class DialogPlots(QDockWidget):
         grid.addWidget(self.list, 0, 0)
         grid.addWidget(self.add_plot_button, 1, 0)
         grid.addWidget(self.input_frame, 2, 0)
-
-    def initialize(self):
-        """Set up dialog parameters and make dialog visible."""
-        self.setAllowedAreas(
-            Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
+        
         self.setWidget(self.widget)
 
+    @Slot()
+    def initialize(self):
+        """Register signals once the event loop is running."""
         self.register_signals()
-
-        self.current_plot = None
+        
+        self.show()
 
     def register_signals(self):
         """Register all external PyQt signal connections."""
         self.program.diagram_changed.connect(self.set_list_model)
-        if self.list.selectionModel():
-            self.list.selectionModel().selectionChanged.connect(
-                self.plot_changed)
+        self.list.deleted_item.connect(self.program.window.diagram.draw)
 
     def set_list_model(self):
         """Set the model the list will display plots from."""
         self.list.setModel(self.program.diagram.plots)
+        # We have to store this in a variable to get around GC weirdness.
+        selection_model = self.list.selectionModel()
+        selection_model.selectionChanged.connect(self.plot_changed)
         self.list.resize_headers()
         self.current_plot = None
         self.plot_changed(None, None)
@@ -169,6 +172,7 @@ class DialogPlots(QDockWidget):
         """Set the color label to transparent."""
         self.color_label.setAutoFillBackground(False)
 
+    @Slot()
     def add_plot(self):
         """Add a new plot to the plot list and select it."""
         self.validate()
@@ -207,6 +211,7 @@ class DialogPlots(QDockWidget):
             self.input_frame.setEnabled(False)
         self.validate()
 
+    @Slot(str)
     def equation_changed(self, text):
         """Called when the equation input is changed by the user.
         
@@ -218,6 +223,7 @@ class DialogPlots(QDockWidget):
         self.validation_indicator.setVisible(True)
         self.validation_timer.start(VALIDATION_DELAY)
 
+    @Slot()
     def validate(self):
         """Validates the equation input.
         

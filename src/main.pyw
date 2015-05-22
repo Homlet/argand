@@ -29,6 +29,7 @@ class Program(QObject):
         preferences: Stores a few diagram-independent settings.
         window: Serves as the main handle to the entire PyQt GUI.
     """
+    initialized = Signal()
     diagram_changed = Signal()
     
     def __init__(self, path=None):
@@ -64,6 +65,9 @@ class Program(QObject):
         self.window = Window(self)
         self.diagram_changed.emit()
         self.diagram.notify_transformation()
+        
+        self.initialized.emit()
+        self.diagram_changed.emit()
 
     def new_diagram(self):
         """Create a new blank diagram object.

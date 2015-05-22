@@ -38,7 +38,9 @@ class Window(QMainWindow):
         self.setup_content()
         self.create_actions()
         self.setup_menubar()
-        self.initialize()
+        
+        program.initialized.connect(self.initialize)
+        program.initialized.connect(self.plots.initialize)
 
     def setup_content(self):
         """Create and add widgets to the viewport."""
@@ -93,7 +95,6 @@ class Window(QMainWindow):
 
         # Add the plot list docking dialog.
         self.plots = DialogPlots(self, self.program)
-        self.plots.list.deleted_item.connect(self.diagram.draw)
         self.addDockWidget(Qt.LeftDockWidgetArea, self.plots)
 
         # Create an about dialog for the program.
@@ -165,6 +166,7 @@ class Window(QMainWindow):
         menu_help.addAction(self.a_show_about)
         menu_help.addAction(self.a_show_about_qt)
 
+    @Slot()
     def initialize(self):
         """Start the main thread."""
         self.setGeometry(200, 150, 800, 600)
@@ -175,6 +177,7 @@ class Window(QMainWindow):
 
         self.show()
 
+    @Slot()
     def set_title(self):
         """Put the name of the current diagram file in the title bar."""
         if hasattr(self.program, "diagram") and self.program.diagram:
@@ -183,17 +186,20 @@ class Window(QMainWindow):
         else:
             self.setWindowTitle("Argand Plotter")
 
+    @Slot()
     def register_signals(self):
         """Register all external PyQt signal connections."""
         self.program.diagram.translation_changed.connect(
             self.translation_to_input)
         self.program.diagram.zoom_changed.connect(self.zoom_to_slider)
 
+    @Slot()
     def show_preferences(self):
         """Show the modal preferences dialog."""
         DialogPreferences(self, self.program.preferences).exec_()
         self.diagram.draw()
 
+    @Slot()
     def open_guide(self):
         """Attempt to open the user manual .pdf file."""
         if sys.platform.startswith('darwin'):
@@ -203,6 +209,7 @@ class Window(QMainWindow):
         elif os.name == 'posix':
             subprocess.call(('xdg-open', filepath))
 
+    @Slot()
     def show_about(self):
         """Show the Argand Plotter about dialog."""
         QMessageBox.about(self, "About Argand Plotter",
@@ -211,6 +218,7 @@ class Window(QMainWindow):
             "A2 computing coursework.\n\n"
             "Copyright (C) 2015 Sam Hubbard")
 
+    @Slot()
     def input_to_translation(self):
         """Set the translation in the diagram, from the inputs."""
         self.program.diagram.set_translation(Point(
@@ -227,11 +235,13 @@ class Window(QMainWindow):
         self.translation_input_x.blockSignals(False)
         self.translation_input_y.blockSignals(False)
 
+    @Slot()
     def reset_translation(self):
         """Reset the translation to the origin."""
         self.program.diagram.set_translation(Point(0, 0))
         self.diagram.draw()
 
+    @Slot()
     def slider_to_zoom(self):
         """Set the zoom in the diagram, from the slider."""
         self.program.diagram.set_zoom(
@@ -245,6 +255,7 @@ class Window(QMainWindow):
             self.zoom_slider.setValue(25 * log10(value))
             self.zoom_slider.blockSignals(False)
 
+    @Slot()
     def reset_zoom(self):
         """Reset zoom level to 1."""
         self.program.diagram.set_zoom(1)
