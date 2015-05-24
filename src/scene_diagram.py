@@ -334,6 +334,7 @@ class SceneDiagram(QGraphicsScene):
                         draw_ray(ray)
 
                 if type == TYPE_SECTOR:
+                    # Someday...
                     pass
 
     def set_viewport(self, viewport):
