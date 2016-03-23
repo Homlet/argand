@@ -11,8 +11,8 @@ import sys
 import subprocess
 import os
 
-from PySide.QtGui import *
-from PySide.QtCore import *
+from PyQt4.QtGui import *
+from PyQt4.QtCore import *
 
 from dialog_plots import DialogPlots
 from dialog_preferences import DialogPreferences
@@ -119,7 +119,7 @@ class Window(QMainWindow):
 
         self.a_exit = QAction("&Exit", self)
         self.a_exit.setShortcut("Ctrl+W")
-        self.a_exit.triggered.connect(self.program.app.quit)
+        self.a_exit.triggered.connect(qApp.quit)
 
         self.a_reset_view = QAction("&Reset View", self)
         self.a_reset_view.setShortcut("Ctrl+R")
@@ -139,7 +139,7 @@ class Window(QMainWindow):
         self.a_show_about = QAction("&About Argand Plotter", self)
         self.a_show_about.triggered.connect(self.show_about)
         self.a_show_about_qt = QAction("About &Qt", self)
-        self.a_show_about_qt.triggered.connect(self.program.app.aboutQt)
+        self.a_show_about_qt.triggered.connect(qApp.aboutQt)
 
     def setup_menubar(self):
         """Add actions to the menubar menus."""

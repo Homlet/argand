@@ -7,8 +7,8 @@ Written by Sam Hubbard - samlhub@gmail.com
 Copyright (C) 2015 Sam Hubbard
 """
 
-from PySide.QtGui import *
-from PySide.QtCore import *
+from PyQt4.QtGui import *
+from PyQt4.QtCore import *
 
 from plot import *
 
@@ -23,8 +23,8 @@ class PlotListTable(QTableView):
     Attributes:
         deleted_item: Signal emitted when a plot is deleted.
     """
-    deleted_item = Signal()
-
+    deleted_item = pyqtSignal()
+    
     def __init__(self):
         """Create the table."""
         super(PlotListTable, self).__init__()
@@ -43,11 +43,12 @@ class PlotListTable(QTableView):
 
         self.setSelectionMode(QAbstractItemView.SingleSelection)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
-
+        
     def append(self, plot):
         """Convenience function for adding a plot to the model."""
         self.model().append(plot)
         self.resize_headers()
+
 
     def resize_headers(self):
         """The more this is done, the less likely the list will look weird."""
@@ -107,7 +108,7 @@ class PlotListDelegate(QStyledItemDelegate):
         hover: The cell currently hovered over by the cursor.
         deleted_item: Signal emitted when a plot is deleted.
     """
-    deleted_item = Signal()
+    deleted_item = pyqtSignal()
 
     def __init__(self):
         """Create the delegate."""

@@ -8,8 +8,8 @@ Copyright (C) 2015 Sam Hubbard
 
 from time import time
 
-from PySide.QtGui import *
-from PySide.QtCore import *
+from PyQt4.QtGui import *
+from PyQt4.QtCore import *
 
 from plot import *
 from plot_list import *
@@ -128,19 +128,18 @@ class DialogPlots(QDockWidget):
         self.setWidget(self.widget)
 
         self.register_signals()
+        self.program.diagram_changed.connect(self.register_signals)
 
         self.current_plot = None
 
     def register_signals(self):
         """Register all external PyQt signal connections."""
         self.program.diagram_changed.connect(self.set_list_model)
-        if self.list.selectionModel():
-            self.list.selectionModel().selectionChanged.connect(
-                self.plot_changed)
 
     def set_list_model(self):
         """Set the model the list will display plots from."""
         self.list.setModel(self.program.diagram.plots)
+        self.list.selectionModel().selectionChanged.connect(self.plot_changed)
         self.list.resize_headers()
         self.current_plot = None
         self.plot_changed(None, None)
@@ -179,7 +178,6 @@ class DialogPlots(QDockWidget):
             QItemSelectionModel.ClearAndSelect | QItemSelectionModel.Rows)
         self.equation.setFocus()
 
-    @Slot(QItemSelection, QItemSelection)
     def plot_changed(self, selected, deselected):
         """Update the current plot attributes.
         
@@ -189,7 +187,6 @@ class DialogPlots(QDockWidget):
             selected: List of newly selected entries.
             deselected: List of newly deselected entries.
         """
-        print("Plot changed.")
         try:
             indices = selected.indexes()
         except:
